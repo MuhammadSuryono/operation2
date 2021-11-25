@@ -2668,7 +2668,9 @@ class Stkb extends CI_Controller
   public function print_reportsdm($nomorstkb, $term, $id)
   {
     ini_set('max_execution_time', '0');
-    $getHoliday = $this->db->query("SELECT * FROM db_cuti.kalender")->result_array();
+	  $dsn1 = 'mysql://adam:Ad@mMR1db@192.168.8.2/db_cuti';
+	  $this->db1 = $this->load->database($dsn1, true);
+    $getHoliday = $this->db1->query("SELECT * FROM db_cuti.kalender")->result_array();
     $holidays = [];
     foreach ($getHoliday as $item) {
       array_push($holidays, $item['tanggal']);
