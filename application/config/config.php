@@ -23,7 +23,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | a PHP script and you can easily do that on your own.
 |
 */
-$config['base_url'] = 'http://192.168.8.2/uat-operation2/';
+$config['base_url'] = 'http://180.211.92.131/uat-operation2/';
 
 /*
 |--------------------------------------------------------------------------
