@@ -1,0 +1,37 @@
+.container {
+  width: 80%;
+  background: #ffffff;
+  text-align: center;
+  padding-bottom: 10px;
+  border-style: solid;
+  border-color: #4ecdc4;
+  border-width: 1px 2px 2px 2px;
+}
+
+.progress {
+  width: 1px;
+  height: 3px;
+  background: #006B5A;
+  transition: width .1s linear;
+  margin-bottom:2px;
+}
+
+// Play/Pause Button
+.togglePlay {
+  border-radius: 40%;
+  }
+  
+.togglePlay {
+  background-color: #337ab7;
+  border: none;
+  color: white;
+  text-align: center;
+  padding-top : 5px;
+  padding-right : 5.5px;
+
+  cursor: pointer;
+  border-radius: 40%;
+}
+
+
+}

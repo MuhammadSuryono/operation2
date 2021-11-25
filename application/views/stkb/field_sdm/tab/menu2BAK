@@ -1,0 +1,62 @@
+<div class="table-responsive">
+<table class=" table table-bordered table-striped table-condensed" id="dataTables-example">
+  <thead>
+      <tr>
+        <th>No.</th>
+        <th>Nomor Stkb</th>
+        <th>Term</th>
+        <th>Tanggal Buat</th>
+        <th>Project</th>
+        <th>Nama</th>
+        <th>Perdin</th>
+        <th>Akomodasi</th>
+        <th>Bpjs</th>
+        <th>Jumlah RTP (OPS)</th>
+        <th>Jumlah RTP (TRK)</th>
+        <th>Total</th>
+        <th>Tanggal Bayar</th>
+        <th>No. Voucher</th>
+        <th>Jumlah Pembayaran</th>
+        <th>Print</th>
+      </tr>
+  </thead>
+  <tbody>
+      <?php
+        $no = 1;
+        foreach ($getpaid as $key3) :
+        $totalnya = $key3['jumlahops'] + $key3['jumlahtrk'] + $key3['akomodasi'] + $key3['perdin'] + $key3['bpjs'];
+       ?>
+       <tr>
+        <td><?php echo $no; ?></td>
+        <td><?php echo $key3['nomorstkb'] ?></td>
+        <td><?php echo $key3['term'] ?></td>
+        <td><?php echo $key3['tanggalbuat'] ?></td>
+        <td><?php echo $key3['kodeproject'] ?> - <?php echo $key3['namaproject'] ?></td>
+        <td><?php echo $key3['idpic'] ?> - <?php echo $key3['namapic'] ?></td>
+        <td><?php echo 'Rp. ' . number_format( $key3['perdin'], 0 , '' , ',' ); ?></td>
+        <td><?php echo 'Rp. ' . number_format( $key3['akomodasi'], 0 , '' , ',' ); ?></td>
+        <td><?php echo 'Rp. ' . number_format( $key3['bpjs'], 0 , '' , ',' ); ?></td>
+        <td><?php echo 'Rp. ' . number_format( $key3['jumlahops'], 0 , '' , ',' ); ?></td>
+        <td><?php echo 'Rp. ' . number_format( $key3['jumlahtrk'], 0 , '' , ',' ); ?></td>
+        <td><?php echo 'Rp. ' . number_format( $totalnya, 0 , '' , ',' ); ?></td>
+        <td><?php echo $key3['tanggalbayar'] ?></td>
+        <td><?php echo $key3['novoucher'] ?></td>
+        <td><?php echo 'Rp. ' . number_format( $key3['jumlahbayar'], 0 , '' , ',' ); ?></td>
+        <td><a href="<?php echo base_url(); ?>stkb/printstkb/<?php echo $key3['nomorstkb']; ?>/<?php echo $key3['term']; ?>" target="_blank"><i class="fa fa-print"></i> Print</a></td>
+        <!-- <td><button type="button" class="btn btn-default btn-small" onclick="printstkb('<?php //echo $key3['nomorstkb']; ?>','<?php //echo $key3['term']; ?>')"><i class="fa fa-print"></i> Print</button></td> -->
+      </tr>
+       <?php
+       $no++;
+      endforeach;
+        ?>
+  </tbody>
+</table>
+  </div>
+
+<script src="<?=base_url('assets/')?>js/jquery.dataTables.js"></script>
+<script src="<?=base_url('assets/')?>js/dataTables.bootstrap.js"></script>
+<script>
+  $(document).ready(function () {
+    $('#dataTables-example').dataTable();
+  });
+</script>

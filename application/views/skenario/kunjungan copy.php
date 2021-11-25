@@ -1,0 +1,101 @@
+<section id="main-content">
+      <section class="wrapper site-min-height">
+        <h3><i class="fa fa-angle-right"></i> Skenario Kunjungan</h3>
+        <div class="row mt">
+          <div class="col-lg-12">
+
+
+          <div class="row mt">
+             
+          <div class="col-lg-12">
+            <div class="form-panel">
+                <h4 class="mb text-primary"> <strong> <i class="fa fa-angle-right"></i> Daftar Skenario Kunjungan</strong></h4>
+
+                <form action="<?= base_url('skenario/tambahkunjungan')?>" method="post">
+                <div class="row">
+                    <div class="col-md-3">
+                        <select name="project" class="selectpicker form-control" data-live-search="true">
+                            <option value=""> Pilih Project </option>
+                            <?php foreach($project as $pr) :?>
+                            <option value="<?=$pr['id_project']?>"> <?= $pr['nama_project']?> </option>
+                            <?php endforeach?>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select name="skenario" class="selectpicker form-control" data-live-search="true">
+                            <option value=""> Pilih Skenario </option>
+                            <?php foreach($skenario as $pr) :?>
+                            <option value="<?=$pr['id_skenario']?>"> <?= $pr['nama_skenario']?> </option>
+                            <?php endforeach?>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-round btn-primary mb"><i class="fa fa-plus fa-fw"></i> Tambah </button>
+                    </div>
+                </div>
+                </form>
+                
+                <div class="col-lg-12">
+                    <?= $this->session->flashdata('info');?>
+                </div>
+                
+                <section id="unseen">
+                <table class=" table table-bordered table-striped table-condensed table-responsive-sm" id="dataTables-example">
+                  <thead>
+                    <tr>
+                      <th>No</th>
+                      <th>Nama Project</th>
+                      <th>Nama Skenario</th>
+                      <th>Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                      <?php $no = 0; foreach($skenario_kunjungan as $db) :?>
+                      <?php if($no%2==0):?>
+                         <tr style="background-color : #e2e4ff;">
+                         <td>
+                         <?php else :?>
+                         <tr>
+                         <td style="background-color : #ffffff;">
+                         <?php endif?>
+                            <?= ++$no?></td>
+                            <td><?= $db['nama_project']?></td>
+                            <td><?= $db['nama_skenario']?></td>
+                            <td>
+                                        <a href="" class="btn btn-danger btn-round btn-xs" style="margin-right : 0.5rem;" data-toggle="modal" data-target="#hapus<?= $db['id_skenario_kunjungan']; ?>"><span class="fa fa-trash fa-fw"></span>Hapus</a>
+                            </td>
+                        </tr>
+
+                        <!-- MODAL HAPUS -->
+                        <div class="modal fade" id="hapus<?= $db['id_skenario_kunjungan']?>" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                <h4 class="modal-title" id="myModalLabel">Hapus Skenario</h4>
+                                </div>
+                                <div class="modal-body">
+                                Yakin ingin menghapus skenario <strong><?//= $db['nama_skenario']?></strong> ?
+                                </div>
+                                <div class="modal-footer">
+                                <button type="button" class="btn btn-danger btn-round" data-dismiss="modal">Batal</button>
+                                <a href="<?= base_url('skenario/hapuskunjungan/')?><?= $db['id_skenario_kunjungan']?>" type="button" class="btn btn-primary btn-round">Hapus</a>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                        <!-- AKHIR MODAL HAPUS -->
+                      <?php endforeach?>
+                  </tbody>
+                </table>
+              </section>
+            </div>
+           </div>
+           </div>
+
+
+          </div>
+        </div>
+      </section>
+      <!-- /wrapper -->
+    </section>
