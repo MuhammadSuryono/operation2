@@ -254,9 +254,9 @@ $db['dbkas'] = array(
 //Koneksi DB Cuti
 $db['db_cuti'] = array(
 	'dsn'	=> '',
-	'hostname' => '192.168.8.2',
-	'username' => 'adam',
-	'password' => 'Ad@mMR1db',
+	'hostname' => '192.168.8.233',
+	'username' => 'itdev2',
+	'password' => 'itd3v@MR12',
 	'database' => 'db_cuti',
 	'dbdriver' => 'mysqli',
 	'dbprefix' => '',
