@@ -128,7 +128,7 @@ if ($this->db->get_where('user', ['noid' => $id_user])->num_rows() >= 1) {
                                     <a href="<?php echo base_url(); ?>stkb/hapus_fieldsdm/<?php echo $data['id']; ?> " class="btn-danger btn-sm tombol-hapus"><i class="fa fa-trash"></i> Delete</a>
                                   <?php endif; ?>
                                   <br>
-                                  <?php if ($data['posisi'] == 'Area Head' && ($user['id_divisi'] == 99 || $user['id_divisi'] == 8 || $user['id_divisi'] == 7)) : ?>
+                                  <?php if (($data['posisi'] == 'Area Head' OR $data['posisi'] == 'Kepala Field') && ($user['id_divisi'] == 99 || $user['id_divisi'] == 8 || $user['id_divisi'] == 7)) : ?>
                                     <!-- href="<?php echo base_url(); ?>stkb/print_reportsdm/675/0/<?php echo $data['id']; ?>" -->
                                     <?php if ($data['status'] == 'Mitra') : ?>
                                       <a class="btn-primary btn-sm btn-print-sdm-mitra" data-toggle="modal" data-target="#printSdmMitra" data-id_data_id="<?= $data['id_data_id'] ?>" data-id="<?= $data['id'] ?>"><i class="fa fa-print"></i> Print</a>
@@ -601,7 +601,7 @@ $dataAreaHead = $this->db->query("SELECT * FROM field_sdm JOIN id_data ON id_dat
           </div>
           <div class="form-group">
             <label>Upload Memo</label>
-            <input type="file" name="memo_sdm" accept="application/pdf" class="form-control" required>
+            <input type="file" name="memo_sdm" accept="application/pdf" class="form-control">
             <span class="bg-info p-1">NOTE!</span>&nbsp;&nbsp;Format Memo(.pdf)
           </div>
         </div>
