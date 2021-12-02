@@ -313,6 +313,7 @@ class Time extends CI_Controller {
 
     public function tambahAg(){
         $num = $this->input->post('num');
+        
         $data_quest = ['kom_antrian' => $this->input->post('antrian'),
                         'kom_rekaman_video' => $this->input->post('rekaman_video')];
 

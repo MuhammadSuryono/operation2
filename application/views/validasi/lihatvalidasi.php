@@ -552,38 +552,56 @@
             ?>
                 <div class="col-lg-6">
               <form class="form-horizontal style-form" method="post" action="<?= base_url('time/tambahAg')?>">
-                <input type="hidden" name="num" value="<?= $db['num'] ?>">
-
+                 <input type="hidden"  name="num" id="num" value="<?=$sts_quest['num']?>">
+                      
                 <div class="row">
                   <div class="col-lg-12">
                     <div class="form-panel">
                         <h4 class="mb text-primary"> <strong> <i class="fa fa-angle-right"></i> FORM PERTANYAAN  </strong></h4>
                         <div class="form-group">
                           <!-- <div class="row"> -->
-                            <label class="col-sm-8 control-label"><b><i class="fa fa-angle-right"></i> Apakah shopper menunggu antrian dari pagi sebelum office hour?</b></label>
+                            <label class="col-sm-8 control-label"><i class="fa fa-angle-right"></i> Apakah shopper harus mengambil nomor antrian <strong>tiga jam</strong> sebelum jam buka cabang?</label>
                               <div class="col-sm-4">
                                   <div class="row">
                                     <div class="col-sm-6">
-                                      <input type="radio" name="antrian" value="1" required="required" >&nbsp; YES
+                                      <input type="radio" name="antrian" value="1" required="required">&nbsp; YES
                                     </div>
                                     <div class="col-sm-6">
                                       <input type="radio" name="antrian" value="0" >&nbsp; NO
                                     </div>
                                   </div>
                               </div>
+                            </div>
+
                             <!-- </div> -->
                             <!-- <div class="row"> -->
-                            <label class="col-sm-8 control-label"><b><i class="fa fa-angle-right"></i> Apakah shopper diharuskan merekam kunjungan dengan video?</b></label>
+                            <div class="form-group">
+                            <label class="col-sm-8 control-label"><i class="fa fa-angle-right"></i> Apakah kunjungan yang dikunjungi shopper wajib video?</label>
                               <div class="col-sm-4">
                                   <div class="row">
                                     <div class="col-sm-6">
-                                      <input type="radio" name="rekaman_video" value="1" required="required" >&nbsp; YES
+                                      <input type="radio" id="side_rekaman" name="side_rekaman" onchange="changeWajib(this);" value="1" required="required">&nbsp; YES
                                     </div>
                                     <div class="col-sm-6">
-                                      <input type="radio" name="rekaman_video" value="0" >&nbsp; NO
+                                      <input type="radio" id="side_rekaman" name="side_rekaman" onchange="changeWajib(this);" value="0" >&nbsp; NO
                                     </div>
                                   </div>
                               </div>
+
+                              <div id="hasil_side" style="margin-left: 40px; margin-top: 50px; display: none;">
+                              <label class="col-sm-8 control-label"><i class="fa fa-angle-right"></i> Apakah shopper melakukan upload video kunjungan?</label>
+                              <div class="col-sm-4">
+                                  <div class="row">
+                                    <!-- <div class="col-sm-6"> -->
+                                      <input type="radio" name="rekaman_video" id="rekaman_video" value="1" >&nbsp; YES
+                                    <!-- </div> -->
+                                    <br>
+                                    <!-- <div class="col-sm-6"> -->
+                                      <input type="radio" name="rekaman_video" value="0" >&nbsp; NO
+                                    <!-- </div> -->
+                                  </div>
+                              </div>
+                            </div>
                             <!-- </div> -->
                         </div>
                       
@@ -735,6 +753,18 @@
     <!--main content end-->
 
     <script>
+      function changeWajib(val) {
+          // alert(val.value);
+          if (val.value == 1) {
+               document.getElementById('hasil_side').style.display = 'block';
+               $("#rekaman_video").attr("required", true);
+          } else {
+               document.getElementById('hasil_side').style.display = 'none';
+               $("#rekaman_video").attr("required", false);
+
+          }
+      }
+
     function dialog(id){
         console.log(id);
         $.ajax({
