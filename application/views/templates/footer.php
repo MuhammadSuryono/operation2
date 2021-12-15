@@ -577,6 +577,37 @@
  });
 
  $(document).ready(function() {
+  $('#hostname').change(function(){
+    var host = $(this).val();
+    console.log(host);
+    $('#dba').empty();
+
+    var ht = '';
+    $.ajax({
+           url: "<?php echo base_url('project/getdba') ?>",
+           type: "POST",
+           dataType: 'json',
+           data: {
+             host: host
+           },
+           success: function(hasil) {
+             console.log("success");
+             console.log(hasil);
+             
+             var cetak = "<option>Pilih Data</option>";
+             for (var i = 0; i < hasil.length; i++) {
+               cetak += "<option value='" + hasil[i]['project_num'] + "'>" + hasil[i]['project_name'] + "</option>";
+             }
+            $("#dba").append(cetak);
+            $("#dba").selectpicker('refresh');
+
+           }
+         });
+   
+  })
+ });
+
+ $(document).ready(function() {
   $('#plat_akunbank').change(function(){
     var plat = $(this).val();
     console.log(plat);
@@ -940,6 +971,9 @@
                var persen_plot = (plot / coba.length) * 100;
                var persen_belum_plot = (belum_plot / coba.length) * 100;
 
+               var total_masuk = aktual + validasi;
+               var persen_total_masuk = ((aktual + validasi)/coba.length) * 100;
+
                cobaah += "</tbody>";
                cobaah += "</table>";
                cobaah += "</div>";
@@ -950,11 +984,7 @@
                cobaah += "<td><h5><b>: " + coba.length + "</b></h5></td>";
                cobaah += "</tr>";
                cobaah += "<tr>";
-               cobaah += "<td><h5><b><span class='fa fa-square fa-fw'></span>--Sudah Plotting</b></h5></td>";
-               cobaah += "<td><h5><b>: " + plot + " (" + persen_plot.toFixed(2) + "%)</b></h5></td>";
-               cobaah += "</tr>";
-               cobaah += "<tr>";
-               cobaah += "<td><h5><b><span class='fa fa-square fa-fw' style='color:#98FB98;'></span>--Sudah Aktual</b></h5></td>";
+               cobaah += "<td><h5><b><span class='fa fa-square fa-fw' style='color:#98FB98;'></span>--Menunggu Validasi</b></h5></td>";
                cobaah += "<td><h5><b>: " + aktual + " (" + persen_aktual.toFixed(2) + "%)</b></h5></td>";
                cobaah += "</tr>";
                cobaah += "<tr>";
@@ -967,8 +997,16 @@
                cobaah += "<td><h5><b>: " + ditolak + " (" + persen_ditolak.toFixed(2) + "%)</b></h5></td>";
                cobaah += "</tr>";
                cobaah += "<tr>";
+               cobaah += "<td><h5><b><span class='fa fa-square fa-fw' style='color:#1E90FF;'></span>--Total Aktual</b></h5></td>";
+               cobaah += "<td><h5><b>: " + total_masuk + " (" + persen_total_masuk.toFixed(2) + "%)</b></h5></td>";
+               cobaah += "</tr>";
+               cobaah += "<tr>";
                cobaah += "<td><h5><b><span class='fa fa-square fa-fw' style='color: #F0FFF0;'></span>--Belum Aktual</b></h5></td>";
                cobaah += "<td><h5><b>: " + belum_aktual + " (" + persen_belum.toFixed(2) + "%)</b></h5></td>";
+               cobaah += "</tr>";
+               cobaah += "<tr>";
+               cobaah += "<td><h5><b><span class='fa fa-square fa-fw'></span>--Sudah Plotting</b></h5></td>";
+               cobaah += "<td><h5><b>: " + plot + " (" + persen_plot.toFixed(2) + "%)</b></h5></td>";
                cobaah += "</tr>";
                cobaah += "<tr>";
                cobaah += "<td><h5><b><span class='fa fa-square fa-fw'></span>--Belum Plotting</b></h5></td>";
@@ -1107,6 +1145,212 @@
          });
        });
 
+       $(document).ready(function() {
+         $('#viewdata_image').click(function() {
+           var project = $('#ebanking_project').val();
+           var transaksi = $('#ebanking_trx').val();
+           console.log(project);
+           console.log(transaksi);
+
+           $("#div_dataimage").empty();
+           $.ajax({
+             url: "<?php echo base_url('ebanking/getlist_image') ?>",
+             type: "POST",
+             dataType: 'json',
+             data: {
+               pro: project,
+               transaksi: transaksi
+             },
+             success: function(hasil) {
+               console.log(hasil);
+               // $("#kunjungan").empty();
+               var cobaah = "";
+               cobaah += "<div class='form-group'>";
+               cobaah += "<div class='text-right' style='margin-bottom: 20px;'><button type='button' class='btn btn-primary' onclick='downloadAll()'><i class='fas fa-download'></i> Download All Image</button></div>";
+               cobaah += "<div class='table-responsive'>";
+               cobaah += "<table class='table table-bordered table-striped table-responsive-sm' id='dataTables-example'>";
+               cobaah += " <thead>";
+               cobaah += "<tr bgcolor='#e3f3fc' class='py-2'> ";
+               cobaah += "<td><b><center>No</center></b></td>";
+               cobaah += "<td><b><center>Nama Project</center></b></td>";
+               cobaah += "<td><b><center>Nama Bank</center></b></td>";
+               cobaah += "<td><b><center>Channel</center></b></td>";
+               cobaah += "<td><b><center>Transaksi</center></b></td>";
+               cobaah += "<td><b><center>Tanggal Evaluasi</center></b></td>";
+
+               cobaah += "<td width='20%'><b><center>Bukti Transaksi</center></b></td>";
+
+               cobaah += "</tr>";
+               cobaah += "</thead>";
+               cobaah += "<tbody id='AllImage'>";
+
+               for (var i = 0; i < hasil.length; i++) {
+                cobaah += "<input type='text' name='id[]' class='idnya' value='"+hasil[i]['num']+"' style='display: none;'>";
+
+                cobaah += "<tr>";
+                cobaah += "<td>"+ (i+1) +"</td>";
+                cobaah += "<td>"+ hasil[i]['nama_project'] +"<input type='hidden' class='projectnya' value='"+ hasil[i]['nama_project'] +"'></td>";
+                cobaah += "<td>"+ hasil[i]['nama_bank'] +"<input type='hidden' class='banknya' value='"+ hasil[i]['nama_bank'] +"'></td>";
+                cobaah += "<td>"+ hasil[i]['channel'] +"<input type='hidden' class='channelnya' value='"+ hasil[i]['channel'] +"'></td>";
+                cobaah += "<td>"+ hasil[i]['nama_transaksi'] +"<input type='hidden' class='transaksinya' value='"+ hasil[i]['nama_transaksi'] +"'></td>";
+                cobaah += "<td>"+ hasil[i]['tanggal_evaluasi'] +"<input type='hidden' class='tanggalnya' value='"+ hasil[i]['tanggal_evaluasi'] +"'></td>";
+
+                cobaah += "<td><a target='_blank' href='<?= base_url('assets/')?>file/buktitrk/"+ hasil[i]['upload_bukti'] +"'><center><img width='50%' class='gambarnya' src='<?= base_url('assets/')?>file/buktitrk/"+ hasil[i]['upload_bukti'] +"'></center></a></td>";
+          
+                cobaah += "</tr>";
+               }
+               cobaah += "</tbody>";
+               cobaah += "</table>";
+               cobaah += "</div>";
+               // cobaah += "<input type='submit' class='btn btn-primary' value='Simpan'";
+               cobaah += "</div>";
+               
+              $("#div_dataimage").append(cobaah);
+
+              if (document.getElementById('dataTables-example')) {
+
+               $('#dataTables-example').DataTable({
+                 "responsive": true,
+                 "searching": true,
+                 "ordering": true,
+                 "info": true,
+                 "scrollY": "",
+                 "scrollCollapse": true,
+                 "paging": true,
+                 "lengthMenu": [
+                   [10, 50, 100, -1],
+                   [10, 50, 100, "All"]
+                 ]
+               });
+             }
+             
+             }
+           });
+         });
+       });
+
+
+        $(document).ready(function() {
+         $('#konsistensi_project').change(function() {
+           var id = $(this).val();
+           console.log(id);
+           $("#konsistensi_variable").empty();
+           $.ajax({
+             url: "<?php echo base_url('validasi/getvariable_konsistensi') ?>",
+             type: "POST",
+             dataType: 'json',
+             data: {
+               pro: id
+             },
+             success: function(hasil) {
+               console.log(hasil);
+               // $("#kunjungan").empty();
+               var cetak = "<option value=''>Pilih Variable</option>";
+               for (var i = 0; i < hasil.length; i++) {
+                 cetak += "<option value='" + hasil[i]['variable'] + "'>" + hasil[i]['variable'] + "</option>";
+               }
+              $("#konsistensi_variable").append(cetak);
+              $('#konsistensi_variable').selectpicker('refresh');
+
+             }
+           });
+         });
+       });
+
+
+      $(document).ready(function() {
+         $('#viewdata_konsistensi').click(function() {
+           var project = $('#konsistensi_project').val();
+           var variable = $('#konsistensi_variable').val();
+           var status = $('#konsistensi_status').val();
+
+           console.log(project);
+           console.log(variable);
+           console.log(status);
+
+         // document.getElementById('tampilan_div').style.display = 'none';
+
+           $("#div_datakonsistensi").empty();
+           $.ajax({
+             url: "<?php echo base_url('validasi/getcek_konsistensi') ?>",
+             type: "POST",
+             dataType: 'json',
+             data: {
+               pro: project,
+               variable: variable,
+               status: status
+             },
+             success: function(hasil) {
+               console.log(hasil);
+               // $("#kunjungan").empty();
+               var cobaah = "";
+               cobaah += "<div class='form-group'>";
+               cobaah += "<div class='text-right' style='padding-top: 20px; padding-bottom: 20px; padding-right: 20px; background-color: #e3f3fc; z-index:100;'><input type='submit' class='btn btn-primary' value='Simpan'></div>";
+               cobaah += "<div class='table-responsive'>";
+               cobaah += "<table class='table table-bordered table-striped table-responsive-sm' id='dataTables-example'>";
+               cobaah += " <thead>";
+               cobaah += "<tr bgcolor='#e3f3fc' class='py-2'> ";
+               cobaah += "<td><b>No</b></td>";
+               cobaah += "<td><b>Project</b></td>";
+               cobaah += "<td><b>Serial</b></td>";
+               cobaah += "<td><b>Code Kunjungan</b></td>";
+               cobaah += "<td><b>Cabang</b></td>";
+               cobaah += "<td><b>Nama Cabang</b></td>";
+               cobaah += "<td><b>Variable</b></td>";
+               cobaah += "<td><b>Kode</b></td>";
+               cobaah += "<td><b>Check</b></td>";
+
+               cobaah += "<td><b>Verifikasi</b></td>";
+               cobaah += "<td><b>Final Code</b></td>";
+
+               cobaah += "</tr>";
+               cobaah += "</thead>";
+               cobaah += "<tbody>";
+
+               for (var i = 0; i < hasil.length; i++) {
+                if (hasil[i]['verifikasi'] == null) { var verifikasi='';} else { var verifikasi=hasil[i]['verifikasi'];}
+                if (hasil[i]['final_code'] == null) { var final='';} else { var final=hasil[i]['final_code'];}
+                cobaah += "<input type='text' name='id[]' value='"+hasil[i]['id']+"' style='display: none;'>";
+
+                cobaah += "<tr>";
+                cobaah += "<td>"+ (i+1) +"</td>";
+                cobaah += "<td>"+ hasil[i]['project_name'] +"</td>";
+                cobaah += "<td>"+ hasil[i]['serial'] +"</td>";
+                cobaah += "<td>"+ hasil[i]['code'] +"</td>";
+                cobaah += "<td>"+ hasil[i]['cabang'] +"</td>";
+                cobaah += "<td>"+ hasil[i]['z3'] +"</td>";
+                cobaah += "<td>"+ hasil[i]['variable'] +"</td>";
+                cobaah += "<td>"+ hasil[i]['kode'] +"</td>";
+                cobaah += "<td>"+ hasil[i]['check'] +"</td>";
+                cobaah += "<td><input type='text' class='form-control' name='verifikasi"+hasil[i]['id']+"' value='"+verifikasi+"'></td>";
+                cobaah += "<td><input type='text' class='form-control' name='finalcode"+hasil[i]['id']+"' value='"+final+"'></td>";
+                cobaah += "</tr>";
+               }
+               cobaah += "</tbody>";
+               cobaah += "</table>";
+               cobaah += "</div>";
+               
+               cobaah += "</div>";
+               
+              $("#div_datakonsistensi").append(cobaah);
+
+              if (document.getElementById('dataTables-example')) {
+
+               $('#dataTables-example').DataTable({
+                 "responsive": true,
+                 "searching": true,
+                 "ordering": true,
+                 "info": true,
+                 "scrollY": "",
+                 "scrollCollapse": true,
+                 "paging": false
+               });
+             }
+             
+             }
+           });
+         });
+       });
 
        $(document).ready(function() {
          $('#validasi_project').change(function() {
@@ -1244,7 +1488,7 @@
            console.log(transaksi);
            console.log(jam);
 
-           if (bank == '1' && tanggal == '1' && hari == '1' && transaksi == '1' && jam == '1' && (tujuan == '1' || tujuan == '3')) {
+           if (bank == '1' && (tanggal == '1' || tanggal == '3') && hari == '1' && transaksi == '1' && jam == '1' && (tujuan == '1' || tujuan == '3')) {
              console.log("Bisa valid");
              console.log($('#btn_valideb'));
 
@@ -5558,6 +5802,9 @@
                var persen_ditolak = (ditolak / coba.length) * 100;
                var persen_belum = (belum_aktual / coba.length) * 100;
 
+               var total_masuk = aktual + validasi;
+               var persen_total_masuk = ((aktual + validasi)/coba.length) * 100;
+
                cobaah += "</tbody>";
                cobaah += "</table>";
                cobaah += "<table>";
@@ -6824,11 +7071,6 @@
                  // }
 
 
-
-
-
-
-
                  cobaah += "</tr>";
 
                }
@@ -6841,6 +7083,9 @@
                var persen_plot = (plot / coba.length) * 100;
                var persen_belum_plot = (belum_plot / coba.length) * 100;
 
+               var total_masuk = aktual + validasi;
+               var persen_total_masuk = ((aktual + validasi)/coba.length) * 100;
+
                cobaah += "</tbody>";
                cobaah += "</table>";
                cobaah += "</div>";
@@ -6851,11 +7096,7 @@
                cobaah += "<td><h5><b>: " + coba.length + "</b></h5></td>";
                cobaah += "</tr>";
                cobaah += "<tr>";
-               cobaah += "<td><h5><b><span class='fa fa-square fa-fw'></span>--Sudah Plotting</b></h5></td>";
-               cobaah += "<td><h5><b>: " + plot + " (" + persen_plot.toFixed(2) + "%)</b></h5></td>";
-               cobaah += "</tr>";
-               cobaah += "<tr>";
-               cobaah += "<td><h5><b><span class='fa fa-square fa-fw' style='color:#98FB98;'></span>--Sudah Aktual</b></h5></td>";
+               cobaah += "<td><h5><b><span class='fa fa-square fa-fw' style='color:#98FB98;'></span>--Menunggu Validasi</b></h5></td>";
                cobaah += "<td><h5><b>: " + aktual + " (" + persen_aktual.toFixed(2) + "%)</b></h5></td>";
                cobaah += "</tr>";
                cobaah += "<tr>";
@@ -6868,10 +7109,18 @@
                cobaah += "<td><h5><b>: " + ditolak + " (" + persen_ditolak.toFixed(2) + "%)</b></h5></td>";
                cobaah += "</tr>";
                cobaah += "<tr>";
+               cobaah += "<td><h5><b><span class='fa fa-square fa-fw' style='color:#1E90FF;'></span>--Total Aktual</b></h5></td>";
+               cobaah += "<td><h5><b>: " + total_masuk + " (" + persen_total_masuk.toFixed(2) + "%)</b></h5></td>";
+               cobaah += "</tr>";
+               cobaah += "<tr>";
                cobaah += "<td><h5><b><span class='fa fa-square fa-fw' style='color: #F0FFF0;'></span>--Belum Aktual</b></h5></td>";
                cobaah += "<td><h5><b>: " + belum_aktual + " (" + persen_belum.toFixed(2) + "%)</b></h5></td>";
                cobaah += "</tr>";
                cobaah += "<tr>";
+               cobaah += "<tr>";
+               cobaah += "<td><h5><b><span class='fa fa-square fa-fw'></span>--Sudah Plotting</b></h5></td>";
+               cobaah += "<td><h5><b>: " + plot + " (" + persen_plot.toFixed(2) + "%)</b></h5></td>";
+               cobaah += "</tr>";
                cobaah += "<td><h5><b><span class='fa fa-square fa-fw'></span>--Belum Plotting</b></h5></td>";
                cobaah += "<td><h5><b>: " + belum_plot + " (" + persen_belum_plot.toFixed(2) + "%)</b></h5></td>";
                cobaah += "</tr>";
@@ -9071,6 +9320,8 @@
        });
 
        $('#tables-konsistensi').DataTable({
+        "paging":   false,
+        
 
          dom: 'Blfrtip',
          lengthMenu: [

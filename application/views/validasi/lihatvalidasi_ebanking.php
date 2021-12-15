@@ -321,14 +321,23 @@
                                    ?>
                                 <td><input type="radio" name="val_tanggal" id="for_eb" class="for_eb" value="1" <?php if($akses == 1){echo "onclick='return false;'";} ?>> Sesuai</td>
                                 <td><input type="radio" name="val_tanggal" id="for_eb" class="for_eb" value="2" <?php if($akses == 1){echo "onclick='return false;'";} ?>> Tidak Sesuai</td>
+                                <td><input type="radio" name="val_tanggal" id="for_eb" class="for_eb" value="3" <?php if($akses == 1){echo "onclick='return false;'";} ?>> N/A</td>
                               <?php } else {
                               if ($cek_form['tanggal'] == '1') { ?>
                                 <td><input type="radio" name="val_tanggal" id="for_eb" class="for_eb" value="1" checked <?php if($akses == 1){echo "onclick='return false;'";} ?>> Sesuai</td>
                                 <td><input type="radio" name="val_tanggal" id="for_eb" class="for_eb" value="2" <?php if($akses == 1){echo "onclick='return false;'";} ?>> Tidak Sesuai</td>
+                                <td><input type="radio" name="val_tanggal" id="for_eb" class="for_eb" value="3" <?php if($akses == 1){echo "onclick='return false;'";} ?>> N/A</td>
+
                                 
-                               <?php } else { ?>
+                               <?php } else if ($cek_form['tanggal'] == '2') { ?>
                                 <td><input type="radio" name="val_tanggal" id="for_eb" class="for_eb" value="1" <?php if($akses == 1){echo "onclick='return false;'";} ?>> Sesuai</td>
                                 <td><input type="radio" name="val_tanggal" id="for_eb" class="for_eb" value="2" checked <?php if($akses == 1){echo "onclick='return false;'";} ?>> Tidak Sesuai</td>
+                                <td><input type="radio" name="val_tanggal" id="for_eb" class="for_eb" value="3" <?php if($akses == 1){echo "onclick='return false;'";} ?>> N/A</td>
+
+                              <?php } else { ?>
+                                <td><input type="radio" name="val_tanggal" id="for_eb" class="for_eb" value="1" <?php if($akses == 1){echo "onclick='return false;'";} ?>> Sesuai</td>
+                                <td><input type="radio" name="val_tanggal" id="for_eb" class="for_eb" value="2" <?php if($akses == 1){echo "onclick='return false;'";} ?>> Tidak Sesuai</td>
+                                <td><input type="radio" name="val_tanggal" id="for_eb" class="for_eb" value="3" checked <?php if($akses == 1){echo "onclick='return false;'";} ?>> N/A</td>
 
                               <?php
                                     }
