@@ -901,8 +901,9 @@ class Stkb extends CI_Controller
       $waktubudget = $caribudget['waktu'];
 			
 			$project = $this->db->query("SELECT * FROM project WHERE kode='SB1'")->row_array();
-			$user = $this->db->query("SELECT * FROM stkb_sdm WHERE id='$data[idpic]'")->row_array();
-			$userCreator = $this->db->query("SELECT * FROM user WHERE noid='$this->session->userdata('id_user')'")->row_array();
+			$user = $this->db->query("SELECT * FROM id_data WHERE id='$data[idpic]'")->row_array();
+			$idUser = $this->session->userdata('id_user');
+			$userCreator = $this->db->query("SELECT * FROM user WHERE noid='$idUser'")->row_array();
 
 
       $cariops = $db3->query("SELECT * FROM selesai WHERE status='STKB OPS' AND waktu='$waktubudget'")->row_array();
@@ -921,7 +922,7 @@ class Stkb extends CI_Controller
 		$id = $this->getLastDataNoidBpu();
 		$dataRekening = $this->dataRekening($data['idpic']);
 	  if ($jumlahops < $maxTransfer) {
-			$this->pushToMriTransfer($dataRekening['no'], $user["nama"], "", $dataRekening['nama_bank'], $dataRekening['kode_bank'], "", $jumlahops, "", $userCreator['name'], "Sistem", "STKB OPS", $project['nama'], $id, "0613005908");
+			$this->pushToMriTransfer($dataRekening['no'], $user["Nama"], $user['Email'], $dataRekening['nama_bank'], $dataRekening['kode_bank'], "", $jumlahops, "", $userCreator['name'], "Sistem", "STKB OPS", $project['nama'], $id, "0613005908");
 		}
 
       $carijakorluar = $db2->query("SELECT kotadinas FROM stkb_ops WHERE nomorstkb='$nomorstkb'")->row_array();
@@ -947,7 +948,7 @@ class Stkb extends CI_Controller
 
         $id = $this->getLastDataNoidBpu();
 				if ($jumlahtrk < $maxTransfer) {
-					$this->pushToMriTransfer($dataRekening['no'], $user["nama"], "", $dataRekening['nama_bank'], $dataRekening['kode_bank'], "", $jumlahtrk, "", $userCreator['name'], "Sistem", "STKB TRK Jakarta", $project['nama'], $id, "0613005908");
+					$this->pushToMriTransfer($dataRekening['no'], $user["Nama"], $user['Email'], $dataRekening['nama_bank'], $dataRekening['kode_bank'], "", $jumlahtrk, "", $userCreator['name'], "Sistem", "STKB TRK Jakarta", $project['nama'], $id, "0613005908");
 				}
       } else {
 
@@ -967,7 +968,7 @@ class Stkb extends CI_Controller
                                         ('STKB TRK Luar Kota','$noseltrkluar','$jumlahtrk','0000-00-00','-','-','TLF','Sistem','Sistem','$waktubudget','Belum Di Bayar','Disetujui (Direksi)','0','','','','','$trkluarterm','$nomorstkb','$trm','$metodePembayaran')");
         $id = $this->getLastDataNoidBpu();
 				if ($jumlahtrk < $maxTransfer) {
-					$this->pushToMriTransfer($dataRekening['no'], $user["nama"], "", $dataRekening['nama_bank'], $dataRekening['kode_bank'], "", $jumlahtrk, "", $userCreator['name'], "Sistem", "STKB TRK Jakarta", $project['nama'], $id, "0613005908");
+					$this->pushToMriTransfer($dataRekening['no'], $user["Nama"], $user['Email'], $dataRekening['nama_bank'], $dataRekening['kode_bank'], "", $jumlahtrk, "", $userCreator['name'], "Sistem", "STKB TRK Jakarta", $project['nama'], $id, "0613005908");
 				}
       }
       //Masuk Budget Online
