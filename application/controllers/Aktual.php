@@ -1949,5 +1949,51 @@ class Aktual extends CI_Controller
 
     }
 
+    public function akses_upload()
+    {
+        $data['judul'] = "Akses Upload File";
+
+        $id_user = $this->session->userdata('id_user');
+        $data['project'] = $this->Aktual_model->getproject_user($id_user);
+
+        $this->load->view('templates/header', $data);
+        $this->load->view('templates/sidebar');
+        $this->load->view('aktual/akses', $data);
+        $this->load->view('templates/footer');
+    }
+
+    public function getcabang_akses()
+    {
+        $pro = $_POST['pro'];
+        $data = $this->Aktual_model->getcabang_akses($pro);
+
+        echo json_encode($data);
+    }
+
+    public function getdata_quest()
+    {
+        $pro = $_POST['pro'];
+        $cabang = $_POST['cabang'];
+        $data = $this->Aktual_model->getdata_quest($pro, $cabang);
+
+        echo json_encode($data);
+    }
+
+    public function change_aksesupload()
+    {
+        $num = $_POST['num'];
+        $data = $this->Aktual_model->change_aksesupload($num);
+
+        echo json_encode($data);
+    }
+
+    public function reset_aksesupload()
+    {
+        $num = $_POST['num'];
+        $data = $this->Aktual_model->reset_aksesupload($num);
+
+        echo json_encode($data);
+    }
+
  
 }
