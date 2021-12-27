@@ -81,39 +81,48 @@
                                     endif;
                                 endfor;
                               }
+                              if (!in_array($db['skenario'], $atmcenter)){
+
                               $besok = date('Y-m-d', strtotime("+1 day", strtotime($db['tanggal'])))." ".'12:00:00';
                               $jam = date('H:i:s');
                               $datenow = date('Y-m-d H:i:s');
+                            }
                             ?>
                           </td>
+                          <?php 
+                              if (!in_array($db['skenario'], $atmcenter)){
+                                ?>
                           <td class="text-left" style="vertical-align:middle"><?= $db['tanggal'] ?></td>
+                        <?php } else { ?>
+                          <td></td>
+                        <?php } ?>
                           <td class="text-center">
                               <?php
                               $proj = $db['nama_project']; $cab = $db['cabang']; $ktg = $db['r_kategori'];
                               if (in_array($db['skenario'], $atmcenter)){
                                 $status = unserialize($db['rekaman_status']);
-                                if($status['rekaman_status'] == 0){
-                                      if ($datenow >= $besok AND $db['keterlambatan_upload'] == NULL) {
-                                  echo '<a href="'.base_url('rekaman/tambahKB1/'.$db['r_kategori'].'/'.$db['kode_project'].'/'.$db['cabang']).'" class="btn btn-success btn-round btn-xs" disabled onclick="return(false);" data-trigger="hover" data-toggle="popover" data-placement="top" title="Keterlambatan Upload" data-content="Anda harus mengisi form keterlambatan upload terlebih dahulu, selanjutnya Anda dapat melanjutkan Upload Bukti Rekaman"><span class="fa fa-paperclip fa-fw"></span> Upload Bukti Kirim Rekaman </a><br><br>';
+                                // if($status['rekaman_status'] == 0){
+                                  //     if ($datenow >= $besok AND $db['keterlambatan_upload'] == NULL) {
+                                  // echo '<a href="'.base_url('rekaman/tambahKB1/'.$db['r_kategori'].'/'.$db['kode_project'].'/'.$db['cabang']).'" class="btn btn-success btn-round btn-xs" disabled onclick="return(false);" data-trigger="hover" data-toggle="popover" data-placement="top" title="Keterlambatan Upload" data-content="Anda harus mengisi form keterlambatan upload terlebih dahulu, selanjutnya Anda dapat melanjutkan Upload Bukti Rekaman"><span class="fa fa-paperclip fa-fw"></span> Upload Bukti Kirim Rekaman </a><br><br>';
 
-                                      } else if ($datenow >= $besok AND $db['keterlambatan_upload'] == 'Approve'){
-                                  echo '<a href="'.base_url('rekaman/tambahKB1/'.$db['r_kategori'].'/'.$db['kode_project'].'/'.$db['cabang']).'" class="btn btn-success btn-round btn-xs"><span class="fa fa-paperclip fa-fw"></span> Upload Bukti Kirim Rekaman </a><br><br>';
+                                  //     } else if ($datenow >= $besok AND $db['keterlambatan_upload'] == 'Approve'){
+                                  // echo '<a href="'.base_url('rekaman/tambahKB1/'.$db['r_kategori'].'/'.$db['kode_project'].'/'.$db['cabang']).'" class="btn btn-success btn-round btn-xs"><span class="fa fa-paperclip fa-fw"></span> Upload Bukti Kirim Rekaman </a><br><br>';
 
-                                      } else { 
-                                  echo '<a href="'.base_url('rekaman/tambahKB1/'.$db['r_kategori'].'/'.$db['kode_project'].'/'.$db['cabang']).'" class="btn btn-success btn-round btn-xs"><span class="fa fa-paperclip fa-fw"></span> Upload Bukti Kirim Rekaman </a><br><br>';
-                                      }
-                                }
-                                if($db['status'] == 1){
-                                      if ($datenow >= $besok AND $db['keterlambatan_upload'] == NULL) {
-                                  echo '<a href="'.base_url('shp/tambahKZ/'.$db['r_kategori'].'/'.$db['kode_project'].'/'.$db['cabang']).'" class="btn btn-success btn-round btn-xs" disabled onclick="return(false);" data-trigger="hover" data-toggle="popover" data-placement="top" title="Keterlambatan Upload" data-content="Anda harus mengisi form keterlambatan upload terlebih dahulu, selanjutnya Anda dapat melanjutkan Upload Dialog + Bukti Kunjungan"><span class="fa fa-paperclip fa-fw"></span> Dialog + Bukti Kunjungan</a>';
+                                  //     } else { 
+                                //   echo '<a href="'.base_url('rekaman/tambahKB1/'.$db['r_kategori'].'/'.$db['kode_project'].'/'.$db['cabang']).'" class="btn btn-success btn-round btn-xs"><span class="fa fa-paperclip fa-fw"></span> Upload Bukti Kirim Rekaman </a><br><br>';
+                                //       // }
+                                // }
+                                // if($db['status'] == 1){
+                                  //     if ($datenow >= $besok AND $db['keterlambatan_upload'] == NULL) {
+                                  // echo '<a href="'.base_url('shp/tambahKZ/'.$db['r_kategori'].'/'.$db['kode_project'].'/'.$db['cabang']).'" class="btn btn-success btn-round btn-xs" disabled onclick="return(false);" data-trigger="hover" data-toggle="popover" data-placement="top" title="Keterlambatan Upload" data-content="Anda harus mengisi form keterlambatan upload terlebih dahulu, selanjutnya Anda dapat melanjutkan Upload Dialog + Bukti Kunjungan"><span class="fa fa-paperclip fa-fw"></span> Dialog + Bukti Kunjungan</a>';
 
-                                      } else if ($datenow >= $besok AND $db['keterlambatan_upload'] == 'Approve'){
-                                  echo '<a href="'.base_url('shp/tambahKZ/'.$db['r_kategori'].'/'.$db['kode_project'].'/'.$db['cabang']).'" class="btn btn-success btn-round btn-xs"><span class="fa fa-paperclip fa-fw"></span> Dialog + Bukti Kunjungan</a>';
+                                  //     } else if ($datenow >= $besok AND $db['keterlambatan_upload'] == 'Approve'){
+                                  // echo '<a href="'.base_url('shp/tambahKZ/'.$db['r_kategori'].'/'.$db['kode_project'].'/'.$db['cabang']).'" class="btn btn-success btn-round btn-xs"><span class="fa fa-paperclip fa-fw"></span> Dialog + Bukti Kunjungan</a>';
 
-                                      } else {
-                                  echo '<a href="'.base_url('shp/tambahKZ/'.$db['r_kategori'].'/'.$db['kode_project'].'/'.$db['cabang']).'" class="btn btn-success btn-round btn-xs"><span class="fa fa-paperclip fa-fw"></span> Dialog + Bukti Kunjungan</a>';
-                                    }
-                                }
+                                  //     } else {
+                                //   echo '<a href="'.base_url('shp/tambahKZ/'.$db['r_kategori'].'/'.$db['kode_project'].'/'.$db['cabang']).'" class="btn btn-success btn-round btn-xs"><span class="fa fa-paperclip fa-fw"></span> Dialog + Bukti Kunjungan</a>';
+                                //     // }
+                                // }
                               }else{
                                 //if ($cek = $this->db->query("SELECT * FROM quest WHERE project = '$proj' AND cabang = '$cab' AND shp = '$id_user' AND r_kategori = '$ktg' AND rekaman_status = '0'")->num_rows() != 0){
                                 if($db['rekaman_status'] == 0){
@@ -180,6 +189,9 @@
 <?php 
 $no = 0;
 foreach ($aktual as $ak) { $no++;
+  if (in_array($ak['skenario'], $atmcenter)){
+  continue;
+}
         $atmcenter = array('064','065','066','067');
     if (in_array($ak['skenario'], $atmcenter)){
     $dt = $this->db->query("SELECT
