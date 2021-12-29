@@ -1146,6 +1146,33 @@
        });
 
        $(document).ready(function() {
+         $('#akses_project').change(function() {
+          var pro = $(this).val();
+          console.log(pro);
+          $("#akses_cabang").empty();
+           $.ajax({
+             url: "<?php echo base_url('aktual/getcabang_akses') ?>",
+             type: "POST",
+             dataType: 'json',
+             data: {
+               pro: pro
+             },
+             success: function(hasil) {
+               console.log(hasil);
+               // $("#kunjungan").empty();
+               var cetak = "<option value=''>Pilih Cabang</option>";
+               for (var i = 0; i < hasil.length; i++) {
+                 cetak += "<option value='" + hasil[i]['kode'] + "'> (" + hasil[i]['kode'] +")" + hasil[i]['nama'] + "</option>";
+               }
+               $("#akses_cabang").append(cetak);
+               $('#akses_cabang').selectpicker('refresh');
+             }
+           });
+
+         })
+       })
+
+       $(document).ready(function() {
          $('#viewdata_image').click(function() {
            var project = $('#ebanking_project').val();
            var transaksi = $('#ebanking_trx').val();
@@ -1285,10 +1312,10 @@
                // $("#kunjungan").empty();
                var cobaah = "";
                cobaah += "<div class='form-group'>";
-               cobaah += "<div class='text-right' style='padding-top: 20px; padding-bottom: 20px; padding-right: 20px; background-color: #e3f3fc; z-index:100;'><input type='submit' class='btn btn-primary' value='Simpan'></div>";
+               cobaah += "<div class='text-right fixme' style='padding-top: 20px; padding-bottom: 20px; padding-right: 20px; background-color: #e3f3fc; z-index:100; position: -webkit-sticky; position: sticky; top: 50px;'><input type='submit' class='btn btn-primary' value='Simpan'></div>";
                cobaah += "<div class='table-responsive'>";
                cobaah += "<table class='table table-bordered table-striped table-responsive-sm' id='dataTables-example'>";
-               cobaah += " <thead>";
+               cobaah += " <thead >";
                cobaah += "<tr bgcolor='#e3f3fc' class='py-2'> ";
                cobaah += "<td><b>No</b></td>";
                cobaah += "<td><b>Project</b></td>";
@@ -1302,14 +1329,20 @@
 
                cobaah += "<td><b>Verifikasi</b></td>";
                cobaah += "<td><b>Final Code</b></td>";
+               cobaah += "<td><b>Status</b></td>";
+
 
                cobaah += "</tr>";
                cobaah += "</thead>";
                cobaah += "<tbody>";
 
                for (var i = 0; i < hasil.length; i++) {
+                
                 if (hasil[i]['verifikasi'] == null) { var verifikasi='';} else { var verifikasi=hasil[i]['verifikasi'];}
                 if (hasil[i]['final_code'] == null) { var final='';} else { var final=hasil[i]['final_code'];}
+
+                if (verifikasi == '' && final == '') { var status='Belum Cek Validasi';} else {var status = 'Sudah Cek Validasi';}
+
                 cobaah += "<input type='text' name='id[]' value='"+hasil[i]['id']+"' style='display: none;'>";
 
                 cobaah += "<tr>";
@@ -1324,6 +1357,7 @@
                 cobaah += "<td>"+ hasil[i]['check'] +"</td>";
                 cobaah += "<td><input type='text' class='form-control' name='verifikasi"+hasil[i]['id']+"' value='"+verifikasi+"'></td>";
                 cobaah += "<td><input type='text' class='form-control' name='finalcode"+hasil[i]['id']+"' value='"+final+"'></td>";
+                cobaah += "<td>"+status+"</td>"
                 cobaah += "</tr>";
                }
                cobaah += "</tbody>";
@@ -8268,6 +8302,10 @@
        $('#show_atm').click(function() {
          var id_project = $('#project_atmcenter').val();
 
+           var aksi_atm = document.getElementById('aksi_atm');
+
+           var base = window.location.origin + "/";
+           var host = base + window.location.pathname.split('/')[1];
 
          $.ajax({
            url: "<?php echo base_url('stkb/getcabang_atmcenter') ?>",
@@ -8302,6 +8340,9 @@
                cobaah += "<td><b>Alamat</b></td>";
                cobaah += "<td><b>Kota</b></td>";
                // cobaah += "<td><b>Transport & Transport Jauh</b></td>";
+               if (aksi_atm.checked) {
+                   cobaah += "<td><b>Aksi</b></td>";
+                 }
 
 
 
@@ -8341,6 +8382,14 @@
                  } else {
                    cobaah += "<td></td>";
                  }
+                 if (aksi_atm.checked) {
+                     if (coba[i]['weekend_siang'] == null && coba[i]['weekend_malam'] == null && coba[i]['weekday_siang'] == null && coba[i]['weekday_malam'] == null) {
+                       cobaah += "<td><a href='#' type='button' class='edit_field_atm' title='Edit' data-toggle='modal' data-target='#editcabangatm' data-id='" + coba[i]['num'] + "'><i class='fas fa-edit'></i></a>";
+                       cobaah += "<a href='" + host + "/cabang/hapus_atm/" + coba[i]['num'] + "' title='Delete' class='tombol-hapus' onclick='return confirm(`Apakah Anda yakin ingin hapus cabang?`)'><i class='fas fa-trash'></i></a></td>";
+                     } else {
+                       cobaah += "<td></td>";
+                     }
+                   }
 
 
                  // if (coba[i]['transport'] != null || coba[i]['transport_jauh'] != null) {
@@ -8394,6 +8443,55 @@
 
          })
        });
+
+   $("#tabel_cabangatmcenter").on("click", ".edit_field_atm", function(e) { //user click on remove text
+           var num = $(this).data('id');
+           var base = window.location.origin + "/";
+           var host = base + window.location.pathname.split('/')[1];
+           console.log(base);
+           console.log(host);
+           console.log(num);
+           
+
+           $('#bank_kd_atm').empty();
+
+           $.ajax({
+             url: "<?php echo base_url('cabang/getcabangatm_edit') ?>",
+             method: "POST",
+             data: {
+               num: num
+
+             },
+             async: false,
+             dataType: 'json',
+             success: function(coba) {
+               var ht = '';
+               console.log(coba);
+               $('#edit_num_atm').val(coba['num']);
+               $('#edit_project_atm').val(coba['nama_project']);
+               $('#edit_bank_atm').val(coba['nama_bank']);
+               $('#edit_kode_atm').val(coba['cabang']);
+               $('#edit_nama_atm').val(coba['namacabang']);
+               $('#edit_alamat_atm').val(coba['alamat']);
+               $('#edit_kota_atm').val(coba['kota']);
+               
+               $("input[name='bank_id']").each(function() {
+                 var kat = $(this).val().split('**');
+                 if (coba['kodebank'] == kat[0]) {
+                   ht += `<option value="` + kat[0] + `" selected>` + kat[1] + `</option>`;
+                 } else {
+                   ht += `<option value="` + kat[0] + `">` + kat[1] + `</option>`;
+                 }
+               });
+               $('#bank_kd_atm').append(ht);
+
+
+             }
+           });
+
+         });
+
+
 
 
        $('#kode_pjk_xls1').change(function() {

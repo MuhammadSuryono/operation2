@@ -441,9 +441,12 @@ class Aktual_model extends CI_model
                                     b.nama AS nama_project,
                                     b.kode AS kode_project,
                                     c.nama AS cabangx,
-                                    GROUP_CONCAT( a.kunjungan ) AS kode_skenario,
-                                    GROUP_CONCAT( d.nama ) AS skenario,
-                                    GROUP_CONCAT( a.`status` ) AS sts,
+                                    -- GROUP_CONCAT( a.kunjungan ) AS kode_skenario,
+                                    -- GROUP_CONCAT( d.nama ) AS skenario,
+                                    -- GROUP_CONCAT( a.`status` ) AS sts,
+                                    a.kunjungan AS kode_skenario,
+                                    d.nama AS skenario,
+                                    a.`status` AS sts,
                                     d.nama AS kunjungan1
                                 FROM
                                     attribute d
@@ -456,10 +459,11 @@ class Aktual_model extends CI_model
                                     (a.shp = '$id_user' OR a.pwt = '$id_user')
                                     AND a.r_kategori is not null
                                     AND (a.status = '1' OR a.rekaman_status = '0')
-                                GROUP BY
-                                    a.project,
-                                    a.cabang,
-                                    a.r_kategori")->result_array();
+                                -- GROUP BY
+                                --     a.project,
+                                --     a.cabang,
+                                --     a.r_kategori
+                                    ")->result_array();
         // BARU 01 DESEMBER 2020
         $dataATM = $this->db->query("SELECT
                                     b.kode AS kode_project, b.nama AS nama_project, p.nomorstkb,
@@ -660,6 +664,22 @@ class Aktual_model extends CI_model
 
         }
         // die;
+    }
+
+    public function getproject_user($id_user)
+    {
+     return $this->db->query("SELECT
+                                    a.kode AS kode_project,
+                                    a.nama AS nama_project
+                                FROM
+                                    project a
+                                WHERE
+                                    a.visible = 'y'
+                                    AND a.type = 'n'
+                                    AND channel NOT IN ('E-Banking', 'ATM Center')
+                                    AND id_user='$id_user'
+                                GROUP BY
+                                    a.kode")->result_array();   
     }
 
      public function getproject_ebanking(){
@@ -1311,6 +1331,39 @@ class Aktual_model extends CI_model
     public function getnorek_bank($bank)
     {
         return $this->db->query("SELECT a.*, b.nama AS nama_bank FROM ebanking_rekening a JOIN bank b ON a.bank=b.kode WHERE a.bank='$bank' AND kategori='Rekening' ORDER BY a.nama")->result_array();
+    }
+
+    public function getcabang_akses($pro)
+    {
+        return $this->db->order_by('kode', 'ASC')->get_where('cabang', ['project' => $pro])->result_array();
+    }
+
+    public function getdata_quest($pro, $cabang)
+    {
+        $this->db->select("a.*, b.nama AS nama_project, c.nama AS nama_cabang, d.nama AS nama_kunjungan, e.Nama AS nama_shp, f.nama AS nama_pwt");
+        $this->db->from("quest a");
+        $this->db->join("project b", "a.project=b.kode", "left");
+        $this->db->join("cabang c", "a.cabang=c.kode", "left");
+        $this->db->join("attribute d", "a.kunjungan=d.kode", "left");
+        $this->db->join("id_data e", "a.shp=e.Id", "left");
+        $this->db->join("id_data f", "a.pwt=f.Id", "left");
+        $this->db->where("a.project", $pro);
+        $this->db->where("a.cabang", $cabang);
+        $this->db->group_by("a.num");
+
+        return $this->db->get()->result_array();
+    }
+
+    public function change_aksesupload($num)
+    {
+        $this->db->where('num', $num);
+        $this->db->update('quest', ['keterlambatan_upload' => 'Approve']);
+    }
+
+    public function reset_aksesupload($num)
+    {
+        $this->db->where('num', $num);
+        $this->db->update('quest', ['keterlambatan_upload' => NULL]);
     }
 
 }

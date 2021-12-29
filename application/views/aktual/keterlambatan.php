@@ -19,7 +19,7 @@ if ($this->db->get_where('user', ['noid' => $id_user])->num_rows() >= 1) {
   $where_col = "Id";
 }
 
-$plan = $this->db->query("SELECT a.*, b.name FROM plan a JOIN user b ON a.area_head=b.noid WHERE a.project='$quest[project]' AND a.nomorstkb='$quest[nomorstkb]'")->row_array();
+$plan = $this->db->query("SELECT a.*, b.name FROM quest a JOIN user b ON a.r_spv=b.noid WHERE a.project='$quest[project]' AND a.nomorstkb='$quest[nomorstkb]'")->row_array();
 
 $pwt = $this->db->get_where('id_data', array('Id' => $quest['pwt']))->row_array();
 $shp = $this->db->get_where('id_data', array('Id' => $quest['shp']))->row_array(); 
@@ -51,7 +51,7 @@ $shp = $this->db->get_where('id_data', array('Id' => $quest['shp']))->row_array(
                   <input type="hidden" name="kunjungan" value="<?= $quest['kunjungan'] ?>">
                   <input type="hidden" name="r_kategori" value="<?= $quest['r_kategori'] ?>">
                   <input type="hidden" name="pemohon" value="<?= $this->session->userdata('id_user') ?>">
-                  <input type="hidden" name="pj_field" value="<?= $plan['area_head'] ?>">
+                  <input type="hidden" name="pj_field" value="<?= $plan['r_spv'] ?>">
                   <?php if ($quest['pwt'] != NULL) {
                    ?>
                   <input type="hidden" name="pwt" value="<?= $quest['pwt'] ?>">
