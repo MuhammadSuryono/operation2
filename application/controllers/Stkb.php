@@ -902,17 +902,17 @@ class Stkb extends Whatsapp
 			
       // Masuk budget Online
       $kodepro = $this->input->post("kodeproject$status");
-      $caribudget = $db3->query("SELECT * FROM pengajuan WHERE kodeproject='SB1'")->row_array();
+      $caribudget = $db3->query("SELECT * FROM pengajuan WHERE kodeproject='$kodepro'")->row_array();
       $waktubudget = $caribudget['waktu'];
 			
-			$project = $this->db->query("SELECT * FROM project WHERE kode='SB1'")->row_array();
+			$project = $this->db->query("SELECT * FROM project WHERE kode='$kodepro'")->row_array();
 			$user = $this->db->query("SELECT * FROM id_data WHERE id='$data[idpic]'")->row_array();
 			$idUser = $this->session->userdata('id_user');
 			$userCreator = $this->db->query("SELECT * FROM user WHERE noid='$idUser'")->row_array();
 
 
       $cariops = $db3->query("SELECT * FROM selesai WHERE status='STKB OPS' AND waktu='$waktubudget'")->row_array();
-      $noselops = 4;
+      $noselops = $cariops['no'];
 
       $maxbpuops = $db3->query("SELECT max(term) AS maxt FROM bpu WHERE waktu='$waktubudget' AND no='$noselops'")->row_array();
       $opsterm = $maxbpuops['maxt'] + 1;
@@ -1057,7 +1057,7 @@ class Stkb extends Whatsapp
             'kunjungan' => $project['kunjungan'],
             'harga' => $project['harga']
           );
-          // $this->db->insert('stkb1project_final', $dataProject);
+          $this->db->insert('stkb1project_final', $dataProject);
         }
       }
     }
@@ -1065,7 +1065,7 @@ class Stkb extends Whatsapp
 		array_unique($arrDataNotifikasiWaa);
 		$this->send_message_transfer($arrDataNotifikasiWaa);
 
-    // $db2->insert_batch('stkb_pembayaran', $insert);
+    $db2->insert_batch('stkb_pembayaran', $insert);
     $this->session->set_flashdata('flash', 'STKB Berhasil Pindah Ke RTP');
     redirect("stkb/pengajuan");
   }
