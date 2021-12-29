@@ -18,7 +18,7 @@ class Whatsapp extends CI_Controller {
 
 				$explode = explode("-", $val['msisdn']);
 				$val['msisdn'] = implode("", $explode);
-				
+
 				$body = ["msisdn" => $val['msisdn'], "message" => $message];
 
 				$this->HTTPPost($url, $body);
