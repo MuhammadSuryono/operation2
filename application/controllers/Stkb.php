@@ -856,27 +856,28 @@ class Stkb extends Whatsapp
   {
     $db2 = $this->load->database('database_kedua', TRUE);
     $db3 = $this->load->database('database_ketiga', TRUE);
-    $insert = [];
 		$dbMri = $this->load->database('db_mritransfer', TRUE);
+
+
+    $insert = [];
+		$arrDataNotifikasiWaa = [];
+		$duplicateNumber = [];
+
 		$jenisPembayaran = $dbMri->query("SELECT max_transfer FROM jenis_pembayaran WHERE jenispembayaran = 'STKB'")->row_array();
 		$maxTransfer = $jenisPembayaran['max_transfer'];
-		$arrDataNotifikasiWaa = [];
 
     foreach ($_POST['statusbayar'] as $key => $status) {
       $term = $this->input->post("term$status");
-      if ($term == 'Term 1') {
-        $trm = 1;
-      }
-      if ($term == 'Term 2') {
-        $trm = 2;
-      }
-      if ($term == 'Term 3') {
-        $trm = 3;
-      }
+			$term = $this->rtpGetStatusTerm($term);
 
+			$nomorstkb = $this->input->post("nomorstkb$status");
+			$jumlahops = $this->input->post("jumlahops$status");
+			$jumlahtrk = $this->input->post("jumlahtrk$status");
+
+			$isTerm1 = $term == 1;
       $data = [
         'nomorstkb' => $this->input->post("nomorstkb$status"),
-        "term" => $trm,
+        "term" => $term,
         "tanggalbuat" => $this->input->post("tanggalbuat$status"),
         "kodeproject" => $this->input->post("kodeproject$status"),
         "idpic" => $this->input->post("idpic$status"),
@@ -889,30 +890,22 @@ class Stkb extends Whatsapp
         "statusbayar" => "RTP",
       ];
 
-      // array_push($data, $insert);
       array_push($insert, $data);
 
-      $nomorstkb = $this->input->post("nomorstkb$status");
-      $term = $trm;
-      $jumlahops = $this->input->post("jumlahops$status");
-      $jumlahtrk = $this->input->post("jumlahtrk$status");
-
-			$isTerm1 = $term == 1;
-			
 			
       // Masuk budget Online
       $kodepro = $this->input->post("kodeproject$status");
-      $caribudget = $db3->query("SELECT * FROM pengajuan WHERE kodeproject='SB1'")->row_array();
+      $caribudget = $db3->query("SELECT * FROM pengajuan WHERE kodeproject='$kodepro'")->row_array();
       $waktubudget = $caribudget['waktu'];
 			
-			$project = $this->db->query("SELECT * FROM project WHERE kode='SB1'")->row_array();
+			$project = $this->db->query("SELECT * FROM project WHERE kode='$kodepro'")->row_array();
 			$user = $this->db->query("SELECT * FROM id_data WHERE id='$data[idpic]'")->row_array();
 			$idUser = $this->session->userdata('id_user');
 			$userCreator = $this->db->query("SELECT * FROM user WHERE noid='$idUser'")->row_array();
 
 
       $cariops = $db3->query("SELECT * FROM selesai WHERE status='STKB OPS' AND waktu='$waktubudget'")->row_array();
-      $noselops = 4;
+      $noselops = $cariops['no'];
 
       $maxbpuops = $db3->query("SELECT max(term) AS maxt FROM bpu WHERE waktu='$waktubudget' AND no='$noselops'")->row_array();
       $opsterm = $maxbpuops['maxt'] + 1;
@@ -932,18 +925,10 @@ class Stkb extends Whatsapp
 
       if ($jumlahops < $maxTransfer) {
         $dataTransfer = $this->pushToMriTransfer($nomorstkb, $dataRekening['no'], $user["Nama"], $user['Email'], $dataRekening['nama_bank'], $dataRekening['kode_bank'], "", $jumlahops, "", $userCreator['name'], "Sistem", $caribudget['jenis'], $project['nama'], $id, "0613005908", $isTerm1);
-				array_push($arrDataNotifikasiWaa, [
-					"nomor_stkb" => $nomorstkb,
-					"penerima" => $user['Nama'],
-					"msisdn" => $user['HP'],
-					"jenis_pembayaran" => "STKB",
-					"pemilik_rekening" => $user['Nama'],
-					"nomor_rekening" => $dataRekening['no'],
-					"bank" => $dataRekening['nama_bank'],
-					"jumlah" => $jumlahops,
-					"jadwal_transfer" => $dataTransfer['jadwal_transfer'],
-					"project" => $project['nama']
-				]);
+				if (!in_array($user['HP'], $duplicateNumber)) {
+					array_push($duplicateNumber, $user['HP']);
+					array_push($arrDataNotifikasiWaa, $this->setDataNotifWa($nomorstkb, $user, $dataTransfer,$dataRekening, $jumlahops, $project));
+				}
       }
 
       $carijakorluar = $db2->query("SELECT kotadinas FROM stkb_ops WHERE nomorstkb='$nomorstkb'")->row_array();
@@ -965,23 +950,15 @@ class Stkb extends Whatsapp
 
         $db3->query("INSERT INTO bpu (no,statusbpu,jumlah,tglcair,namabank,norek,namapenerima,pengaju,divisi,waktu,status,persetujuan,jumlahbayar,novoucher,tanggalbayar,pembayar,divpemb,term,nomorstkb,termstkb, metode_pembayaran)
                                         VALUES
-                                        ('STKB TRK Jakarta','$noseltrkjak','$jumlahtrk','0000-00-00','-','-','TLF','Sistem','Sistem','$waktubudget','Belum Di Bayar','Disetujui (Direksi)','0','','','','','$trkjakterm','$nomorstkb','$trm','$metodePembayaran')");
+                                        ('STKB TRK Jakarta','$noseltrkjak','$jumlahtrk','0000-00-00','-','-','TLF','Sistem','Sistem','$waktubudget','Belum Di Bayar','Disetujui (Direksi)','0','','','','','$trkjakterm','$nomorstkb','$term','$metodePembayaran')");
 
         $id = $this->getLastDataNoidBpu();
 				if ($jumlahtrk < $maxTransfer) {
 					$dataTransfer = $this->pushToMriTransfer($nomorstkb,$dataRekening['no'], $user["Nama"], $user['Email'], $dataRekening['nama_bank'], $dataRekening['kode_bank'], "", $jumlahtrk, "", $userCreator['name'], "Sistem", $caribudget['jenis'], $project['nama'], $id, "0613005908", $isTerm1);
-					array_push($arrDataNotifikasiWaa, [
-						"nomor_stkb" => $nomorstkb,
-						"penerima" => $user['Nama'],
-						"msisdn" => $user['HP'],
-						"jenis_pembayaran" => "STKB",
-						"pemilik_rekening" => $user['Nama'],
-						"nomor_rekening" => $dataRekening['no'],
-						"bank" => $dataRekening['nama_bank'],
-						"jumlah" => $jumlahops,
-						"jadwal_transfer" => $dataTransfer['jadwal_transfer'],
-						"project" => $project['nama']
-					]);
+					if (!in_array($user['HP'], $duplicateNumber)) {
+						array_push($duplicateNumber, $user['HP']);
+						array_push($arrDataNotifikasiWaa, $this->setDataNotifWa($nomorstkb, $user, $dataTransfer,$dataRekening, $jumlahops, $project));
+					}
 				}
       } else {
 
@@ -998,28 +975,20 @@ class Stkb extends Whatsapp
 
         $db3->query("INSERT INTO bpu (no,statusbpu,jumlah,tglcair,namabank,norek,namapenerima,pengaju,divisi,waktu,status,persetujuan,jumlahbayar,novoucher,tanggalbayar,pembayar,divpemb,term,nomorstkb,termstkb, metode_pembayaran)
                                         VALUES
-                                        ('STKB TRK Luar Kota','$noseltrkluar','$jumlahtrk','0000-00-00','-','-','TLF','Sistem','Sistem','$waktubudget','Belum Di Bayar','Disetujui (Direksi)','0','','','','','$trkluarterm','$nomorstkb','$trm','$metodePembayaran')");
+                                        ('STKB TRK Luar Kota','$noseltrkluar','$jumlahtrk','0000-00-00','-','-','TLF','Sistem','Sistem','$waktubudget','Belum Di Bayar','Disetujui (Direksi)','0','','','','','$trkluarterm','$nomorstkb','$term','$metodePembayaran')");
         $id = $this->getLastDataNoidBpu();
 				if ($jumlahtrk < $maxTransfer) {
 					$dataTransfer = $this->pushToMriTransfer($nomorstkb, $dataRekening['no'], $user["Nama"], $user['Email'], $dataRekening['nama_bank'], $dataRekening['kode_bank'], "", $jumlahtrk, "", $userCreator['name'], "Sistem", $caribudget['jenis'], $project['nama'], $id, "0613005908", $isTerm1);
-					array_push($arrDataNotifikasiWaa, [
-						"nomor_stkb" => $nomorstkb,
-						"penerima" => $user['Nama'],
-						"msisdn" => $user['HP'],
-						"jenis_pembayaran" => "STKB",
-						"pemilik_rekening" => $user['Nama'],
-						"nomor_rekening" => $dataRekening['no'],
-						"bank" => $dataRekening['nama_bank'],
-						"jumlah" => $jumlahops,
-						"jadwal_transfer" => $dataTransfer['jadwal_transfer'],
-						"project" => $project['nama']
-					]);
+					if (!in_array($user['HP'], $duplicateNumber)) {
+						array_push($duplicateNumber, $user['HP']);
+						array_push($arrDataNotifikasiWaa, $this->setDataNotifWa($nomorstkb, $user, $dataTransfer,$dataRekening, $jumlahops, $project));
+					}
 				}
       }
       //Masuk Budget Online
 
       //TAMBAHAN ADAM SANTOSO - RTP
-      if ($trm == 1) {
+      if ($term == 1) {
         // CARI APAKAH NOMORSTKB INI MERUPAKAN ATM CENTER = 1 / NON ATM CENTER = 0
         $cekatmbukan = $this->db->query("SELECT project FROM plan WHERE nomorstkb = '$nomorstkb' AND kunjungan IN ('064','065','066','067') GROUP BY nomorstkb,kunjungan")->num_rows();
         // ==== //
@@ -1057,18 +1026,52 @@ class Stkb extends Whatsapp
             'kunjungan' => $project['kunjungan'],
             'harga' => $project['harga']
           );
-          // $this->db->insert('stkb1project_final', $dataProject);
+          $this->db->insert('stkb1project_final', $dataProject);
         }
       }
     }
 
-		array_unique($arrDataNotifikasiWaa);
 		$this->send_message_transfer($arrDataNotifikasiWaa);
 
-    // $db2->insert_batch('stkb_pembayaran', $insert);
+    $db2->insert_batch('stkb_pembayaran', $insert);
     $this->session->set_flashdata('flash', 'STKB Berhasil Pindah Ke RTP');
     redirect("stkb/pengajuan");
   }
+
+	private function rtpGetStatusTerm($term)
+	{
+		switch ($term) {
+			case 'Term 1':
+				return 1;
+				break;
+			case 'Term 2':
+				return 2;
+				break;
+			case 'Term 3':
+				return 3;
+				break;
+			
+			default:
+			return 1;
+				break;
+		}
+	}
+
+	private function setDataNotifWa($nomorstkb, $user, $dataTransfer, $dataRekening, $jumlahops, $project)
+	{
+		return [
+			"nomor_stkb" => $nomorstkb,
+			"penerima" => $user['Nama'],
+			"msisdn" => $user['HP'],
+			"jenis_pembayaran" => "STKB",
+			"pemilik_rekening" => $user['Nama'],
+			"nomor_rekening" => $dataRekening['no'],
+			"bank" => $dataRekening['nama_bank'],
+			"jumlah" => $jumlahops,
+			"jadwal_transfer" => $dataTransfer['jadwal_transfer'],
+			"project" => $project['nama']
+		];
+	}
 
 	/***
 	 * 
