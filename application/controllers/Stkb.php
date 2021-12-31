@@ -863,7 +863,7 @@ class Stkb extends Whatsapp
 		$arrDataNotifikasiWaa = [];
 		$duplicateNumber = [];
 
-		$queryDbKas = $dbDevelop->query("SELECT rekening FROM kas WHERE keterangan = 'Kas Project'")->row_array();
+		$queryDbKas = $dbDevelop->query("SELECT rekening FROM kas WHERE label_kas = 'Kas Project'")->row_array();
 		$rekeningSumber = $queryDbKas['rekening'];
 
 		$jenisPembayaran = $dbMri->query("SELECT max_transfer FROM jenis_pembayaran WHERE jenispembayaran = 'STKB'")->row_array();
@@ -1174,7 +1174,7 @@ class Stkb extends Whatsapp
 	 * @param string $rekeningSumber
 	 * @return mixed
 	 */
-  private function pushToMriTransfer($nomorstkb, $norek, $pemilikRekening, $emailPemilikRekening = "", $bank, $kodeBank, $beritaTrasnfer = "", $jumlah, $ketTransfer, $creator, $otorisasi = "Sistem", $statusBpu, $nmProject = "", $noIdBpu, $rekeningSumber = $rekeningSumber, $isTerm1 = false)
+  private function pushToMriTransfer($nomorstkb, $norek, $pemilikRekening, $emailPemilikRekening = "", $bank, $kodeBank, $beritaTrasnfer = "", $jumlah, $ketTransfer, $creator, $otorisasi = "Sistem", $statusBpu, $nmProject = "", $noIdBpu, $rekeningSumber = "", $isTerm1 = false)
   {
 	  $dbBridge = $this->load->database('db_bridge', TRUE);
 		$trasnferRequestId = $this->lastRequestTransferId();
