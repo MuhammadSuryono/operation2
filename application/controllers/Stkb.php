@@ -863,7 +863,7 @@ class Stkb extends Whatsapp
 		$arrDataNotifikasiWaa = [];
 		$duplicateNumber = [];
 
-		$queryDbKas = $dbDevelop->query("SELECT rekening FROM kas WHERE keterangan = 'Kas Project'")->row_array();
+		$queryDbKas = $dbDevelop->query("SELECT rekening FROM kas WHERE label_kas = 'Kas Project'")->row_array();
 		$rekeningSumber = $queryDbKas['rekening'];
 
 		$jenisPembayaran = $dbMri->query("SELECT max_transfer FROM jenis_pembayaran WHERE jenispembayaran = 'STKB'")->row_array();
