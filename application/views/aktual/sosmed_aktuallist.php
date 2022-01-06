@@ -202,7 +202,7 @@ if ($this->db->get_where('user', ['noid' => $id_user])->num_rows() >= 1) {
 
         <div class="form-group">
           <label><b>Time Delivery</b></label><br>
-          <input type="radio" name="total_td" id="td_1" value="1" > &nbsp;Kurang dari 30 menit<br>
+          <input type="radio" name="total_td" id="td_1" value="1" required="required"> &nbsp;Kurang dari 30 menit<br>
           <input type="radio" name="total_td" id="td_2" value="2" > &nbsp;31 menit - 1 jam<br>
           <input type="radio" name="total_td" id="td_3" value="3" > &nbsp;1 - 24 jam (respons diterima dalam hari yang sama)<br>
           <input type="radio" name="total_td" id="td_4" value="4" > &nbsp;H+1<br>
@@ -214,7 +214,7 @@ if ($this->db->get_where('user', ['noid' => $id_user])->num_rows() >= 1) {
 
         <div class="form-group">
           <label>Apabila time delivery respons agent lebih dari 1 jam, apakah terdapat respons otomatis yang dikirimkan bahwa staf bank sedang offline/tidak beroperasi? </label>
-          <input type="radio" name="respon_otomatis" class="respon_1" id="respon" value="1" > &nbsp;Ada<br>
+          <input type="radio" name="respon_otomatis" class="respon_1" id="respon" value="1" required="required"> &nbsp;Ada<br>
           <input type="radio" name="respon_otomatis" class="respon_2" id="respon" value="2" > &nbsp;Tidak<br>
           <input type="radio" name="respon_otomatis" class="respon_99" id="respon" value="99" > &nbsp;Time delivery < 1 jam<br>
         </div>

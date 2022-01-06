@@ -602,7 +602,7 @@ class Aktual_model extends CI_model
                 OR (a.weekday_siang = p.kunjungan AND a.shp_weekday_siang = '$user' AND a.status_weekday_siang = 0)
                 OR (a.weekday_malam = p.kunjungan AND a.shp_weekday_malam = '$user' AND a.status_weekday_malam = 0))")->result_array();
         }else{
-          $data = $this->db->query("SELECT a.*, b.nama as skenario FROM `quest`a join attribute b on a.kunjungan = b.kode WHERE r_kategori = $id and project = '$project' and shp = '$user' and cabang = '$cabang' and status = 0")->result_array();
+          $data = $this->db->query("SELECT a.*, b.nama as skenario FROM `quest`a join attribute b on a.kunjungan = b.kode WHERE r_kategori = '$id' and project = '$project' and shp = '$user' and cabang = '$cabang' and status = 0")->result_array();
         }
         return $data;
     }
