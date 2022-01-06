@@ -207,9 +207,16 @@ $id_divisi = $this->session->userdata('id_divisi');
                                 <input type="checkbox" name="transport_atm" value="1" id="transport_atm" checked="checked">
                                 <label for="transport_cabang">Transport</label>&nbsp;
                                 <span> | </span>&nbsp;
+
                                
                                 
                               </div> -->
+                              <?php if ($id_divisi == 99 OR $id_divisi == 2) {
+                                  ?>
+                                <input type="checkbox" name="aksi_atm" value="1" id="aksi_atm" checked="checked" onclick="return false" style="display: none;">
+                                <?php } else { ?>
+                                <input type="checkbox" name="aksi_atm" value="1" id="aksi_atm" onclick="return false" style="display: none;">
+                              <?php } ?>
                             </div>
                             <hr size="30px" width="95%" color="grey" style="border-top: 3px solid;">
                             <br>
@@ -702,6 +709,83 @@ $id_divisi = $this->session->userdata('id_divisi');
                                         </div>
                                       </div>
                                       <!-- AKHIR MODAL ADD CABANG NON ATM CENTER -->
+
+
+    <!-- MODAL ADD CABANG ATM CENTER -->
+                                      <div class="modal fade" id="editcabangatm" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                          <div class="modal-content">
+                                            <div class="modal-header">
+                                              <h5 class="modal-title" id="exampleModalLabel">Edit Cabang ATM Center</h5>
+                                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                              </button>
+                                            </div>
+                                            
+                                            <div class="modal-body">
+                                              <form method="POST" action="<?php echo base_url('cabang/edit_cabangatm') ?>">
+                                                <input type="hidden" name="num" id="edit_num_atm" class="form-control" readonly>
+                                              <div class="form-group">
+                                                <label >Project</label>
+                                                <input type="text" class="form-control" name="project" id="edit_project_atm" readonly>
+<!--                                                  <select class="form-control form-control-user" name="project" id="kode_pjk">
+                                                    <option value="" selected="">--Pilih Project--</option>
+                                                    <?php foreach ($project as $row) {
+                                                      ?>
+                                                      <option value="<?php echo $row['kode'] ?>"><?php echo $row['nama']; ?></option>
+                                                      <?php
+                                                    } ?>
+                                                  </select>
+ -->                                              </div>
+
+                                              <?php 
+                                            $bank = $this->db->query("SELECT * FROM bank")->result_array();
+                                             ?>
+                                             <?php foreach ($bank as $bk) : ?>
+                                                <input type="hidden" name="bank_id" value="<?= $bk['kode'] ?>**<?= $bk['nama'] ?>">
+                                              <?php endforeach ?>
+                                            
+                                              <div class="form-group">
+                                                <label >Bank</label>
+                                                <!-- <input type="text" class="form-control" name="bank" id="edit_bank" readonly> -->
+
+                                                 <select class="form-control form-control-user" name="kodebank" id="bank_kd_atm">
+                                                    <option value="">--Pilih Bank--</option>
+                                                    <!-- <?php foreach ($bank as $row) {
+                                                      ?>
+                                                      <option value="<?php echo $row['kode'] ?>"><?php echo $row['nama']; ?></option>
+                                                      <?php
+                                                    } ?> -->
+                                                  </select>
+
+                                            </div>
+                                              <div class="form-group">
+                                                <label>Kode</label>
+                                                <input type="text" name="kode" id="edit_kode_atm" class="form-control" required minlength="3" maxlength="3" onkeypress="return hanyaAngka(event)">
+                                              </div>
+                                              <div class="form-group">
+                                                <label>Nama</label>
+                                                <input type="text" name="nama" id="edit_nama_atm" class="form-control">
+                                              </div>
+                                              <div class="form-group">
+                                                <label>Alamat</label>
+                                                <textarea name="alamat" id="edit_alamat_atm" class="form-control"></textarea>
+                                              </div>
+                                              <div class="form-group">
+                                                <label>Kota</label>
+                                                <input type="text" name="kota" id="edit_kota_atm" class="form-control">
+                                              </div>
+                                            
+                                            </div>
+                                            <div class="modal-footer">
+                                              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                              <button type="submit" class="btn btn-primary">Save changes</button>
+                                            </div>
+                                          </form>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <!-- AKHIR MODAL ADD CABANG ATM CENTER -->
     <!--main content end -->
 <script>
     function hanyaAngka(evt) {
