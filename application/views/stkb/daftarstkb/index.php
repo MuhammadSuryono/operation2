@@ -93,7 +93,8 @@ if ($this->db->get_where('user', ['noid' => $id_user])->num_rows() >= 1) {
                     <?php
                     $no = 1;
                     foreach ($getalldaftarstkb as $row) :
-                      $cekPembayaran = $this->db->query("SELECT nomorstkb FROM stkb_pembayaran WHERE nomorstkb = '$row[nomorstkb]'")->num_rows();
+                      $cekPembayaran = $this->db->get_where('stkb_pembayaran', ['nomorstkb' => $row['nomorstkb']])->num_rows();
+                      $quest = $this->db->get_where('quest', ['nomorstkb' => $row['nomorstkb']])->num_rows();
                             if($cekPembayaran >= 1){
                               continue;
                             }
@@ -115,7 +116,7 @@ if ($this->db->get_where('user', ['noid' => $id_user])->num_rows() >= 1) {
                         <td><?php echo $row['tglmulai']; ?></td>
                         <td><?php echo $row['tglselesai']; ?></td>
                         <td>
-                          <?php if ($user['id_divisi'] == 99) : ?>
+                          <?php if ($user['id_divisi'] == 99 AND $quest == 0) : ?>
                           <a href="<?php echo base_url(); ?>stkb/hapus_daftarstkb/<?php echo $row['nomorstkb']; ?> " class="btn-danger btn-sm tombol-hapus" title="Delete"><i class="fa fa-trash"></i> </a>
                         <?php endif; ?>
                         </td>
