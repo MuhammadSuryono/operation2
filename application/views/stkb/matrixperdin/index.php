@@ -23,7 +23,7 @@ if ($this->db->get_where('user', ['noid' => $id_user])->num_rows() >= 1) {
             <div class="col-lg-12">
                 <div class="form-panel">
                     <h4 class="mb text-primary"><strong> <i class="fa fa-angle-right"></i> Matrix Perdin </strong> </h4>
-                     <?php if ($user['id_divisi'] == 99) : ?>
+                     <?php if ($user['id_divisi'] == 99 OR ($user['id_divisi'] == 7 AND $user['jabatan'] == 'Manager')) : ?>
                     <a href="" class="btn btn-round btn-primary mb" data-target="#exampleModal" data-toggle="modal"><span class="fa fa-plus fa-fw"></span> Tambah </a>
                   <?php endif; ?>
 

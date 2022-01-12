@@ -60,7 +60,7 @@
                           Periode
                         </div>
                         <div class="col-xs-4 text-left">
-                          <strong>: <?php echo $allprint['namanya'] ?>/<?php echo  $allprint['jeniskota1'] ?></strong>/<?php echo $allprint['penugasan'] ?>&nbsp;&nbsp;<a id="klik1" title="Show Area Head" data-toggle="collapse" href="#collapse_ah" role="button" aria-expanded="false" aria-controls="collapseExample"><i class="fas fa-arrow-circle-down"></i></a>
+                          <strong>: <?php echo $allprint['namanya'] ?>/<?php echo  $allprint['jeniskota2'] ?></strong>/<?php echo $allprint['penugasan'] ?>&nbsp;&nbsp;<a id="klik1" title="Show Area Head" data-toggle="collapse" href="#collapse_ah" role="button" aria-expanded="false" aria-controls="collapseExample"><i class="fas fa-arrow-circle-down"></i></a>
                           <a id="klik2" data-toggle="collapse" href="#collapse_ah2" role="button" aria-expanded="false" aria-controls="collapseExample" style="display: none;"><i class="fas fa-arrow-circle-down"></i></a><br>
                           <?php if (empty($plan)) : ?>
                             : <?php echo $allprint['namanya'] ?> - <?php echo $allprint['kode_iddata'] ?><br>

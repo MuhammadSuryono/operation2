@@ -327,11 +327,14 @@ class Stkb extends Whatsapp
   }
   public function getkotabyidfo()
   {
-    $sdm = $this->db->query("SELECT b.nm_kota AS kota_asal, b.nm_kota AS kota_penugasan, c.Nama as nama 
-                              FROM field_sdm a JOIN kota b ON b.id = a.kota_id JOIN id_data c ON c.Id = a.id_data_id 
+    $sdm = $this->db->query("SELECT b.nm_kota AS kota_asal, a.kota_dinas, b.nm_kota AS kota_penugasan, c.Nama as nama 
+                              FROM field_sdm a 
+                              JOIN kota b ON b.id = a.kota_id 
+                              -- JOIN kota d ON d.id = a.kota_dinas
+                              JOIN id_data c ON c.Id = a.id_data_id 
                               WHERE id_data_id = '$_POST[id]'
                               UNION
-                              SELECT z.KotaTgl as kota_asal, x.kota_dinas AS kota_penugasan, z.Nama as nama
+                              SELECT z.KotaTgl as kota_asal, x.kota_dinas, x.kota_dinas AS kota_penugasan, z.Nama as nama
                               FROM data_pengajuan_sdm x
                               JOIN id_data z ON x.pic = z.Id 
                               WHERE x.pic = '$_POST[id]'
@@ -664,31 +667,8 @@ class Stkb extends Whatsapp
     $cek = $this->db->get_where('stkb_lskontrak', array('kota' => $jenkot, 'jabatan' => $jabatan, 'penempatan' => $penempatan))->num_rows();
 
     if ($cek == 0) {
-      $data = [
-        'kota' => $jenkot,
-        'jabatan' => $this->input->post('jabatan'),
-        'penempatan' => $this->input->post('penempatan'),
-        'dinas' => $this->input->post('dinas'),
-        // 'lsharikerja' => $this->input->post('lsharikerja'),
-        'biaya_pulsa' => $this->input->post('biaya_pulsa'),
-        'biaya_atk' => $this->input->post('biaya_atk'),
-        'transport_harian' => $this->input->post('transport_harian'),
-        'biaya_fc' => $this->input->post('biaya_fc'),
-        'biaya_pengiriman' => $this->input->post('biaya_pengiriman'),
-        'transport_kecabang' => $this->input->post('transport_kecabang'),
+      $this->Stkb_model->tambah_lskontrak();
 
-        'kunjungan' => $this->input->post('kunjungan'),
-        'atmcentermalam' => $this->input->post('atmcentermalam'),
-        // 'lsops' => $this->input->post('lsops'),
-        'lsakomodasi1_8' => $this->input->post('lsakomodasi1_8'),
-        'lsakomodasi9_16' => $this->input->post('lsakomodasi9_16'),
-        'bpjs' => $this->input->post('bpjs'),
-        'id_update' => $this->session->userdata('id_user'),
-        'last_update' => date('Y-m-d H:i:s')
-
-      ];
-
-      $this->db->insert('stkb_lskontrak', $data);
       $this->session->set_flashdata('flash', 'Tambah Data LS Kontrak Berhasil');
       redirect("stkb/lskontrak");
     } else {
@@ -703,34 +683,8 @@ class Stkb extends Whatsapp
 
   public function edit_lskontrak()
   {
-    date_default_timezone_set('Asia/Jakarta');
-    $data = [
-      'kota' => $this->input->post('kota'),
-      'jabatan' => $this->input->post('jabatan'),
-      'penempatan' => $this->input->post('penempatan'),
-      'dinas' => $this->input->post('dinas'),
-      // 'lsharikerja' => $this->input->post('lsharikerja'),
-      'biaya_pulsa' => $this->input->post('biaya_pulsa'),
-      'biaya_atk' => $this->input->post('biaya_atk'),
-      'transport_harian' => $this->input->post('transport_harian'),
-      'biaya_fc' => $this->input->post('biaya_fc'),
-      'biaya_pengiriman' => $this->input->post('biaya_pengiriman'),
-      'transport_kecabang' => $this->input->post('transport_kecabang'),
+    $this->Stkb_model->edit_lskontrak();
 
-      'kunjungan' => $this->input->post('kunjungan'),
-      'atmcentermalam' => $this->input->post('atmcentermalam'),
-      // 'lsops' => $this->input->post('lsops'),
-      'lsakomodasi1_8' => $this->input->post('lsakomodasi1_8'),
-      'lsakomodasi9_16' => $this->input->post('lsakomodasi9_16'),
-      'bpjs' => $this->input->post('bpjs'),
-      'id_update' => $this->session->userdata('id_user'),
-      'last_update' => date('Y-m-d H:i:s')
-    ];
-
-    $where = ['no' => $this->input->post('no')];
-
-    $this->db->where($where);
-    $this->db->update('stkb_lskontrak', $data);
     $this->session->set_flashdata('flash', 'LS Kontrak Berhasil Diubah');
     redirect("stkb/lskontrak");
   }
@@ -757,6 +711,7 @@ class Stkb extends Whatsapp
   {
     $data['judul'] = "STKB || Tracking";
     $data['gettracking'] = $this->Stkb_model->getalldatatracking();
+    $data['q'] = $this->Stkb_model->getdata_q();
     // $data['getprogress'] = $this->Stkb_model->getallprogress();
     // var_dump($this->Stkb_model->getalldatatracking()); die;
     $this->load->view('templates/header', $data);
@@ -2183,33 +2138,13 @@ class Stkb extends Whatsapp
 
   public function tambah_sdmstkb()
   {
-    date_default_timezone_set('Asia/Jakarta');
-
     $Id = $this->input->post('Id');
-    $getnama = $this->db->get_where('id_data', array('Id' => $Id))->row_array();
-    $kota = $this->input->post('kota_asal');
-    $jabatan = $this->input->post('jabatan');
-
+    
     $cek = $this->db->get_where('stkb_sdm', array('id' => $Id))->num_rows();
-
-    //UPLOAD MEMO
-    $extension_memo  = pathinfo($_FILES['memo_sdm']['name'], PATHINFO_EXTENSION);
-    $memo_name = "memo_sdmstkb_" . time() . "." . $extension_memo;
-    $memo_tmp = $_FILES['memo_sdm']['tmp_name'];
-    move_uploaded_file($memo_tmp, "assets/file/memo/" . $memo_name);
-
-    $data = [
-      'id' => $Id,
-      'nama' => strtoupper($getnama['Nama']),
-      'kota_asal' => strtoupper($kota),
-      'jabatan' => $jabatan,
-      'memo' => $memo_name,
-      'id_update' => $this->session->userdata('id_user'),
-      'last_update' => date('Y-m-d H:i:s')
-
-    ];
+    
     if ($cek == 0) {
-      $this->db->insert('stkb_sdm', $data);
+      $this->Stkb_model->tambah_sdmstkb();
+
       $this->session->set_flashdata('flash', 'Berhasil Menambah Data');
       redirect('stkb/sdm_stkb');
     } else {
@@ -2224,32 +2159,7 @@ class Stkb extends Whatsapp
 
   public function edit_sdmstkb()
   {
-    $no = $this->input->post('no');
-    $nama = $this->input->post('nama');
-    $kota = $this->input->post('kota_asal');
-    $kota_penugasan = $this->input->post('kota_penugasan');
-
-    $jabatan = $this->input->post('jabatan');
-
-    //UPLOAD MEMO
-    $extension_memo  = pathinfo($_FILES['memo_sdm']['name'], PATHINFO_EXTENSION);
-    $memo_name = "memo_sdmstkb_" . time() . "." . $extension_memo;
-    $memo_tmp = $_FILES['memo_sdm']['tmp_name'];
-    move_uploaded_file($memo_tmp, "assets/file/memo/" . $memo_name);
-
-    $data = [
-      'nama' => $nama,
-      'kota_asal' => $kota,
-      'kota_penugasan' => $kota_penugasan,
-      'jabatan' => $jabatan,
-      'memo' => $memo_name,
-      'id_update' => $this->session->userdata('id_user'),
-      'last_update' => date('Y-m-d H:i:s')
-    ];
-    $where = ['no' => $no];
-
-    $this->db->where($where);
-    $this->db->update('stkb_sdm', $data);
+    $this->Stkb_model->edit_sdmstkb();
 
     $this->session->set_flashdata('flash', 'Berhasil Diubah');
     redirect('stkb/sdm_stkb');
@@ -2773,14 +2683,14 @@ class Stkb extends Whatsapp
     }
 
     $inList = "('" . implode("','", $listKota) . "')";
-    $sdm = $this->db->query("SELECT a.id_data_id as id, b.Nama as nama, c.nm_kota as kota_asal 
+    $sdm = $this->db->query("SELECT a.id_data_id as id, b.Nama as nama, c.nm_kota as kota_asal, a.aktif
                               FROM field_sdm a 
                               JOIN id_data b ON a.id_data_id = b.Id 
                               LEFT JOIN kota c ON a.kota_id = c.id  
                               WHERE  a.id != '0' AND a.kota_id 
                               IN $inList
                               UNION
-                              SELECT a.pic as id, b.Nama as nama, b.KotaTgl as kota_asal 
+                              SELECT a.pic as id, b.Nama as nama, b.KotaTgl as kota_asal, a.aktif 
                               FROM data_pengajuan_sdm a
                               JOIN id_data b ON a.pic = b.Id 
                               WHERE a.project = '$_POST[project]' AND a.status='1'

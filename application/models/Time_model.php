@@ -463,6 +463,35 @@ class Time_model extends CI_model
                                     ")->result_array();
     }
 
+    public function edittd_RA($project, $skenario, $cabang)
+    {
+        $total_td = $this->input->post('total_td');
+        $alasan = $this->input->post('alasan_revisi');
+        $user = $this->session->userdata('id_user');
+        $datenow = date('Y-m-d');
+
+        $data = ['revisi_ra' => $total_td,
+                'alasan_revisi' => $alasan,
+                'user_revisi' => $user,
+                'tanggal_revisi' => $datenow
+                ];
+
+        $this->db->where(array('id_project' => $project, 'id_skenario' => $skenario, 'kode_cabang' => $cabang));
+        $this->db->update('data_waktu_td', $data);
+    }
+
+    public function editmedia_RA($project, $skenario, $cabang)
+    {
+        $jenis_form = $this->input->post('jenis_form');
+        $datenow = date('Y-m-d');
+
+        $data = ['jenis_form' => $jenis_form
+                ];
+
+        $this->db->where(array('id_project' => $project, 'id_skenario' => $skenario, 'kode_cabang' => $cabang));
+        $this->db->update('data_waktu_td', $data);
+    }
+
     public function gettd_ebanking_form($bank, $chan, $transaksi, $os, $jenis)
     {
         $cek = [

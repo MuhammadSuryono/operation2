@@ -70,32 +70,7 @@ $id_user = $this->session->userdata('id_user');
                           <td class="text-left" style="vertical-align:middle"><?= $db['nama_project'] ?></td>
                           <td class="text-left" style="vertical-align:middle"><?= $db['cabangx'] ?></td>
                           <td class="text-left" style="vertical-align:middle"><?= $db['kunjungan1'] ?></td>
-                          <!-- <td class="text-left" style="vertical-align:middle">
-                            <?php
-                              if (in_array($db['skenario'], $atmcenter)){
-                                if($db['status'] >= 1){
-                                  echo $db['kunjungan1'].'(<span class="fa fa-check text-success fa-fw"></span>)';
-                                }else{
-                                  echo $db['kunjungan1'].'(<span class="fa fa-times text-danger fa-fw"></span>)';
-                                }
-                              }else{
-                                $get = $this->db->query("SELECT GROUP_CONCAT( a.kunjungan ) AS kode_skenario, GROUP_CONCAT( d.nama ) AS skenario, GROUP_CONCAT( a.`status` ) AS sts
-                                         FROM attribute d LEFT JOIN (cabang c JOIN ( quest a JOIN project b ON a.project = b.kode AND b.visible = 'y' AND b.type = 'n' ) ON a.cabang = c.kode AND a.project = c.project) ON a.kunjungan = d.kode
-                                         WHERE a.shp = '$id_user' AND a.nomorstkb = $db[nomorstkb] GROUP BY a.project, a.cabang, a.r_kategori")->row_array();
-                                $data = explode(",", $get['skenario']);
-                                $data1 = explode(",", $get['kode_skenario']);
-                                $sts = explode(",", $get['sts']);
-
-                                for($i=0;$i<count($data1);$i++):
-                                    if($sts[$i] >= 1):
-                                    echo $data[$i].'(<span class="fa fa-check text-success fa-fw"></span>),';
-                                    else :
-                                    echo $data[$i].'(<span class="fa fa-times text-danger fa-fw"></span>),';
-                                    endif;
-                                endfor;
-                              }
-                              ?>
-                          </td> -->
+                          
 
                             <?php
                               $besok = date('Y-m-d', strtotime("+1 day", strtotime($db['tanggal'])))." ".'12:05:00';
@@ -111,6 +86,7 @@ $id_user = $this->session->userdata('id_user');
                           <td class="text-center">
                             <?php 
                             $form = $this->db->get_where('form_keterlambatan', array('num_quest' => $db['num']))->row_array();
+                            // echo $form['num_quest'];
                             
                             if ($datenow <= $besok AND $db['keterlambatan_upload'] == NULL AND ($db['status'] == 1 OR $db['rekaman_status'] == 0) AND $form == NULL) {
                                        echo '<a href="'.base_url('aktual/keterlambatan/'.$db['kode_project'].'/'.$db['cabang'].'/'.$db['kunjungan']).'" class="btn btn-warning btn-round btn-xs" target="_blank" data-trigger="hover" data-toggle="popover" data-placement="top" title="Informasi" data-content="Anda harus mengajukan berita acara keterlambatan sebelum H+1 jam 12.00. Jika sudah terlewat kunjungan dianggap DO"> Pengajuan Keterlambatan</a>'; 
