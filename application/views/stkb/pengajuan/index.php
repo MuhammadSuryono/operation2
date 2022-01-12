@@ -108,15 +108,7 @@ if ($this->db->get_where('user', ['noid' => $id_user])->num_rows() >= 1) {
                           </tr>
                         </thead>
                         <tbody>
-                          <?php $q = $this->db->query("SELECT
-                                                              a.*, b.nama namanya, c.nama namaproject
-                                                            FROM
-                                                              stkb_trk a
-                                                            JOIN stkb_sdm b ON a.nama = b.id
-                                                            JOIN project c ON a.project = c.kode
-                                                            WHERE c.type = 'n' AND a.term1 <= -1 OR a.term2 <= -1 OR a.term3 <= -1
-                                                            ORDER BY
-                                                              nostkb DESC ")->result();
+                          <?php 
                           $no = 1;
                           foreach ($q as $row) {
 
