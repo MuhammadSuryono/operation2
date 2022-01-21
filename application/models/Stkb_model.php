@@ -2295,6 +2295,8 @@ class Stkb_model extends CI_model
       a.nomorstkb AS nmrstkb,
       a.tglbuat AS tanggalbuat,
       a.kode_iddata AS idpic,
+			a.jml_hari,
+			a.quota,
       IF(a.perdin IS NULL, 0, a.perdin) AS perdin,
       IF(a.akomodasi IS NULL, 0, a.akomodasi) AS akomodasi,
       IF(a.bpjs IS NULL, 0, a.bpjs) AS bpjs,
@@ -2346,7 +2348,9 @@ class Stkb_model extends CI_model
           "cek" => $keyy['cek'],
           "print" => $keyy['print'],
           "bank" => $rek['nama'],
-          "rekening" => $rek['no']
+          "rekening" => $rek['no'],
+					"jumlah_hari" => $keyy['jml_hari'],
+					"jumlah_cabang" => $keyy['quota']
         );
         $no++;
       }
