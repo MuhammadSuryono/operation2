@@ -27,6 +27,8 @@
         <th>Term</th>
         <th>Tanggal Buat</th>
         <th>Tanggal Mulai</th>
+          <th>Total Hari</th>
+          <th>Total Cabang</th>
         <th>Project</th>
         <th>Nama</th>
         <th>Bank</th>
@@ -105,6 +107,15 @@
                   {"data": "termnya"},
                   {"data": "tanggalbuat"},
                   {"data": "tglm"},
+
+									
+									{
+										"data": "jumlah_hari"
+									},
+
+									{
+										"data": "jumlah_cabang"
+									},
                   {"data": "namaproject",
                     render: function ( data, type, row ) {
                       return row.kodeproject + ' - ' + row.namaproject;

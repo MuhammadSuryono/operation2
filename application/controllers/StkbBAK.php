@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Stkb extends CI_Controller
+class StkbBAK extends CI_Controller
 {
 
   public function __construct()

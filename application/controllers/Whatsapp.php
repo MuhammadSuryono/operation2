@@ -64,12 +64,42 @@ No. Rekening Anda : " . $data['nomor_rekening'] . "
 Bank             : " . $data['bank'] . "
 Nama Penerima    : " . $data['pemilik_rekening'] . "
 Jumlah Dibayarkan : Rp. " . number_format($data['jumlah'], 0, '', '.') . "
-Status           : Dijadwalkan Pada</strong>,  Tanggal : " . $data['jadwal_transfer'] . "</strong>
+Status           : Dijadwalkan Pada,  Tanggal : " . $data['jadwal_transfer'] . "
 
 Jika ada pertanyaan lebih lanjut, silahkan email Divisi Finance ke finance@mri-research-ind.com.
 Hormat kami,
 Finance Marketing Research Indonesia
 ";
 		return $msg;
+	}
+
+	public function message_success_transfer(array $data)
+	{
+		$msg = "Kepada " . $data['penerima'] . ", 
+Berikut informasi status pembayaran yang akan Anda terima:
+Nama Pembayaran : " . $data['jenis_pembayaran'] . "
+Nomor STKB : ". $data['nomor_stkb'] . "
+Term Pembayaran : ". $data['term'] . "
+Nama Project : ". $data['project'] . "
+No. Rekening Anda : " . $data['nomor_rekening'] . "
+Bank             : " . $data['bank'] . "
+Nama Penerima    : " . $data['pemilik_rekening'] . "
+Jumlah : Rp. " . number_format($data['jumlah'] + $data['biaya_transfer'], 0, '', '.') . "
+Biaya Transfer : Rp. " . number_format($data['biaya_transfer'], 0, '', '.') . "
+Jumlah Dibayarkan : Rp. " . number_format($data['jumlah'], 0, '', '.') . "
+Status           : Dibayarkan Pada,  Tanggal : " . $data['jadwal_transfer'] . "
+
+Jika ada pertanyaan lebih lanjut, silahkan email Divisi Finance ke finance@mri-research-ind.com.
+Hormat kami,
+Finance Marketing Research Indonesia
+";
+		return $msg;
+	}
+
+	public function send_notification($msisdn, $message)
+	{
+		$url = $this->host."/send-notification-message";
+		$body = ["msisdn" => $msisdn, "message" => $message];
+		$this->HTTPPost($url, $body);
 	}
 }
