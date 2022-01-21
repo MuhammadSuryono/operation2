@@ -632,6 +632,41 @@ class Stkb_model extends CI_model
      $db2->order_by('nama', 'ASC');
      return $db2->get()->result_array();*/
 
+    //    $db2->select('a.cabang AS kocab, a.namacabang AS nacab, GROUP_CONCAT(b.att ORDER BY b.att ASC) skennya, GROUP_CONCAT(c.nama ORDER BY b.att ASC) namasken');
+    //   $db2->from('cabang a');
+    //   $db2->join('skenario b', 'a.project=b.project');
+    //   $db2->join('attribute c', 'b.att = c.kode');
+    //   $db2->where('a.project', $id);
+    //   $db2->where('a.kota', $kota);
+    //   $db2->where_in('b.att', $newatt);
+    //   $db2->group_by('a.cabang');
+    //   $db2->order_by('a.namacabang', 'ASC');
+    
+    // $atm = $db2->get()->result_array();
+    
+    // $data = array();
+    // foreach ($atm as $row) {
+    //   // $db2->get_where('plan', ['project' => $id, 'kode' => $row['kocab']]);
+    //   $count = $db2->query("SELECT kunjungan FROM plan WHERE project='$id' AND kode='$row[kocab]'")->num_rows();
+    //   log_message('info', $db2->last_query());
+      
+    //   log_message('info', 'Kode : '.$row['kocab'].' Total : '.$count);
+    //   if ($count == 0) {
+    //     array_push($data, $row);
+    //   }
+    // }
+
+    // return $data;
+
+     $att = $db2->select('kode')->get_where('attribute', ['kunjungan_q' => 1])->result_array();
+
+     $newatt = array();
+     foreach ($att as $new) {
+       array_push($newatt, $new['kode']);
+     }
+
+     $getatt = implode("','",$newatt);
+
     return $db2->query("SELECT
                         	a.kode kocab,
                         	a.nama nacab,
@@ -647,12 +682,13 @@ class Stkb_model extends CI_model
                         	a.project = '$id'
                         AND a.kota = '$kota'
                         AND b.att IN (
-                        	SELECT
-                        		kode
-                        	FROM
-                        		attribute
-                        	WHERE
-                        		kunjungan_q = 1
+                        	'$getatt'
+                          -- SELECT
+                        	-- 	kode
+                        	-- FROM
+                        	-- 	attribute
+                        	-- WHERE
+                        	-- 	kunjungan_q = 1
                         )
                         AND b.att NOT IN (SELECT kunjungan FROM plan WHERE project='$id' AND kode = a.kode)
                         GROUP BY
@@ -671,6 +707,47 @@ class Stkb_model extends CI_model
      $db2->order_by('nama', 'ASC');
      return $db2->get()->result_array();*/
 
+     $att = $db2->select('kode')->get_where('attribute', ['kunjungan_q' => 1])->result_array();
+
+     $newatt = array();
+     foreach ($att as $new) {
+       array_push($newatt, $new['kode']);
+     }
+
+      
+
+    //   $db2->select('a.cabang AS kocab, a.namacabang AS nacab, GROUP_CONCAT(b.att ORDER BY b.att ASC) skennya, GROUP_CONCAT(c.nama ORDER BY b.att ASC) namasken');
+    //   $db2->from('atmcenter a');
+    //   $db2->join('skenario b', 'a.project=b.project');
+    //   $db2->join('attribute c', 'b.att = c.kode');
+    //   $db2->where('a.project', $id);
+    //   $db2->where('a.kota', $kota);
+    //   $db2->where_in('b.att', $newatt);
+    //   $db2->group_by('a.cabang');
+    //   $db2->order_by('a.namacabang', 'ASC');
+    
+    // $atm = $db2->get()->result_array();
+    
+    // $data = array();
+    // foreach ($atm as $row) {
+    //   // $db2->get_where('plan', ['project' => $id, 'kode' => $row['kocab']]);
+    //   $count = $db2->query("SELECT kunjungan FROM plan WHERE project='$id' AND kode='$row[kocab]'")->num_rows();
+    //   log_message('info', $db2->last_query());
+      
+    //   log_message('info', 'Kode : '.$row['kocab'].' Total : '.$count);
+    //   if ($count == 0) {
+    //     array_push($data, $row);
+    //   }
+    // }
+
+    // return $data;
+
+    // $newplan = array();
+    // foreach ($plan as $key => $value) {
+    //   # code...
+    // }
+
+     $getatt = implode("','",$newatt);
 
     return $db2->query("SELECT
                         	a.cabang kocab,
@@ -687,18 +764,21 @@ class Stkb_model extends CI_model
                         	a.project = '$id'
                         AND a.kota = '$kota'
                         AND b.att IN (
-                        	SELECT
-                        		kode
-                        	FROM
-                        		attribute
-                        	WHERE
-                        		kunjungan_q = 1
+                        '$getatt'
+                        	-- SELECT
+                        	-- 	kode
+                        	-- FROM
+                        	-- 	attribute
+                        	-- WHERE
+                        	-- 	kunjungan_q = 1
                         )
                         AND b.att NOT IN (SELECT kunjungan FROM plan WHERE project='$id' AND kode = a.cabang)
                         GROUP BY
                         	kocab
                         ORDER BY
                         	a.namacabang")->result_array();
+
+     log_message('info', $db2->last_query());
   }
 
   public function kotakabupaten()
@@ -760,7 +840,8 @@ class Stkb_model extends CI_model
                                   AND a.kota = c.kota 
                                   WHERE a.project = '$id'
                                    AND a.kota IN ('Jakarta', 'Bekasi', 'Bogor', 'Tangerang', 'Depok', 'Sukabumi', 'Serang', 'Cilegon', 'Cibubur', 'Cibinong', 'Cianjur', 'Ciputat')
-                                  
+                                  GROUP BY a.cabang
+
                                   UNION ALL
                               SELECT a.*, 
                                 b.nama as nama_project, 
@@ -773,7 +854,8 @@ class Stkb_model extends CI_model
                                   AND a.kota = c.kota 
                                   WHERE a.project = '$id'
                                   AND a.kota NOT IN ('Jakarta', 'Bekasi', 'Bogor', 'Tangerang', 'Depok', 'Sukabumi', 'Serang', 'Cilegon', 'Cibubur', 'Cibinong', 'Cianjur', 'Ciputat')
-                                  
+                                  GROUP BY a.cabang
+
                                   ORDER BY cabang
                                   ")->result_array();
   }
@@ -1245,6 +1327,8 @@ class Stkb_model extends CI_model
     $iddata = $this->input->post('nama_fo');
     $penugasan = $this->input->post('penugasan');
     $projectnya = $this->input->post('project');
+
+    $this->db->update('field_sdm', ['kota_dinas' => strtoupper($this->input->post('kotadinas'))], ['id_data_id' => $iddata]);
 
     $get_sdm = $this->db->query("SELECT * FROM field_sdm a JOIN id_data b ON a.id_data_id = b.Id WHERE id_data_id='$iddata'")->row_array();
     $nama_pic = $get_sdm['Nama'];
@@ -3251,6 +3335,150 @@ class Stkb_model extends CI_model
                                   ;");
     return $getprint->result_array();
   }
+
+  public function getdata_q()
+  {
+    return $this->db->query("SELECT
+                                                              a.*, b.nama namanya, b.status statusnya, c.nama namaproject
+                                                            FROM
+                                                              stkb_trk a
+                                                            JOIN stkb_sdm b ON a.nama = b.id
+                                                            JOIN project c ON a.project = c.kode
+                                                            WHERE c.type = 'n' AND a.term1 <= -1 OR a.term2 <= -1 OR a.term3 <= -1
+                                                            ORDER BY
+                                                              nostkb DESC ")->result();
+  }
+
+  public function tambah_lskontrak()
+  {
+    $data = [
+        'kota' => $jenkot,
+        'jabatan' => $this->input->post('jabatan'),
+        'penempatan' => $this->input->post('penempatan'),
+        'dinas' => $this->input->post('dinas'),
+        // 'lsharikerja' => $this->input->post('lsharikerja'),
+        'biaya_pulsa' => $this->input->post('biaya_pulsa'),
+        'biaya_atk' => $this->input->post('biaya_atk'),
+        'transport_harian' => $this->input->post('transport_harian'),
+        'biaya_fc' => $this->input->post('biaya_fc'),
+        'biaya_pengiriman' => $this->input->post('biaya_pengiriman'),
+        'transport_kecabang' => $this->input->post('transport_kecabang'),
+
+        'kunjungan' => $this->input->post('kunjungan'),
+        'atmcentermalam' => $this->input->post('atmcentermalam'),
+        // 'lsops' => $this->input->post('lsops'),
+        'lsakomodasi1_8' => $this->input->post('lsakomodasi1_8'),
+        'lsakomodasi9_16' => $this->input->post('lsakomodasi9_16'),
+        'bpjs' => $this->input->post('bpjs'),
+        'id_update' => $this->session->userdata('id_user'),
+        'last_update' => date('Y-m-d H:i:s')
+
+      ];
+
+      $this->db->insert('stkb_lskontrak', $data);
+  }
+
+  public function edit_lskontrak()
+  {
+    date_default_timezone_set('Asia/Jakarta');
+    $data = [
+      'kota' => $this->input->post('kota'),
+      'jabatan' => $this->input->post('jabatan'),
+      'penempatan' => $this->input->post('penempatan'),
+      'dinas' => $this->input->post('dinas'),
+      // 'lsharikerja' => $this->input->post('lsharikerja'),
+      'biaya_pulsa' => $this->input->post('biaya_pulsa'),
+      'biaya_atk' => $this->input->post('biaya_atk'),
+      'transport_harian' => $this->input->post('transport_harian'),
+      'biaya_fc' => $this->input->post('biaya_fc'),
+      'biaya_pengiriman' => $this->input->post('biaya_pengiriman'),
+      'transport_kecabang' => $this->input->post('transport_kecabang'),
+
+      'kunjungan' => $this->input->post('kunjungan'),
+      'atmcentermalam' => $this->input->post('atmcentermalam'),
+      // 'lsops' => $this->input->post('lsops'),
+      'lsakomodasi1_8' => $this->input->post('lsakomodasi1_8'),
+      'lsakomodasi9_16' => $this->input->post('lsakomodasi9_16'),
+      'bpjs' => $this->input->post('bpjs'),
+      'id_update' => $this->session->userdata('id_user'),
+      'last_update' => date('Y-m-d H:i:s')
+    ];
+
+    $where = ['no' => $this->input->post('no')];
+
+    $this->db->where($where);
+    $this->db->update('stkb_lskontrak', $data);
+  }
+
+  public function tambah_sdmstkb()
+  {
+    date_default_timezone_set('Asia/Jakarta');
+
+    $Id = $this->input->post('Id');
+    $getnama = $this->db->get_where('id_data', array('Id' => $Id))->row_array();
+    $kota = $this->input->post('kota_asal');
+    $jabatan = $this->input->post('jabatan');
+
+
+    //UPLOAD MEMO
+    $extension_memo  = pathinfo($_FILES['memo_sdm']['name'], PATHINFO_EXTENSION);
+    $memo_name = "memo_sdmstkb_" . time() . "." . $extension_memo;
+    $memo_tmp = $_FILES['memo_sdm']['tmp_name'];
+    move_uploaded_file($memo_tmp, "assets/file/memo/" . $memo_name);
+
+    $data = [
+      'id' => $Id,
+      'nama' => strtoupper($getnama['Nama']),
+      'kota_asal' => strtoupper($kota),
+      'jabatan' => $jabatan,
+      'memo' => $memo_name,
+      'id_update' => $this->session->userdata('id_user'),
+      'last_update' => date('Y-m-d H:i:s'),
+      'status' => 'Enable'
+    ];
+      $this->db->insert('stkb_sdm', $data);
+      
+  }
+
+  public function edit_sdmstkb()
+  {
+    $no = $this->input->post('no');
+    $nama = $this->input->post('nama');
+    $kota = $this->input->post('kota_asal');
+    $kota_penugasan = $this->input->post('kota_penugasan');
+
+    $jabatan = $this->input->post('jabatan');
+    $status = $this->input->post('status');
+
+    $get = $this->db->get_where('stkb_sdm', ['no' => $no])->row_array();
+
+    //UPLOAD MEMO
+    if ($_FILES['memo_sdm']['name'] == NULL) {
+      $memo_name = $get['memo'];
+    } else {
+      $extension_memo  = pathinfo($_FILES['memo_sdm']['name'], PATHINFO_EXTENSION);
+      $memo_name = "memo_sdmstkb_" . time() . "." . $extension_memo;
+      $memo_tmp = $_FILES['memo_sdm']['tmp_name'];
+      move_uploaded_file($memo_tmp, "assets/file/memo/" . $memo_name);
+    }
+
+
+    $data = [
+      'nama' => $nama,
+      'kota_asal' => $kota,
+      'kota_penugasan' => $kota_penugasan,
+      'jabatan' => $jabatan,
+      'memo' => $memo_name,
+      'id_update' => $this->session->userdata('id_user'),
+      'last_update' => date('Y-m-d H:i:s'),
+      'status' => $status
+    ];
+    $where = ['no' => $no];
+
+    $this->db->where($where);
+    $this->db->update('stkb_sdm', $data);
+  }
+
   // UPDATE ADAM SANTOSO
   public function triggerGetPrintTRK($datanya)
   {
@@ -3315,6 +3543,7 @@ class Stkb_model extends CI_model
     }
     return $result;
   }
+
   function multi_array_search($array, $search)
   {
     $result = array();

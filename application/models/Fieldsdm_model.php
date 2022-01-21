@@ -163,11 +163,19 @@ class Fieldsdm_model extends CI_model
 
     public function edit()
     {
+        $get = $this->db->get_where('field_sdm', ['id' => $this->input->post('id')])->row_array();
+
         //UPLOAD MEMO
-        $extension_memo  = pathinfo($_FILES['memo_sdm']['name'], PATHINFO_EXTENSION);
-        $memo_name = "memo_fieldsdm_" . time() . "." . $extension_memo;
-        $memo_tmp = $_FILES['memo_sdm']['tmp_name'];
-        move_uploaded_file($memo_tmp, "assets/file/memo/" . $memo_name);
+        if ($_FILES['memo_sdm']['name'] == NULL) {
+          $memo_name = $get['memo'];
+        } else {
+             //UPLOAD MEMO
+            $extension_memo  = pathinfo($_FILES['memo_sdm']['name'], PATHINFO_EXTENSION);
+            $memo_name = "memo_fieldsdm_" . time() . "." . $extension_memo;
+            $memo_tmp = $_FILES['memo_sdm']['tmp_name'];
+            move_uploaded_file($memo_tmp, "assets/file/memo/" . $memo_name);
+        }
+        
 
         if ($this->input->post('posisi') == 'Field Officer' || $this->input->post('posisi') == 'Pewitnes') {
             $tanggal_mulai = null;
@@ -222,6 +230,7 @@ class Fieldsdm_model extends CI_model
             'selesai_kaderisasi' => $selesai_kaderisasi,
             'penanggung_jawab_kaderisasi' => $penanggung_jawab_kaderisasi,
             'memo' => $memo_name,
+            'aktif' => $this->input->post('aktif'),
             'user_update' => $this->session->userdata('id_user')
         ];
 

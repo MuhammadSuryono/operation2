@@ -703,21 +703,8 @@ class Time extends CI_Controller {
         $skenario = $this->input->post('skenario');
         $cabang = $this->input->post('cabang');
 
-
-        $total_td = $this->input->post('total_td');
-        $alasan = $this->input->post('alasan_revisi');
-        $user = $this->session->userdata('id_user');
-        $datenow = date('Y-m-d');
-
-        $data = ['revisi_ra' => $total_td,
-                'alasan_revisi' => $alasan,
-                'user_revisi' => $user,
-                'tanggal_revisi' => $datenow
-                ];
-
-        $this->db->where(array('id_project' => $project, 'id_skenario' => $skenario, 'kode_cabang' => $cabang));
-        $this->db->update('data_waktu_td', $data);
-
+        $this->Time_model->edittd_RA($project, $skenario, $cabang);
+        
         $this->session->set_flashdata('flash', 'Berhasil revisi Total TD!');
         redirect("time/editRA/".$project."/".$skenario."/".$cabang);
 
@@ -729,15 +716,7 @@ class Time extends CI_Controller {
         $skenario = $this->input->post('skenario');
         $cabang = $this->input->post('cabang');
 
-
-        $jenis_form = $this->input->post('jenis_form');
-        $datenow = date('Y-m-d');
-
-        $data = ['jenis_form' => $jenis_form
-                ];
-
-        $this->db->where(array('id_project' => $project, 'id_skenario' => $skenario, 'kode_cabang' => $cabang));
-        $this->db->update('data_waktu_td', $data);
+        $this->Time_model->editmedia_RA($project, $skenario, $cabang);
 
         $this->session->set_flashdata('flash', 'Berhasil revisi jenis form!');
         redirect("time/editRA/".$project."/".$skenario."/".$cabang);

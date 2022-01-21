@@ -644,7 +644,7 @@ class Skenario extends CI_Controller {
                 'password' => $pass
 
                 ];
-
+                
         $this->db->insert('ebanking_shopper', $data);
         $config = [
                         'protocol' => 'smtp',
