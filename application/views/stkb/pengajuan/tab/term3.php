@@ -173,7 +173,13 @@
               footerCallback: function (row, data, start, end, display) {
                   var totalnya = 0;
                   for (var i = 0; i < data.length; i++) {
-                      totalnya += parseInt(data[i]['total']);
+                    if(data[i]['status_sdm'] == 1 || data[i]['status_sdm'] == null){
+                      var total = data[i]['total'];
+                    } else {
+                      var total = 0;
+                    }
+                    // totalnya += parseInt(data[i]['total']);
+                    totalnya += parseInt(total);
                   }
                   if (totalnya < 0) {
                     $('#totalterm3perpage').html(formatRupiah(totalnya.toString(), 'Rp. -'));

@@ -26,6 +26,10 @@ if ($this->db->get_where('user', ['noid' => $id_user])->num_rows() >= 1) {
           <div class="col-lg-12">
             <div class="form-panel">
               <h4 class="mb text-primary"><strong> <i class="fa fa-angle-right"></i> STKB Pengajuan </strong> </h4>
+							<div class="alert alert-warning" role="alert">
+								<h4 class="alert-heading">PERHATIAN</h4>
+								<p>Total Jumlah Transaksi yang melebihi maksimal transfer sebesar <b>Rp. <?= number_format($maxTransfer) ?></b> maka akan secara otomatis pembayaran dilakukan secara manual</p>
+							</div>
               <div class="flash-data" data-flashdata="<?php echo $this->session->flashdata('flash'); ?>"></div>
 
               <section id="unseen">
@@ -108,7 +112,15 @@ if ($this->db->get_where('user', ['noid' => $id_user])->num_rows() >= 1) {
                           </tr>
                         </thead>
                         <tbody>
-                          <?php 
+                          <?php $q = $this->db->query("SELECT
+                                                              a.*, b.nama namanya, c.nama namaproject
+                                                            FROM
+                                                              stkb_trk a
+                                                            JOIN stkb_sdm b ON a.nama = b.id
+                                                            JOIN project c ON a.project = c.kode
+                                                            WHERE c.type = 'n' AND a.term1 <= -1 OR a.term2 <= -1 OR a.term3 <= -1
+                                                            ORDER BY
+                                                              nostkb DESC ")->result();
                           $no = 1;
                           foreach ($q as $row) {
 
