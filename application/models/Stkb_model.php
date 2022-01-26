@@ -2383,6 +2383,7 @@ class Stkb_model extends CI_model
       e.aktif AS status_sdm,
 			a.jml_hari,
 			a.quota,
+      a.kotadinas,
       IF(a.perdin IS NULL, 0, a.perdin) AS perdin,
       IF(a.akomodasi IS NULL, 0, a.akomodasi) AS akomodasi,
       IF(a.bpjs IS NULL, 0, a.bpjs) AS bpjs,
@@ -2447,7 +2448,8 @@ class Stkb_model extends CI_model
           "rekening" => $rek['no'],
           "status_sdm" => $keyy["status_sdm"],
 					"jumlah_hari" => $keyy['jml_hari'],
-					"jumlah_cabang" => $keyy['quota']
+					"jumlah_cabang" => $keyy['quota'],
+          "kota_dinas" => $keyy['kotadinas']
         );
         $no++;
       }
@@ -2474,6 +2476,9 @@ class Stkb_model extends CI_model
       a.tgl_buat_term2 AS tanggalbuat,
       a.kode_iddata AS idpic,
       f.aktif AS status_sdm,
+      a.jml_hari,
+      a.quota,
+      a.kotadinas,
       IF(a.perdin IS NULL, 0, 0) AS perdin,
       IF(a.akomodasi IS NULL, 0, 0) AS akomodasi,
       IF(a.bpjs IS NULL, 0, 0) AS bpjs,
@@ -2590,7 +2595,10 @@ class Stkb_model extends CI_model
             "print" => '<a href="printstkb/' . $keyy['nmrstkb'] . '/0" target="_blank"><i class="fa fa-print"></i> Print</a><input type="hidden" name="perdin' . $keyy['nmrstkb'] . '" value="0"><input type="hidden" name="akomodasi' . $keyy['nmrstkb'] . '" value="0"><input type="hidden" name="bpjs' . $keyy['nmrstkb'] . '" value="0"><input type="hidden" name="jumlahops' . $keyy['nmrstkb'] . '" value="' . $keyy['jumlahops'] . '"><input type="hidden" name="jumlahtrk' . $keyy['nmrstkb'] . '" value="' . $keyy['jumlahtrk'] . '"><input type="hidden" name="total' . $keyy['nmrstkb'] . '" value="' . $keyy['total'] . '">',
             "bank" => $rek['nama'],
             "rekening" => $rek['no'],
-            "status_sdm" => $keyy['status_sdm']
+            "status_sdm" => $keyy['status_sdm'],
+          "jumlah_hari" => $keyy['jml_hari'],
+          "jumlah_cabang" => $keyy['quota'],
+          "kota_dinas" => $keyy['kotadinas']
           );
           $no++;
         }
@@ -2624,6 +2632,9 @@ class Stkb_model extends CI_model
       a.tgl_buat_term3 AS tanggalbuat,
       a.kode_iddata AS idpic,
       e.aktif AS status_sdm,
+      a.jml_hari,
+      a.quota,
+      a.kotadinas,
       c.nama AS namapic,
       a.project AS kodeproject,
       d.nama AS namaproject,
@@ -2734,7 +2745,10 @@ class Stkb_model extends CI_model
             "print" => '<a href="printstkb/' . $keyy['nmrstkb'] . '/0" target="_blank"><i class="fa fa-print"></i> Print</a><input type="hidden" name="perdin' . $keyy['nmrstkb'] . '" value="0"><input type="hidden" name="akomodasi' . $keyy['nmrstkb'] . '" value="0"><input type="hidden" name="bpjs' . $keyy['nmrstkb'] . '" value="0"><input type="hidden" name="jumlahops' . $keyy['nmrstkb'] . '" value="' . $keyy['jumlahops'] . '"><input type="hidden" name="jumlahtrk' . $keyy['nmrstkb'] . '" value="' . $keyy['jumlahtrk'] . '"><input type="hidden" name="total' . $keyy['nmrstkb'] . '" value="' . $keyy['total'] . '">',
             "bank" => $rek['nama'],
             "rekening" => $rek['no'],
-            "status_sdm" => $keyy['status_sdm']
+            "status_sdm" => $keyy['status_sdm'],
+          "jumlah_hari" => $keyy['jml_hari'],
+          "jumlah_cabang" => $keyy['quota'],
+          "kota_dinas" => $keyy['kotadinas']
           );
           $no++;
         }
@@ -2756,6 +2770,9 @@ class Stkb_model extends CI_model
       a.term AS term,
       a.tanggalbuat AS tanggalbuat,
       a.idpic AS idpic,
+      e.jml_hari,
+      e.quota,
+      e.kotadinas,
       IF(a.perdin IS NULL, 0, a.perdin) AS perdin,
       IF(a.akomodasi IS NULL, 0, a.akomodasi) AS akomodasi,
       IF(a.bpjs IS NULL, 0, a.bpjs) AS bpjs,
@@ -2771,6 +2788,7 @@ class Stkb_model extends CI_model
     $this->datatables->join('stkb_sdm c', 'a.idpic = c.id');
     $this->datatables->join('datarekening d', 'a.idpic = d.Id');
     $this->datatables->join('bank b2', 'd.CodeBank = b2.kode');
+    $this->datatables->join('stkb_ops e', 'a.nomorstkb = e.nomorstkb', 'left');
     $this->datatables->where('a.statusbayar = "RTP" AND b.type = "n"', NULL, FALSE);
 
     if ($this->session->userdata('id_divisi') == 7) {

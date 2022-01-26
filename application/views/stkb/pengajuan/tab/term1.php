@@ -30,6 +30,7 @@
           <th>Tanggal Mulai</th>
           <th>Total Hari</th>
           <th>Total Cabang</th>
+          <th>Kota Dinas</th>
           <th>Project</th>
           <th>Nama</th>
           <th>Bank</th>
@@ -135,6 +136,9 @@
 
         {
           "data": "jumlah_cabang"
+        },
+        {
+          "data": "kota_dinas"
         },
         {
           "data": "namaproject",
