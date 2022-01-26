@@ -195,11 +195,206 @@ class Project extends CI_Controller
         $data['judul'] = 'Data Konsistensi Non Skill MS B1';
         $data['project'] = $this->db->query("SELECT * FROM project WHERE visible='y' AND type='n' AND (channel != 'E-Banking' OR channel IS NULL)")->result_array();
         $data['database'] = $this->db->query("SHOW DATABASES")->result_array();
+        $data['host'] = $this->db->get('datahost')->result_array();
+        $data['query'] = $this->db->get('konsistensi_query')->result_array();
+        $data['group_query'] = $this->Project_model->getdata_kelompokquery();    
 
         $this->load->view('templates/header', $data);
         $this->load->view('templates/sidebar');
         $this->load->view('project/konsistensi', $data);
         $this->load->view('templates/footer');
+    }
+
+    public function add_listquery()
+    {
+        $add = $this->Project_model->add_listquery();
+
+        // if ($add) {
+        //     $this->session->set_flashdata('flash', 'Berhasil Tambah Data Query');
+        //     redirect('project/konsistensi');
+        // } else {
+        //     $this->session->set_flashdata('flash2', 'Gagal Tambah Data Query');
+        //     redirect('project/konsistensi');
+        // }
+         $this->session->set_flashdata('flash', 'Berhasil Tambah Data Query');
+            redirect('project/konsistensi');
+    }
+
+    public function get_listquery()
+    {
+        $data = $this->db->get('konsistensi_query')->result_array();
+        echo json_encode($data);
+    }
+
+    public function get_progressquery()
+    {
+        $data = $this->Project_model->get_progressquery();
+        echo json_encode($data);
+    }    
+
+    public function datahost()
+    {
+        $data['judul'] = 'Data Host';
+        $data['host'] = $this->db->get('datahost')->result_array();
+
+        $this->load->view('templates/header', $data);
+        $this->load->view('templates/sidebar');
+        $this->load->view('project/datahost', $data);
+        $this->load->view('templates/footer');
+    }
+
+    public function hasil_konsistensi()
+    {
+        $data['judul'] = 'Hasil Cek Konsistensi Data Non Skill';
+        $data['project'] = $this->Project_model->getprojectkonsistensi();
+
+        $this->load->view('templates/header', $data);
+        $this->load->view('templates/sidebar');
+        $this->load->view('project/hasil_konsistensi', $data);
+        $this->load->view('templates/footer');
+    }
+    
+    public function kelompokquery()
+    {
+        $data['judul'] = 'Data Kelompok Query';
+        $data['group_query'] = $this->Project_model->getdata_kelompokquery();
+        $data['query'] = $this->Project_model->getdata_query();
+
+        $this->load->view('templates/header', $data);
+        $this->load->view('templates/sidebar');
+        $this->load->view('project/kelompokquery', $data);
+        $this->load->view('templates/footer');
+    }
+
+    public function create_groupquery()
+    {
+        $simpan = $this->Project_model->create_groupquery();
+
+        // $this->session->set_flashdata('flash', 'Berhasil Buat Kelompok Query');
+        // redirect('project/kelompokquery');
+        if ($simpan['state'] == 0) {
+          // $this->session->set_flashdata('flash2', $simpan['msg']);
+            echo "<script>
+                    alert('".$simpan['msg']."');
+                    window.location.href='kelompokquery';
+                    </script>";
+        } else {
+          $this->session->set_flashdata('flash', $simpan['msg']);
+            redirect('project/kelompokquery');
+        
+        }
+    }
+
+    public function edit_groupquery()
+    {
+        $this->Project_model->edit_groupquery();
+
+        $this->session->set_flashdata('flash', 'Berhasil Edit Kelompok Query');
+        redirect('project/kelompokquery');
+    }
+
+    public function delete_groupquery($kd_group)
+    {
+        $this->db->delete('konsistensi_groupquery', ['kd_group' => $kd_group]);
+
+        $this->session->set_flashdata('flash', 'Berhasil Delete Kelompok Query');
+        redirect('project/kelompokquery');   
+    }
+
+    public function get_kelompok()
+    {
+        $data = array();
+        $data['kelompok'] = $this->Project_model->get_kelompok();
+        $data['target'] = $this->Project_model->get_targetgroup();
+
+        echo json_encode($data);
+    }
+
+    public function get_satuanquery()
+    {
+        $ktg = $_POST['ktg'];
+        $data = $this->db->get_where('konsistensi_query', ['kategori' => $ktg])->result_array();
+
+        echo json_encode($data);
+    }
+
+    public function getprogress_query()
+    {
+        $data = $this->Project_model->getprogress_query();
+
+        echo json_encode($data);
+    }
+
+    public function listquery()
+    {
+        $data['judul'] = 'Data List Query';
+        $data['query'] = $this->Project_model->getdata_query();
+
+        $this->load->view('templates/header', $data);
+        $this->load->view('templates/sidebar');
+        $this->load->view('project/listquery', $data);
+        $this->load->view('templates/footer');
+    }
+
+    public function editquery()
+    {
+        $this->Project_model->editquery();
+
+        $this->session->set_flashdata('flash', 'Berhasil Edit Data Query');
+            redirect('project/listquery');
+    }
+
+    public function deletequery($id)
+    {
+        $this->db->delete('konsistensi_query', ['num' => $id]);
+
+        $this->session->set_flashdata('flash', 'Berhasil Hapus Data Query');
+        redirect('project/listquery');
+    }
+
+    public function tambahhost()
+    {
+        $add = $this->Project_model->tambahhost();
+
+        if ($add) {
+            $this->session->set_flashdata('flash', 'Berhasil Tambah Data Host');
+            redirect('project/datahost');
+        } else {
+            $this->session->set_flashdata('flash2', 'Gagal Tambah Data Host');
+            redirect('project/datahost');
+        }
+    }
+
+    public function edithost()
+    {
+        $edit = $this->Project_model->edithost();
+
+        if ($edit) {
+            $this->session->set_flashdata('flash', 'Berhasil Edit Data Host');
+            redirect('project/datahost');
+        } else {
+            $this->session->set_flashdata('flash2', 'Gagal Edit Data Host');
+            redirect('project/datahost');
+        }
+    }
+
+    public function deletehost($id)
+    {
+        $delete = $this->Project_model->deletehost($id);
+
+        if ($delete) {
+            $this->session->set_flashdata('flash', 'Berhasil Delete Data Host');
+            redirect('project/datahost');
+        } else {
+            $this->session->set_flashdata('flash2', 'Gagal Delete Data Host');
+            redirect('project/datahost');
+        }
+    }
+
+    public function getdba()
+    {
+        $data = $this->Project_model->getdba();
+        echo json_encode($data);
     }
 
     public function download()
@@ -633,5 +828,13 @@ class Project extends CI_Controller
         // $data = $this->db->query("UPDATE quest SET kol_jenis =NULL, kol_td = NULL, kol_temuan=NULL");
 
         echo json_encode($data);
+    }
+
+    public function save_konsistensi()
+    {
+        $this->Project_model->save_konsistensi();
+
+        $this->session->set_flashdata('flash', 'Berhasil Simpan Data');
+        redirect('project/konsistensi');
     }
 }
