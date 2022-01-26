@@ -2381,6 +2381,8 @@ class Stkb_model extends CI_model
       a.tglbuat AS tanggalbuat,
       a.kode_iddata AS idpic,
       e.aktif AS status_sdm,
+			a.jml_hari,
+			a.quota,
       IF(a.perdin IS NULL, 0, a.perdin) AS perdin,
       IF(a.akomodasi IS NULL, 0, a.akomodasi) AS akomodasi,
       IF(a.bpjs IS NULL, 0, a.bpjs) AS bpjs,
@@ -2443,7 +2445,9 @@ class Stkb_model extends CI_model
           "print" => $keyy['print'],
           "bank" => $rek['nama'],
           "rekening" => $rek['no'],
-          "status_sdm" => $keyy["status_sdm"]
+          "status_sdm" => $keyy["status_sdm"],
+					"jumlah_hari" => $keyy['jml_hari'],
+					"jumlah_cabang" => $keyy['quota']
         );
         $no++;
       }
@@ -2957,10 +2961,9 @@ class Stkb_model extends CI_model
 
   public function prosesbayarstkb()
   {
-
     $db2 = $this->load->database('database_kedua', TRUE);
     $db3 = $this->load->database('database_ketiga', TRUE);
-    date_default_timezone_get('asia/bangkok');
+    // date_default_timezone_get('asia/bangkok');
     // $tahun = date(Y);
     // $bulan = date(m);
     // $carilast = $db2->query("SELECT
@@ -2981,6 +2984,13 @@ class Stkb_model extends CI_model
     $bulan = date('m');
     $novoucher = $this->input->post('novoucher');
     $jadivoucher = "KKP" . $bulan . $tahun . $novoucher;
+
+    // Nomor vouncher dari generate Callback API pembayaran MRI PAL
+    $voucherCallbackApi = $this->input->post('nomor_voucher');
+    if ($voucherCallbackApi) {
+      $novoucher = $voucherCallbackApi;
+      $jadivoucher = $this->input->post('stkb_voucher');
+    }
 
     $data = [
       'perdin' => $this->input->post('perdin'),
@@ -3131,9 +3141,9 @@ class Stkb_model extends CI_model
       } else {
         $maxttrkluar = $maxtermtrkluarjml['maxt'];
       }
-      var_dump($nmrstkbnya);
-      var_dump($maxttrkluar);
-      var_dump($noselluartrk);
+      // var_dump($nmrstkbnya);
+      // var_dump($maxttrkluar);
+      // var_dump($noselluartrk);
       // die;
 
       $db3->query("UPDATE bpu SET tglcair='$tglbayar',
@@ -3147,7 +3157,7 @@ class Stkb_model extends CI_model
     }
     // Masuk Budget Online
 
-    var_dump('here3');
+    // var_dump('here3');
     // die;
   }
 
