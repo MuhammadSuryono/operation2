@@ -567,9 +567,10 @@ class Stkb_model extends CI_model
   public function getallnama()
   {
     $db2 = $this->load->database('database_kedua', TRUE);
-    $db2->select('id,nama,kota_asal');
-    $db2->from('stkb_sdm');
-    $db2->order_by('nama', 'asc');
+    $db2->select('a.id,a.nama,a.kota_asal, b.aktif');
+    $db2->from('stkb_sdm a');
+    $db2->join('field_sdm b', 'a.id=b.id_data_id', 'left');
+    $db2->order_by('a.nama', 'asc');
     return $db2->get()->result_array();
   }
 
