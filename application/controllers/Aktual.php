@@ -175,6 +175,54 @@ class Aktual extends CI_Controller
         redirect('aktual/pending');
     }
 
+    public function historykunjungan()
+    {
+     $data['judul'] = 'Daftar History Kunjungan';
+      
+     $data['project'] = $this->Aktual_model->getproject();
+
+        $this->load->view('templates/header', $data);
+        $this->load->view('templates/sidebar');
+        $this->load->view('aktual/historykunjungan', $data);
+        $this->load->view('templates/footer');   
+    }
+
+    public function pengulangan()
+    {
+     $data['judul'] = 'Daftar Kunjungan Pengulangan';
+      
+     $data['project'] = $this->Aktual_model->getproject();
+
+        $this->load->view('templates/header', $data);
+        $this->load->view('templates/sidebar');
+        $this->load->view('aktual/pengulangan', $data);
+        $this->load->view('templates/footer');   
+    }
+
+     public function gethistory_aktual()
+      {
+        $project = $_POST['project'];
+        
+        $data = $this->Aktual_model->gethistory_aktual($project);
+        echo json_encode($data);
+      }
+
+      public function getkunjungan_pengulangan()
+      {
+        $project = $_POST['project'];
+        
+        $data = $this->Aktual_model->getkunjungan_pengulangan($project);
+        echo json_encode($data);
+      }
+
+      public function getpenolakan_validasi()
+      {
+        $project = $_POST['project'];
+        
+        $data = $this->Aktual_model->getpenolakan_validasi($project);
+        echo json_encode($data);
+      }
+
     public function index()
     {
         $data['judul'] = 'Daftar Aktual Success';
