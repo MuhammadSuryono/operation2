@@ -144,6 +144,7 @@ $db['db_mritransfer'] = array(
 	'hostname' => '192.168.8.2',
 	'username' => 'adam',
 	'password' => 'Ad@mMR1db',
+
 	'database' => 'mritransferapi',
 	'dbdriver' => 'mysqli',
 	'dbprefix' => '',

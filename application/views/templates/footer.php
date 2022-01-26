@@ -1256,6 +1256,316 @@
          });
        });
 
+        $(document).ready(function() {
+         $('#viewdata_history').click(function() {
+           var project = $('#history_project').val();
+           console.log(project);
+          
+           $("#datahistory").empty();
+           $.ajax({
+             url: "<?php echo base_url('aktual/gethistory_aktual') ?>",
+             type: "POST",
+             dataType: 'json',
+             data: {
+               project: project,
+               
+             },
+             success: function(hasil) {
+               console.log(hasil);
+               // $("#kunjungan").empty();
+               var cobaah = "";
+               cobaah += "<div class='form-group'>";
+               if (hasil.length > 0) {
+               cobaah += "<h4><b>Data History Gagal Kunjungan Untuk Project " + hasil[0]['nama_project'] + " (" + hasil[0]['project'] + ")" + "</b></h4>";
+              }
+               cobaah += "<div class='table-responsive'>";
+               cobaah += "<table class='table table-bordered table-striped table-responsive-sm' id='dataTables-example-2'>";
+               cobaah += " <thead>";
+               cobaah += "<tr bgcolor='#e3f3fc' class='py-2'> ";
+               cobaah += "<td><b><center>No</center></b></td>";
+               cobaah += "<td><b><center>Tanggal Kunjungan</center></b></td>";
+               cobaah += "<td><b><center>Kota</center></b></td>";
+               cobaah += "<td><b><center>Kode Cabang</center></b></td>";
+               cobaah += "<td><b><center>Nama Cabang</center></b></td>";
+               cobaah += "<td><b><center>Kunjungan</center></b></td>";
+               cobaah += "<td><b><center>Shopper</center></b></td>";
+               cobaah += "<td><b><center>Pewitness</center></b></td>";
+               cobaah += "<td><b><center>STKB</center></b></td>";
+               cobaah += "<td><b><center>Keterangan</center></b></td>";
+
+               cobaah += "</tr>";
+               cobaah += "</thead>";
+               cobaah += "<tbody>";
+
+               for (var i = 0; i < hasil.length; i++) {
+
+                cobaah += "<tr>";
+                cobaah += "<td><center>"+(i+1)+"</center></td>";
+                cobaah += "<td>"+hasil[i]['tanggal']+"</td>";          
+                cobaah += "<td>"+hasil[i]['kota']+"</td>";          
+                cobaah += "<td>"+hasil[i]['cabang']+"</td>";          
+                cobaah += "<td>"+hasil[i]['namacabang']+"</td>"; 
+                cobaah += "<td>"+hasil[i]['nama_kunjungan']+" ("+hasil[i]['kunjungan']+")</td>";                   
+                cobaah += "<td>"+hasil[i]['shp']+" - "+hasil[i]['nama_shp']+"</td>";
+                if(hasil[i]['pwt'] != null) {          
+                cobaah += "<td>"+hasil[i]['pwt']+" - "+hasil[i]['nama_pwt']+"</td>";
+                } else {
+                cobaah += "<td><center>-</center></td>";
+                }          
+                cobaah += "<td>"+hasil[i]['idstkb']+"</td>";          
+                cobaah += "<td>"+hasil[i]['keterangan']+"</td>";          
+                cobaah += "</tr>";
+               }
+               cobaah += "</tbody>";
+               cobaah += "</table>";
+               cobaah += "</div>";
+               // cobaah += "<input type='submit' class='btn btn-primary' value='Simpan'";
+               cobaah += "</div>";
+               
+              $("#datahistory").append(cobaah);
+
+              if (document.getElementById('dataTables-example-2')) {
+
+               $('#dataTables-example-2').DataTable({
+                 "responsive": true,
+                 "searching": true,
+                 "ordering": true,
+                 "info": true,
+                 "scrollY": "",
+                 "scrollCollapse": true,
+                 "paging": true,
+                 "lengthMenu": [
+                   [10, 50, 100, -1],
+                   [10, 50, 100, "All"]
+                 ]
+               });
+             }
+             
+             }
+           });
+         });
+       });
+
+
+
+        $(document).ready(function() {
+         $('#viewdata_penolakan').click(function() {
+           var project = $('#penolakan_project').val();
+           console.log(project);
+          
+           $("#datapenolakan").empty();
+           $.ajax({
+             url: "<?php echo base_url('aktual/getpenolakan_validasi') ?>",
+             type: "POST",
+             dataType: 'json',
+             data: {
+               project: project,
+               
+             },
+             success: function(hasil) {
+               console.log(hasil);
+               // $("#kunjungan").empty();
+               var cobaah = "";
+               cobaah += "<div class='form-group'>";
+               if (hasil.length > 0) {
+               cobaah += "<h4><b>Data History Penolakan Data Untuk Project " + hasil[0]['nama_project'] + " (" + hasil[0]['project'] + ")" + "</b></h4>";
+              }
+               cobaah += "<div class='table-responsive'>";
+               cobaah += "<table class='table table-bordered table-striped table-responsive-sm' id='dataTables-example-3'>";
+               cobaah += " <thead>";
+               cobaah += "<tr bgcolor='#e3f3fc' class='py-2'> ";
+               cobaah += "<td rowspan='2'><b><center>No</center></b></td>";
+               cobaah += "<td rowspan='2'><b><center>Project</center></b></td>";
+               cobaah += "<td rowspan='2'><b><center>Tanggal Kunjungan</center></b></td>";
+               cobaah += "<td rowspan='2'><b><center>Kota</center></b></td>";
+               cobaah += "<td rowspan='2'><b><center>Kode Cabang</center></b></td>";
+               cobaah += "<td rowspan='2'><b><center>Nama Cabang</center></b></td>";
+               cobaah += "<td rowspan='2'><b><center>Kunjungan</center></b></td>";
+               cobaah += "<td rowspan='2'><b><center>Shopper</center></b></td>";
+               cobaah += "<td rowspan='2'><b><center>Pewitness</center></b></td>";
+               cobaah += "<td colspan='5'><b><center>Riwayat Penolakan</center></b></td>";
+               cobaah += "</tr>";
+               cobaah += "<tr bgcolor='#e3f3fc' class='py-2'>";
+               cobaah += "<td><b><center>Dialog</center></b></td>";
+               cobaah += "<td><b><center>Rekaman</center></b></td>";
+               cobaah += "<td><b><center>Layout</center></b></td>";
+               // cobaah += "<td><b><center>Equest</center></b></td>";
+               cobaah += "<td><b><center>Slip Transaksi</center></b></td>";
+               cobaah += "</tr>";
+
+               cobaah += "</thead>";
+               cobaah += "<tbody>";
+
+               for (var i = 0; i < hasil.length; i++) {
+                if(hasil[i]['r_temuan_dialog'] == null) {var t_dialog = '<center>-</center>'} else { var t_dialog = hasil[i]['r_temuan_dialog']}
+                if(hasil[i]['r_temuan_layout'] == null) {var t_layout = '<center>-</center>'} else { var t_layout = hasil[i]['r_temuan_layout']}
+                if(hasil[i]['r_temuan_slip_transaksi'] == null) {var t_slip = '<center>-</center>'} else { var t_slip = hasil[i]['r_temuan_slip_transaksi']}
+                if(hasil[i]['r_temuan_rekaman'] == null) {var t_rekaman = '<center>-</center>'} else { var t_rekaman = hasil[i]['r_temuan_rekaman']}
+                if(hasil[i]['r_temuan_ss'] == null) {var t_ss = '<center>-</center>'} else { var t_ss = hasil[i]['r_temuan_ss']}
+
+
+                cobaah += "<tr>";
+                cobaah += "<td><center>"+(i+1)+"</center></td>";
+                cobaah += "<td>"+hasil[i]['project']+"</td>";          
+                cobaah += "<td>"+hasil[i]['tanggal']+"</td>";          
+                cobaah += "<td>"+hasil[i]['kota']+"</td>";          
+                cobaah += "<td>"+hasil[i]['cabang']+"</td>";          
+                cobaah += "<td>"+hasil[i]['namacabang']+"</td>"; 
+                cobaah += "<td>"+hasil[i]['nama_kunjungan']+" ("+hasil[i]['kunjungan']+")</td>";                   
+                cobaah += "<td>"+hasil[i]['shp']+" - "+hasil[i]['nama_shp']+"</td>";
+                if(hasil[i]['pwt'] != null && hasil[i]['pwt'] != '') {          
+                cobaah += "<td>"+hasil[i]['pwt']+" - "+hasil[i]['nama_pwt']+"</td>";
+                } else {
+                cobaah += "<td><center>-</center></td>";
+                }
+                cobaah += "<td style='background-color: #FAFAD2;'>"+t_dialog+"</td>";
+                cobaah += "<td style='background-color: #FAFAD2;'>"+t_rekaman+"</td>";          
+                cobaah += "<td style='background-color: #FAFAD2;'>"+t_layout+"</td>";
+                // cobaah += "<td style='background-color: #FAFAD2;'>"+t_ss+"</td>";                    
+                cobaah += "<td style='background-color: #FAFAD2;'>"+t_slip+"</td>";          
+
+                cobaah += "</tr>";
+               }
+               cobaah += "</tbody>";
+               cobaah += "</table>";
+               cobaah += "</div>";
+               // cobaah += "<input type='submit' class='btn btn-primary' value='Simpan'";
+               cobaah += "</div>";
+               
+              $("#datapenolakan").append(cobaah);
+
+              if (document.getElementById('dataTables-example-3')) {
+
+               $('#dataTables-example-3').DataTable({
+                 "responsive": true,
+                 "searching": true,
+                 "ordering": true,
+                 "info": true,
+                 "scrollY": "",
+                 "scrollCollapse": true,
+                 "paging": true,
+                 "lengthMenu": [
+                   [10, 50, 100, -1],
+                   [10, 50, 100, "All"]
+                 ]
+               });
+             }
+             
+             }
+           });
+         });
+       });
+
+
+        $(document).ready(function() {
+         $('#viewdata_pengulangan').click(function() {
+           var project = $('#pengulangan_project').val();
+           console.log(project);
+          
+           $("#datapengulangan").empty();
+           $.ajax({
+             url: "<?php echo base_url('aktual/getkunjungan_pengulangan') ?>",
+             type: "POST",
+             dataType: 'json',
+             data: {
+               project: project,
+               
+             },
+             success: function(hasil) {
+               console.log(hasil);
+               // $("#kunjungan").empty();
+               var cobaah = "";
+               cobaah += "<div class='form-group'>";
+              if (hasil.length > 0) {
+               cobaah += "<h4><b>Data Kunjungan Diulang Untuk Project " + hasil[0]['nama_project'] + " (" + hasil[0]['project'] + ")" + "</b></h4>";
+              }
+               cobaah += "<div class='table-responsive'>";
+               cobaah += "<table class='table table-bordered table-striped table-responsive-sm' id='dataTables-example'>";
+               cobaah += " <thead>";
+               cobaah += "<tr bgcolor='#e3f3fc' class='py-2'> ";
+               cobaah += "<td><b><center>No</center></b></td>";
+               cobaah += "<td><b><center>Tanggal Kunjungan</center></b></td>";
+               cobaah += "<td><b><center>Kota</center></b></td>";
+               cobaah += "<td><b><center>Kode Cabang</center></b></td>";
+               cobaah += "<td><b><center>Nama Cabang</center></b></td>";
+               cobaah += "<td><b><center>Kunjungan</center></b></td>";
+               cobaah += "<td><b><center>Status</center></b></td>";
+               cobaah += "<td><b><center>Shopper</center></b></td>";
+               cobaah += "<td><b><center>Pewitness</center></b></td>";
+               cobaah += "<td><b><center>Kesalahan</center></b></td>";
+               cobaah += "<td><b><center>Keterangan</center></b></td>";
+
+               cobaah += "</tr>";
+               cobaah += "</thead>";
+               cobaah += "<tbody>";
+
+               for (var i = 0; i < hasil.length; i++) {
+
+                cobaah += "<tr>";
+                cobaah += "<td><center>"+(i+1)+"</center></td>";
+                cobaah += "<td>"+hasil[i]['tanggal']+"</td>";          
+                cobaah += "<td>"+hasil[i]['kota']+"</td>";          
+                cobaah += "<td>"+hasil[i]['cabang']+"</td>";          
+                cobaah += "<td>"+hasil[i]['namacabang']+"</td>"; 
+                cobaah += "<td>"+hasil[i]['nama_kunjungan']+" ("+hasil[i]['kunjungan']+")</td>";
+                if (hasil[i]['status'] == '1') {
+                    cobaah += "<td style='background-color: #ffff06;'><center>"+hasil[i]['status']+"</center></td>";                             
+                  } else if (hasil[i]['status'] == '2') {
+                    cobaah += "<td style='background-color: #99FF99;'><center>"+hasil[i]['status']+"</center></td>";                             
+                  } else if (hasil[i]['status'] == '3') {
+                    cobaah += "<td style='background-color: #9ACA4A;'><center>"+hasil[i]['status']+"</center></td>";                             
+                  } else {
+                    cobaah += "<td><center>"+hasil[i]['status']+"</center></td>";                             
+                  }
+                cobaah += "<td>"+hasil[i]['shp']+" - "+hasil[i]['nama_shp']+"</td>";
+                if(hasil[i]['pwt'] != null && hasil[i]['pwt'] != '') {          
+                cobaah += "<td>"+hasil[i]['pwt']+" - "+hasil[i]['nama_pwt']+"</td>";
+                } else {
+                cobaah += "<td><center>-</center></td>";
+                }
+                
+                if(hasil[i]['r_kesalahan'] == '1'){
+                cobaah += "<td>Salah Pewitness</td>";          
+                } else if(hasil[i]['r_kesalahan'] == '2'){
+                cobaah += "<td>Bukan Salah Pewitness</td>";          
+                } else {
+                cobaah += "<td><center> - </center></td>"
+                }
+
+                cobaah += "<td>"+hasil[i]['r_keterangan_ra']+"</td>";
+
+                cobaah += "</tr>";
+               }
+               cobaah += "</tbody>";
+               cobaah += "</table>";
+               cobaah += "</div>";
+               // cobaah += "<input type='submit' class='btn btn-primary' value='Simpan'";
+               cobaah += "</div>";
+               
+              $("#datapengulangan").append(cobaah);
+
+              if (document.getElementById('dataTables-example')) {
+
+               $('#dataTables-example').DataTable({
+                 "responsive": true,
+                 "searching": true,
+                 "ordering": true,
+                 "info": true,
+                 "scrollY": "",
+                 "scrollCollapse": true,
+                 "paging": true,
+                 "lengthMenu": [
+                   [10, 50, 100, -1],
+                   [10, 50, 100, "All"]
+                 ]
+               });
+             }
+             
+             }
+           });
+         });
+       });
+
 
         $(document).ready(function() {
          $('#konsistensi_project').change(function() {
@@ -1288,6 +1598,7 @@
       $(document).ready(function() {
          $('#viewdata_konsistensi').click(function() {
            var project = $('#konsistensi_project').val();
+           var kategori = $('#konsistensi_kategori').val();
            var variable = $('#konsistensi_variable').val();
            var status = $('#konsistensi_status').val();
 
@@ -1304,6 +1615,7 @@
              dataType: 'json',
              data: {
                pro: project,
+               kategori: kategori,
                variable: variable,
                status: status
              },
@@ -1379,6 +1691,169 @@
                  "scrollCollapse": true,
                  "paging": false
                });
+             }
+             
+             }
+           });
+         });
+       });
+
+   $(document).ready(function() {
+         $('#hasil_project').change(function() {
+           var id = $(this).val();
+           console.log(id);
+           $("#hasil_variable").empty();
+           $.ajax({
+             url: "<?php echo base_url('validasi/getvariable_konsistensi') ?>",
+             type: "POST",
+             dataType: 'json',
+             data: {
+               pro: id
+             },
+             success: function(hasil) {
+               console.log(hasil);
+               // $("#kunjungan").empty();
+               var cetak = "<option value=''>Pilih Variable</option>";
+               for (var i = 0; i < hasil.length; i++) {
+                 cetak += "<option value='" + hasil[i]['variable'] + "'>" + hasil[i]['variable'] + "</option>";
+               }
+              $("#hasil_variable").append(cetak);
+              $('#hasil_variable').selectpicker('refresh');
+
+             }
+           });
+         });
+       });
+
+
+         $(document).ready(function() {
+         $('#viewhasil_konsistensi').click(function() {
+           var project = $('#hasil_project').val();
+           var kategori = $('#hasil_kategori').val();
+           var variable = $('#hasil_variable').val();
+           var status = $('#hasil_status').val();
+
+           console.log(project);
+           console.log(variable);
+           console.log(status);
+
+         // document.getElementById('tampilan_div').style.display = 'none';
+
+           $("#div_hasilkonsistensi").empty();
+           $.ajax({
+             url: "<?php echo base_url('validasi/getcek_konsistensi') ?>",
+             type: "POST",
+             dataType: 'json',
+             data: {
+               pro: project,
+               kategori: kategori,
+               variable: variable,
+               status: status
+             },
+             success: function(hasil) {
+               console.log(hasil);
+              var sudah = 0;
+              var belum = 0;
+              for (var i = 0; i < hasil.length; i++) {
+                if (hasil[i]['verifikasi'] == null) { var verifikasi='';} else { var verifikasi=hasil[i]['verifikasi'];}
+                if (hasil[i]['final_code'] == null) { var final='';} else { var final=hasil[i]['final_code'];}
+
+                if (verifikasi == '' && final == '') { 
+                  belum = belum + 1;
+                } else {
+                  sudah = sudah + 1;
+                }
+              }
+               // $("#kunjungan").empty();
+               var cobaah = "";
+               cobaah += "<div class='form-group'>";
+               cobaah += "<div class='text-right fixme' style='padding-top: 20px; padding-bottom: 20px; padding-right: 20px; background-color: #e3f3fc; z-index:100; position: -webkit-sticky; position: sticky; top: 50px;'><h5><b>Sudah Cek Validasi : "+sudah+"</b></h5><h5><b>Belum Cek Validasi : "+belum+"</b></h5></div>";
+               cobaah += "<div class='table-responsive'>";
+               cobaah += "<table class='table table-bordered table-striped table-responsive-sm' id='dataTables-example'>";
+               cobaah += " <thead >";
+               cobaah += "<tr bgcolor='#e3f3fc' class='py-2'> ";
+               cobaah += "<td><b>No</b></td>";
+               cobaah += "<td><b>Project</b></td>";
+               cobaah += "<td><b>Serial</b></td>";
+               cobaah += "<td><b>Code Kunjungan</b></td>";
+               cobaah += "<td><b>Cabang</b></td>";
+               cobaah += "<td><b>Nama Cabang</b></td>";
+               cobaah += "<td><b>Variable</b></td>";
+               cobaah += "<td><b>Kode</b></td>";
+               cobaah += "<td><b>Check</b></td>";
+
+               cobaah += "<td><b>Verifikasi</b></td>";
+               cobaah += "<td><b>Final Code</b></td>";
+               cobaah += "<td><b>Status</b></td>";
+
+
+               cobaah += "</tr>";
+               cobaah += "</thead>";
+               cobaah += "<tbody>";
+
+               for (var i = 0; i < hasil.length; i++) {
+                
+                if (hasil[i]['verifikasi'] == null) { var verifikasi='';} else { var verifikasi=hasil[i]['verifikasi'];}
+                if (hasil[i]['final_code'] == null) { var final='';} else { var final=hasil[i]['final_code'];}
+
+                if (verifikasi == '' && final == '') { var status='Belum Cek Validasi';} else {var status = 'Sudah Cek Validasi';}
+
+                cobaah += "<input type='text' name='id[]' value='"+hasil[i]['id']+"' style='display: none;'>";
+
+                cobaah += "<tr>";
+                cobaah += "<td>"+ (i+1) +"</td>";
+                cobaah += "<td>"+ hasil[i]['project_name'] +"</td>";
+                cobaah += "<td>"+ hasil[i]['serial'] +"</td>";
+                cobaah += "<td>"+ hasil[i]['code'] +"</td>";
+                cobaah += "<td>"+ hasil[i]['cabang'] +"</td>";
+                cobaah += "<td>"+ hasil[i]['z3'] +"</td>";
+                cobaah += "<td>"+ hasil[i]['variable'] +"</td>";
+                cobaah += "<td>"+ hasil[i]['kode'] +"</td>";
+                cobaah += "<td>"+ hasil[i]['check'] +"</td>";
+                cobaah += "<td>"+verifikasi+"</td>";
+                cobaah += "<td>"+final+"</td>";
+                cobaah += "<td>"+status+"</td>"
+                cobaah += "</tr>";
+               }
+               cobaah += "</tbody>";
+               cobaah += "</table>";
+               cobaah += "</div>";
+               
+               cobaah += "</div>";
+               
+              $("#div_hasilkonsistensi").append(cobaah);
+
+              if (document.getElementById('dataTables-example')) {
+
+               $('#dataTables-example').DataTable({
+                 "responsive": true,
+                 "searching": true,
+                 "ordering": true,
+                 "info": true,
+                 "scrollY": "",
+                 "scrollCollapse": true,
+                 "paging": true,
+
+                 dom: 'Blfrtip',
+                 lengthMenu: [
+                   [10, 25, 50, 100, -1],
+                   [10, 25, 50, 100, "All"]
+                 ],
+                 buttons: [{
+                   extend: 'excel',
+                   text: 'Export to Excel',
+
+                   title: 'Hasil Cek Konsistensi Non Skill MS B1 Project ' + project,
+                   filename: function() {
+                     var d = new Date();
+                     const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+                     var n = d.getDate() + " " + months[d.getMonth()] + " " + d.getFullYear();
+                     return 'Data Konsistensi Non Skill MS B1 Project '+ project + " " + n;
+                   },
+                 }],
+               });
+               var table_hasil = $('#dataTables-example').DataTable();
+               table_hasil.button(0).nodes().css('background-color', '#5F9EA0').css('color', 'white').addClass('btn');
              }
              
              }
@@ -6849,7 +7324,11 @@
                $("#namafo").empty();
                var cetak = "<option value=''>Pilih Nama</option>";
                for (var i = 0; i < hasil.length; i++) {
-                 cetak += "<option value='" + hasil[i]['id'] + "'>" + hasil[i]['nama'] + " - " + hasil[i]['id'] + " - " + hasil[i]['kota_asal'] + "</option>";
+                if(hasil[i]['aktif'] == 0) {
+                 cetak += "<option value='" + hasil[i]['id'] + "' disabled='disabled' title='Field Officer Telah Di Blacklist'>" + hasil[i]['nama'] + " - " + hasil[i]['id'] + " - " + hasil[i]['kota_asal'] + "</option>";
+                } else {
+                  cetak += "<option value='" + hasil[i]['id'] + "' >" + hasil[i]['nama'] + " - " + hasil[i]['id'] + " - " + hasil[i]['kota_asal'] + "</option>";
+                }
                }
                $("#namafo").append(cetak);
                $('#namafo').selectpicker('refresh');
@@ -8552,6 +9031,12 @@
          var kotdari = $(this).val();
          var kotdinas = document.getElementById("kotadinas").value;
 
+         // var kotdinas = $(this).val();
+         // var kotdari = document.getElementById("kotadari").value;
+         console.log(this[this.selectedIndex].id);
+
+         var lanjutan = this[this.selectedIndex].id;
+
 
          var jakartalist = ["JAKARTA", "JAKARTA TIMUR", "JAKARTA SELATAN", "JAKARTA BARAT", "JAKARTA UTARA", "JAKARTA PUSAT", "TANGERANG", "TANGERANG SELATAN", "BEKASI", "BOGOR", "DEPOK", "SUKABUMI", "SERANG", "CILEGON", "CIBUBUR", "CIBINONG", "CIPUTAT", "KARAWANG", "JABODETABEK"];
 
@@ -8561,7 +9046,7 @@
 
            if (cekdari >= 0 && cekdinas >= 0) {
              document.getElementById("penugasan").value = "Setempat";
-           } else if (kotdari == kotdinas) {
+           } else if (kotdari == kotdinas && lanjutan == 'dari_kotadari') {
              document.getElementById("penugasan").value = "Setempat";
            } else {
              document.getElementById("penugasan").value = "Dinas";
@@ -8675,9 +9160,21 @@
              //   $('#kotadari').selectpicker('refresh');
 
              // } else {
-             $('select[name=kotadari]').val(hasil['kota_asal'].toUpperCase());
-             $('#kotadari').selectpicker('refresh');
-             $('#kotadari').attr('disabled', true);
+
+            if (hasil['kota_dinas'] == null) {
+                $('select[name=kotadari]').val(hasil['kota_asal'].toUpperCase());
+                $('#kotadari').selectpicker('refresh');
+                $('#kotadari').attr('disabled', true);
+              } else {
+                $('select[name=kotadari]').empty();
+
+                var kotanya = `<option value="`+ hasil['kota_asal'].toUpperCase() +`" id="dari_kotadari" selected> `+ hasil['kota_asal'].toUpperCase() +`</option>
+                              <option value="`+ hasil['kota_dinas'].toUpperCase() +`" id="dari_kotadinas"> `+ hasil['kota_dinas'].toUpperCase() +`</option>`;
+                $('select[name=kotadari]').append(kotanya);
+                $('#kotadari').selectpicker('refresh');
+                $('#kotadari').attr('disabled', false);
+              }
+             
              // }
 
              var dinas = $('#kotated_2021').val();
@@ -9011,19 +9508,24 @@
        });
        // TAMBAHAN ADAM SANTOSO
        $('#formmasterplan').submit(function() {
-         var cek = masterplancekperdin();
-         if (cek > 0 || $('#penugasan').val() != 'Dinas') {
-           return true;
-         } else {
-           Swal({
-             position: 'top',
-             type: 'warning',
-             title: 'Matrix Perdin belum ada!',
-             showConfirmButton: false,
-             timer: 2000
-           });
-           return false;
-         }
+        var kotdari = $("#kotadari").val();
+        var kotdinas = $("#kotadinas").val();
+
+        if(kotdari != kotdinas) {
+           var cek = masterplancekperdin();
+           if (cek > 0 || $('#penugasan').val() != 'Dinas') {
+             return true;
+           } else {
+             Swal({
+               position: 'top',
+               type: 'warning',
+               title: 'Matrix Perdin belum ada!',
+               showConfirmButton: false,
+               timer: 2000
+             });
+             return false;
+           }
+        }
        });
 
        //  $('#formmasterplan_2021').submit(function() {
