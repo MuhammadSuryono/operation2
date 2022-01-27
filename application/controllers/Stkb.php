@@ -667,7 +667,7 @@ class Stkb extends Whatsapp
     $cek = $this->db->get_where('stkb_lskontrak', array('kota' => $jenkot, 'jabatan' => $jabatan, 'penempatan' => $penempatan))->num_rows();
 
     if ($cek == 0) {
-      $this->Stkb_model->tambah_lskontrak();
+      $this->Stkb_model->tambah_lskontrak($jenkot);
 
       $this->session->set_flashdata('flash', 'Tambah Data LS Kontrak Berhasil');
       redirect("stkb/lskontrak");

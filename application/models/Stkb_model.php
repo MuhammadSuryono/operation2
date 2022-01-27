@@ -3402,7 +3402,7 @@ class Stkb_model extends CI_model
                                                               nostkb DESC ")->result();
   }
 
-  public function tambah_lskontrak()
+  public function tambah_lskontrak($jenkot)
   {
     $data = [
         'kota' => $jenkot,
