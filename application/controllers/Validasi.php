@@ -1343,4 +1343,44 @@ public function tolakrekaman(){
         redirect('validasi/lihatvalidasi/'.$db['num']);
     }
 
+    public function cek_konsistensi()
+    {
+        $data['judul'] = 'Cek Konsistensi Data Non Skill';
+        $data['project'] = $this->Validasi_model->getprojectkonsistensi();
+
+        $this->load->view('templates/header', $data);
+        $this->load->view('templates/sidebar');
+        $this->load->view('validasi/cek_konsistensi', $data);
+        $this->load->view('templates/footer');
+    }
+
+    public function getvariable_konsistensi()
+    {
+        $pro = $_POST['pro'];
+        $data = $this->Validasi_model->getvariable_konsistensi($pro);
+
+        echo json_encode($data);
+    }
+
+    public function getcek_konsistensi()
+    {
+        $pro = $_POST['pro'];
+        $kategori = $_POST['kategori'];
+        $variable = $_POST['variable'];
+        $status = $_POST['status'];
+
+        $data = $this->Validasi_model->getcek_konsistensi($pro, $kategori, $variable, $status);
+
+        echo json_encode($data);
+    }
+
+    public function verifikasi_konsistensi()
+    {
+        $this->Validasi_model->verifikasi_konsistensi();
+
+        $this->session->set_flashdata('flash', 'Berhasil Simpan Data!');
+        redirect("validasi/cek_konsistensi");
+
+    }
+
 }
