@@ -113,9 +113,12 @@ if ($this->db->get_where('user', ['noid' => $id_user])->num_rows() >= 1) {
 
                                 <th>Waktu Pengiriman Pesan</th>
                                 <th>Waktu Pesan Dibalas Oleh Staff</th>
+                                <th>Respon Agent</th>
                                 <th>Aktual Time Delivery</th>
                                 <th>Time Delivery</th>
                                 <th>Respon Otomatis</th>
+                                <th>Verbatim Automated Response</th>
+
                                 <th>Last Update</th>
 
                                 <?php if($id_divisi == 1 OR $id_divisi == 99) { ?>
@@ -184,9 +187,11 @@ if ($this->db->get_where('user', ['noid' => $id_user])->num_rows() >= 1) {
 
                                    <td><?= $db['waktu_kirim']; ?></td>
                                    <td><?= $db['waktu_balas']; ?></td>
+                                   <td><?= $db['respon_agent']; ?></td>
                                    <td><?= $db['aktual_td']; ?></td>
                                    <td><?= $db['total_td']; ?></td>
                                    <td><?= $db['respon_otomatis']; ?></td>
+                                   <td><?= $db['verbatim_respon']; ?></td>
                                    <td><?php if($db['tgl_update'] != NULL){echo $db['tgl_update'];} else {echo "<center>-</center>";} ?></td>
                                   <?php if($id_divisi == 1 OR $id_divisi == 99) { ?>
                                     <td><a href="<?= base_url('aktual/edit_sosmedRA/'.$db['num']) ?>" target="_blank" class="btn btn-warning btn-xs btn-round">Edit</a></td>
