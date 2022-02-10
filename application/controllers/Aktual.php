@@ -1809,6 +1809,13 @@ class Aktual extends CI_Controller
         $num = $this->input->post('num');
         $datenow = date('Y-m-d');
 
+        $gr = $this->db->get_where('sosmed', ['num' => $num])->row_array();
+
+        $project = $gr['project'];
+        $bank = $gr['bank'];
+        $platform = $gr['platform'];
+        $skenario = $gr['skenario'];
+        
         // $project = $this->input->post('project_2');
         // $bank = $this->input->post('bank_2');
         // $platform = $this->input->post('platform_2');
