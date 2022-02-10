@@ -1843,14 +1843,17 @@ class Aktual extends CI_Controller
         $greet_akhir_after = serialize($this->input->post('greeting_akhir_after'));
 
 
-        $image_name = serialize($_FILES['bukti_transaksi']['name']);
+        $img = [];
         
-
         foreach($_FILES["bukti_transaksi"]["tmp_name"] as $key=>$tmp_name) {
-            $format_name = $_FILES['bukti_transaksi']['name'][$key];
-            $format_tmp = $_FILES['bukti_transaksi']['tmp_name'][$key];
+            $extension_format  = pathinfo($_FILES['bukti_transaksi']['name'][$key], PATHINFO_EXTENSION);
+            $format_name = "BuktiEval_".$project."_".$bank."_".$platform."_".$skenario."_".$num."_" . time()."_".$key. "." . $extension_format;
+             $format_tmp = $_FILES['bukti_transaksi']['tmp_name'][$key];
             move_uploaded_file($format_tmp, "assets/file/buktitrk/" . $format_name);
+
+            $img[] = $format_name;
         }
+        $image_name = serialize($img);
 
         $data = [
                 // 'user_input' => $id_user,
