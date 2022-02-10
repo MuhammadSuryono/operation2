@@ -1815,12 +1815,8 @@ class Aktual extends CI_Controller
         $bank = $gr['bank'];
         $platform = $gr['platform'];
         $skenario = $gr['skenario'];
-<<<<<<< HEAD
 
 
-=======
-        
->>>>>>> cc88d5c859bc51349a829db370ead0bea63dfa46
         // $project = $this->input->post('project_2');
         // $bank = $this->input->post('bank_2');
         // $platform = $this->input->post('platform_2');
