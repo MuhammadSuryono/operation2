@@ -602,7 +602,7 @@ class Aktual_model extends CI_model
                 OR (a.weekday_siang = p.kunjungan AND a.shp_weekday_siang = '$user' AND a.status_weekday_siang = 0)
                 OR (a.weekday_malam = p.kunjungan AND a.shp_weekday_malam = '$user' AND a.status_weekday_malam = 0))")->result_array();
         }else{
-          $data = $this->db->query("SELECT a.*, b.nama as skenario FROM `quest`a join attribute b on a.kunjungan = b.kode WHERE r_kategori = $id and project = '$project' and shp = '$user' and cabang = '$cabang' and status = 0")->result_array();
+          $data = $this->db->query("SELECT a.*, b.nama as skenario FROM `quest`a join attribute b on a.kunjungan = b.kode WHERE r_kategori = '$id' and project = '$project' and shp = '$user' and cabang = '$cabang' and status = 0")->result_array();
         }
         return $data;
     }
@@ -664,6 +664,80 @@ class Aktual_model extends CI_model
 
         }
         // die;
+    }
+
+    public function gethistory_aktual($project)
+    {
+        $this->db->select('a.*, b.nama as namacabang, b.kota, c.nama as nama_shp, d.nama as nama_pwt, e.nama as nama_kunjungan, f.nama AS nama_project');
+        $this->db->from('quest_hapus_history a');
+        $this->db->join('cabang b', 'a.project=b.project AND a.cabang=b.kode', 'left');
+        $this->db->join('id_data c', 'a.shp=c.Id', 'left');
+        $this->db->join('id_data d', 'a.pwt=d.Id', 'left');
+        $this->db->join('attribute e', 'a.kunjungan=e.kode', 'left');
+        $this->db->join('project f', 'a.project=f.kode', 'left');
+
+        $this->db->where('a.project', $project);
+
+        return $this->db->get()->result_array();
+    }
+
+    public function getkunjungan_pengulangan($project)
+    {
+        $this->db->select('a.*, b.nama as namacabang, b.kota, c.nama as nama_shp, d.nama as nama_pwt, e.nama as nama_kunjungan, f.nama AS nama_project');
+        $this->db->from('quest_ulang a');
+        $this->db->join('cabang b', 'a.project=b.project AND a.cabang=b.kode', 'left');
+        $this->db->join('id_data c', 'a.shp=c.Id', 'left');
+        $this->db->join('id_data d', 'a.pwt=d.Id', 'left');
+        $this->db->join('attribute e', 'a.kunjungan=e.kode', 'left');
+        $this->db->join('project f', 'a.project=f.kode', 'left');
+
+        $this->db->where('a.project', $project);
+
+        return $this->db->get()->result_array();
+    }
+
+    public function getpenolakan_validasi($project)
+    {
+        $where  = "(`z`.`r_temuan_dialog` != '' OR ";
+        $where  .= "`z`.`r_temuan_layout` != '' OR ";
+        $where  .= "`a`.`r_temuan_rekaman` != '' OR ";
+        $where  .= "`z`.`r_temuan_ss` != '' OR ";
+        $where  .= "`z`.`r_temuan_slip_transaksi` != '') AND ";
+        $where  .= "`a`.`project` = '".$project."'";
+
+
+        $this->db->select('a.*, b.nama as namacabang, b.kota, c.nama as nama_shp, d.nama as nama_pwt, e.nama as nama_kunjungan, f.nama AS nama_project, z.r_temuan_dialog, z.r_temuan_layout, z.r_temuan_ss, z.r_temuan_slip_transaksi');
+        $this->db->from('quest a');
+        $this->db->join('summary_2 z', 'a.project=z.project_kode AND a.cabang=z.cabang_kode AND a.kunjungan=z.sub_kunjungan_kode AND a.shp=z.shp_id', 'left');
+        $this->db->join('cabang b', 'a.project=b.project AND a.cabang=b.kode', 'left');
+        $this->db->join('id_data c', 'a.shp=c.Id', 'left');
+        $this->db->join('id_data d', 'a.pwt=d.Id', 'left');
+        $this->db->join('attribute e', 'a.kunjungan=e.kode', 'left');
+        $this->db->join('project f', 'a.project=f.kode', 'left');
+        $this->db->where($where);
+        // $this->db->or_where('z.r_temuan_layout !=', '');
+        // $this->db->or_where('a.r_temuan_rekaman !=', '');
+        // $this->db->or_where('z.r_temuan_ss !=', '');
+        // $this->db->or_where('z.r_temuan_slip_tansaksi !=', '');
+        // $this->db->where('a.project', $project);
+
+
+        return $this->db->get()->result_array();
+    }
+
+    public function getproject()
+    {
+     return $this->db->query("SELECT
+                                    a.kode AS kode_project,
+                                    a.nama AS nama_project
+                                FROM
+                                    project a
+                                WHERE
+                                    a.visible = 'y'
+                                    AND a.type = 'n'
+                                    AND channel NOT IN ('E-Banking', 'ATM Center')
+                                GROUP BY
+                                    a.kode")->result_array();   
     }
 
     public function getproject_user($id_user)

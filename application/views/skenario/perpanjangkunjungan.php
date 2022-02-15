@@ -18,6 +18,7 @@
                       <th>No</th>
                       <th>Kode Project</th>
                       <th>Nama Project</th>
+                      <th>STKB</th>
                       <th>Plan Start</th>
                       <th>Plan End</th>
                       <th>Kode Cabang</th>
@@ -33,6 +34,7 @@
                       <td><?= $no;?></td>
                       <td><?= $value['kodeproject'];?></td>
                       <td><?= $value['projectnama'];?></td>
+                      <td><?= $value['nomorstkb'];?></td>
                       <td><?= $value['planstart'];?></td>
                       <td><span id="textplanend<?= $value['no'];?>"><?= $value['planend'];?></span></td>
                       <td><?= $value['kodecabang'];?></td>

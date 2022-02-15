@@ -639,4 +639,56 @@ class Validasi_model extends CI_model
             $this->db->query("UPDATE quest SET rekaman = 'true' where project='$pro' and cabang='$cabang' and kunjungan='$sek' and r_kategori='$kun' and shp = '$user'");
 
     }
+
+    public function getprojectkonsistensi()
+    {
+      return $this->db->group_by('project_name')->get('konsistensi')->result_array();
+    }
+
+    public function getvariable_konsistensi($id)
+    {
+      return $this->db->group_by('variable')->get_where('konsistensi', ['project_name' => $id])->result_array();
+    }
+
+    public function getcek_konsistensi($pro, $kategori, $variable, $status)
+    {
+      // return $this->db->get_where('save_konsistensi', ['project_name' => $pro, 'variable' => $variable])->result_array();
+        $this->db->select('*');
+        $this->db->from('konsistensi');
+        $this->db->where('project_name', $pro);
+      if($kategori != NULL OR $kategori != ''){
+        $this->db->where('kategori', $kategori);
+      }
+      if($variable != NULL OR $variable != ''){
+        $this->db->where('variable', $variable);
+      }
+      if ($status == 'Sudah Validasi') {
+        $this->db->where('verifikasi !=', '');
+        $this->db->where('final_code !=', '');
+      } else if ($status == 'Belum Validasi') {
+        $this->db->where('verifikasi', '');
+        $this->db->where('final_code', '');
+      }
+        return $this->db->get()->result_array();
+
+         log_message('info', $this->db->last_query());
+
+    }
+
+    public function verifikasi_konsistensi()
+    {
+      $id = $this->input->post('id');
+      var_dump($id);
+
+      foreach ($id as $row => $val) {
+        $verifikasi = $this->input->post('verifikasi'.$val);
+        $final = $this->input->post('finalcode'.$val);
+
+        $data = ['verifikasi' => $verifikasi,
+                'final_code' => $final];
+
+        $this->db->update('konsistensi', $data, ['id' => $val]);
+
+      }
+    }
 }

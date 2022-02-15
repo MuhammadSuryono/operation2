@@ -137,7 +137,8 @@ if ($this->db->get_where('user', ['noid' => $id_user])->num_rows() >= 1) {
                   <form method="POST" action="<?php echo base_url('stkb/tambah_lskontrak') ?>">
                       <div class="form-group">
                         <?php
-                        $kokab = $this->db->get('stkb_kotakab')->result_array(); ?>
+                        $kokab = $this->db->order_by('kabupatenkota', 'ASC')->get('stkb_kotakab')->result_array();
+                         ?>
                         <label>Kota</label>
                           <select class="form-control form-control-user" name="kota">
                             <option value="" selected="">--Pilih Kota/Kabupaten--</option>

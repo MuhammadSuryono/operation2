@@ -24,6 +24,9 @@
         <th>Nomor Stkb</th>
         <th>Term</th>
         <th>Tanggal Buat</th>
+        <th>Total Hari</th>
+          <th>Total Cabang</th>
+          <th>Kota Dinas</th>
         <th>Project</th>
         <th>Nama</th>
         <th>Bank</th>
@@ -102,6 +105,16 @@
         },
         {
           "data": "tanggalbuat"
+        },
+        {
+          "data": "jml_hari"
+        },
+
+        {
+          "data": "quota"
+        },
+        {
+          "data": "kotadinas"
         },
         {
           "data": "namaproject",

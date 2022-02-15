@@ -79,6 +79,42 @@ class Cabang_model extends CI_model
         $this->db->delete('cabang', ['num' => $id]);
     }
 
+    public function tambah_cabang()
+    {
+        $kode = $this->input->post('project');
+       $get = $this->db->get_where('project', array('kode' => $kode ))->row_array();
+
+       $data = [
+                'project' => $kode,
+                'kode' => $this->input->post('kode'),
+                'nama' => $this->input->post('nama'),
+                'alamat' => $this->input->post('alamat'),
+                'kota' => ucwords(strtolower($this->input->post('kota'))),
+                'provinsi' => $this->input->post('provinsi'),
+                'kodepos' => $this->input->post('kodepos'),
+                'notelpon' => $this->input->post('notelpon'),
+                'fax' => $this->input->post('fax'),
+                'kodebank' => $this->input->post('bank')
+                ];
+        $this->db->insert('cabang', $data);
+    }
+
+    public function tambah_atmcenter()
+    {
+        $kode = $this->input->post('project');
+       $get = $this->db->get_where('project', array('kode' => $kode ))->row_array();
+
+       $data = [
+                'project' => $kode,
+                'cabang' => $this->input->post('kode'),
+                'namacabang' => $this->input->post('nama'),
+                'alamat' => $this->input->post('alamat'),
+                'kota' => ucwords(strtolower($this->input->post('kota'))),
+                'kodebank' => $get['bank']
+                ];
+        $this->db->insert('atmcenter', $data);
+    }
+
     public function getcabang_edit($num)
   {
     return $this->db->query("SELECT a.*, b.nama AS nama_project, c.nama AS nama_bank
@@ -87,4 +123,63 @@ class Cabang_model extends CI_model
                              WHERE a.num='$num'
                                  ")->row_array();
   }
+
+   public function getcabangatm_edit($num)
+  {
+    return $this->db->query("SELECT a.*, b.nama AS nama_project, c.nama AS nama_bank
+                             FROM atmcenter a JOIN project b ON a.project=b.kode
+                            JOIN bank c ON a.kodebank=c.kode
+                             WHERE a.num='$num'
+                                 ")->row_array();
+      log_message('info', $this->db->last_query());
+  
+  }
+
+  public function edit_cabang()
+  {
+    $data = [
+                'kode' => $this->input->post('kode'),
+                'nama' => $this->input->post('nama'),
+                'alamat' => $this->input->post('alamat'),
+                'kota' => $this->input->post('kota'),
+                'provinsi' => $this->input->post('provinsi'),
+                'kodepos' => $this->input->post('kodepos'),
+                'notelpon' => $this->input->post('notelpon'),
+                'fax' => $this->input->post('fax'),
+                'kodebank' => $this->input->post('kodebank')
+                ];
+        $num = $this->input->post('num');
+
+        $this->db->where('num', $num);
+        $this->db->update('cabang', $data);
+        
+  }
+
+  public function hapus_cabang($num)
+  {
+    $this->db->where('num', $num);
+    $this->db->delete('cabang');
+  }
+
+  public function edit_cabangatm()
+  {
+        $data = [
+                'cabang' => $this->input->post('kode'),
+                'namacabang' => $this->input->post('nama'),
+                'alamat' => $this->input->post('alamat'),
+                'kota' => $this->input->post('kota'),
+                'kodebank' => $this->input->post('kodebank')
+                ];
+        $num = $this->input->post('num');
+
+        $this->db->where('num', $num);
+        $this->db->update('atmcenter', $data);
+  }
+
+  public function hapus_atm($num)
+  {
+    $this->db->where('num', $num);
+    $this->db->delete('atmcenter');
+  }
+
 }

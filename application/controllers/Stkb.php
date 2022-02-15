@@ -327,11 +327,14 @@ class Stkb extends Whatsapp
   }
   public function getkotabyidfo()
   {
-    $sdm = $this->db->query("SELECT b.nm_kota AS kota_asal, b.nm_kota AS kota_penugasan, c.Nama as nama 
-                              FROM field_sdm a JOIN kota b ON b.id = a.kota_id JOIN id_data c ON c.Id = a.id_data_id 
+    $sdm = $this->db->query("SELECT b.nm_kota AS kota_asal, a.kota_dinas, b.nm_kota AS kota_penugasan, c.Nama as nama 
+                              FROM field_sdm a 
+                              JOIN kota b ON b.id = a.kota_id 
+                              -- JOIN kota d ON d.id = a.kota_dinas
+                              JOIN id_data c ON c.Id = a.id_data_id 
                               WHERE id_data_id = '$_POST[id]'
                               UNION
-                              SELECT z.KotaTgl as kota_asal, x.kota_dinas AS kota_penugasan, z.Nama as nama
+                              SELECT z.KotaTgl as kota_asal, x.kota_dinas, x.kota_dinas AS kota_penugasan, z.Nama as nama
                               FROM data_pengajuan_sdm x
                               JOIN id_data z ON x.pic = z.Id 
                               WHERE x.pic = '$_POST[id]'
@@ -664,31 +667,8 @@ class Stkb extends Whatsapp
     $cek = $this->db->get_where('stkb_lskontrak', array('kota' => $jenkot, 'jabatan' => $jabatan, 'penempatan' => $penempatan))->num_rows();
 
     if ($cek == 0) {
-      $data = [
-        'kota' => $jenkot,
-        'jabatan' => $this->input->post('jabatan'),
-        'penempatan' => $this->input->post('penempatan'),
-        'dinas' => $this->input->post('dinas'),
-        // 'lsharikerja' => $this->input->post('lsharikerja'),
-        'biaya_pulsa' => $this->input->post('biaya_pulsa'),
-        'biaya_atk' => $this->input->post('biaya_atk'),
-        'transport_harian' => $this->input->post('transport_harian'),
-        'biaya_fc' => $this->input->post('biaya_fc'),
-        'biaya_pengiriman' => $this->input->post('biaya_pengiriman'),
-        'transport_kecabang' => $this->input->post('transport_kecabang'),
+      $this->Stkb_model->tambah_lskontrak($jenkot);
 
-        'kunjungan' => $this->input->post('kunjungan'),
-        'atmcentermalam' => $this->input->post('atmcentermalam'),
-        // 'lsops' => $this->input->post('lsops'),
-        'lsakomodasi1_8' => $this->input->post('lsakomodasi1_8'),
-        'lsakomodasi9_16' => $this->input->post('lsakomodasi9_16'),
-        'bpjs' => $this->input->post('bpjs'),
-        'id_update' => $this->session->userdata('id_user'),
-        'last_update' => date('Y-m-d H:i:s')
-
-      ];
-
-      $this->db->insert('stkb_lskontrak', $data);
       $this->session->set_flashdata('flash', 'Tambah Data LS Kontrak Berhasil');
       redirect("stkb/lskontrak");
     } else {
@@ -703,34 +683,8 @@ class Stkb extends Whatsapp
 
   public function edit_lskontrak()
   {
-    date_default_timezone_set('Asia/Jakarta');
-    $data = [
-      'kota' => $this->input->post('kota'),
-      'jabatan' => $this->input->post('jabatan'),
-      'penempatan' => $this->input->post('penempatan'),
-      'dinas' => $this->input->post('dinas'),
-      // 'lsharikerja' => $this->input->post('lsharikerja'),
-      'biaya_pulsa' => $this->input->post('biaya_pulsa'),
-      'biaya_atk' => $this->input->post('biaya_atk'),
-      'transport_harian' => $this->input->post('transport_harian'),
-      'biaya_fc' => $this->input->post('biaya_fc'),
-      'biaya_pengiriman' => $this->input->post('biaya_pengiriman'),
-      'transport_kecabang' => $this->input->post('transport_kecabang'),
+    $this->Stkb_model->edit_lskontrak();
 
-      'kunjungan' => $this->input->post('kunjungan'),
-      'atmcentermalam' => $this->input->post('atmcentermalam'),
-      // 'lsops' => $this->input->post('lsops'),
-      'lsakomodasi1_8' => $this->input->post('lsakomodasi1_8'),
-      'lsakomodasi9_16' => $this->input->post('lsakomodasi9_16'),
-      'bpjs' => $this->input->post('bpjs'),
-      'id_update' => $this->session->userdata('id_user'),
-      'last_update' => date('Y-m-d H:i:s')
-    ];
-
-    $where = ['no' => $this->input->post('no')];
-
-    $this->db->where($where);
-    $this->db->update('stkb_lskontrak', $data);
     $this->session->set_flashdata('flash', 'LS Kontrak Berhasil Diubah');
     redirect("stkb/lskontrak");
   }
@@ -757,6 +711,7 @@ class Stkb extends Whatsapp
   {
     $data['judul'] = "STKB || Tracking";
     $data['gettracking'] = $this->Stkb_model->getalldatatracking();
+    $data['q'] = $this->Stkb_model->getdata_q();
     // $data['getprogress'] = $this->Stkb_model->getallprogress();
     // var_dump($this->Stkb_model->getalldatatracking()); die;
     $this->load->view('templates/header', $data);
@@ -854,200 +809,252 @@ class Stkb extends Whatsapp
 
   public function readytopaid()
   {
-    $db2 = $this->load->database('database_kedua', TRUE);
-    $db3 = $this->load->database('database_ketiga', TRUE);
-		$dbMri = $this->load->database('db_mritransfer', TRUE);
-		$dbDevelop = $this->load->database('db_develop', TRUE);
+	  $dbJay2 = $this->load->database('database_kedua', TRUE);
 
-    $insert = [];
-		$arrDataNotifikasiWaa = [];
-		$duplicateNumber = [];
+	  // Collect data prepare
+	  $sourceAccountBank = $this->source_account_bank();
+	  $maxTransfer = $this->max_transfer();
+	  $dataStatusPembayaran = $this->post_input('statusbayar');
+	  $arrayJabodetabek = ["jakarta", "bogor", "depok"];
 
-		$queryDbKas = $dbDevelop->query("SELECT rekening FROM kas WHERE label_kas = 'Kas Project'")->row_array();
-		$rekeningSumber = $queryDbKas['rekening'];
+	  $dataInsert = [];
+	  $arrDataNotifikasiWaa = [];
+	  $duplicateNumber = [];
+	  foreach ($dataStatusPembayaran as $key => $status) {
+		  // Collect data
+		  $payload = $this->payload_rtp($status);
+		  $dataInsert[] = $payload;
 
-		$jenisPembayaran = $dbMri->query("SELECT max_transfer FROM jenis_pembayaran WHERE jenispembayaran = 'STKB'")->row_array();
-		$maxTransfer = $jenisPembayaran['max_transfer'];
+		  $isTerm1 = $payload['term'] == 1;
+		  $kodePro = $payload["kodeproject"];
+		  $waktuBudget = $this->key_waktu_budget($kodePro);
+		  $project = $this->project($kodePro);
+		  $userPic = $this->user_pic($payload["idpic"]);
+		  $idUser = $this->session->userdata('id_user');
+		  $userCreator = $this->db->query("SELECT * FROM user WHERE noid = '$idUser'")->row_array();
 
-    foreach ($_POST['statusbayar'] as $key => $status) {
-      $term = $this->input->post("term$status");
-			$term = $this->rtpGetStatusTerm($term);
+		  // DATA OPS
+		  $dataItemBudget = $this->data_item_budget($waktuBudget, 'STKB OPS');
+		  $opsTerm = $this->max_term_bpu($waktuBudget, $dataItemBudget["no"]) + 1;
+		  $jumlahops = $payload['jumlahops'] + $payload["perdin"] + $payload["bpjs"] + $payload["akomodasi"];
+		  $metodePembayaran = $this->metode_pembayaran($jumlahops, $maxTransfer);
 
-			$nomorstkb = $this->input->post("nomorstkb$status");
-			$jumlahops = $this->input->post("jumlahops$status");
-			$jumlahtrk = $this->input->post("jumlahtrk$status");
+		  $this->insert_data_bpu($dataItemBudget, $payload, $jumlahops, $opsTerm, 'STKB OPS', $waktuBudget, $metodePembayaran);
+		  $idBpu = $this->getLastDataNoidBpu();
+		  $dataRekening = $this->dataRekening($payload["idpic"]);
 
-			$perdin = $this->input->post("perdin$status");
-			$bpjs = $this->input->post("bpjs$status");
-			$akomodasi = $this->input->post("akomodasi$status");
+		  // INPUT OPS
+		  if ($jumlahops < $maxTransfer && $jumlahops > 0) {
+			  $biayaTransfer = $this->setBiayaTransfer($dataRekening['kode_bank']);
+			  $jumlahops = $jumlahops - $biayaTransfer;
+			  $dataTransfer = $this->pushToMriTransfer($payload["nomorstkb"], $dataRekening['no'], $userPic["Nama"], $userPic['Email'], $dataRekening['nama_bank'], $dataRekening['kode_bank'], "", $jumlahops, "", $userCreator['name'], "Sistem", $dataItemBudget['status'], $project['nama'], $idBpu, $sourceAccountBank, $isTerm1);
+			  if (!in_array($userPic['HP'], $duplicateNumber)) {
+				  $duplicateNumber[] = $userPic['HP'];
+				  $arrDataNotifikasiWaa[] = $this->setDataNotifWa($payload["nomorstkb"], $userPic, $dataTransfer, $dataRekening, $jumlahops, $project);
+			  }
+		  }
 
-			$jumlahops = $jumlahops + $perdin + $bpjs + $akomodasi;
+		  $dataKota = $this->get_kotadinas_stkb($payload["nomorstkb"]);
+		  // KOTA DINAS
+		  if ($this->is_jabodetabek($dataKota["kotadinas"])) {
+			  // Data Kota Dinas
+			  $itemBudget = $this->data_item_budget($waktuBudget, 'STKB TRK Jakarta');
+			  $dinasTerm = $this->max_term_bpu($waktuBudget, $itemBudget["no"]);
+			  $metodePembayaran = $this->metode_pembayaran($payload["jumlahtrk"], $maxTransfer);
 
-			$isTerm1 = $term == 1;
-      $data = [
-        'nomorstkb' => $this->input->post("nomorstkb$status"),
-        "term" => $term,
-        "tanggalbuat" => $this->input->post("tanggalbuat$status"),
-        "kodeproject" => $this->input->post("kodeproject$status"),
-        "idpic" => $this->input->post("idpic$status"),
-        "perdin" => $this->input->post("perdin$status"),
-        "akomodasi" => $this->input->post("akomodasi$status"),
-        "bpjs" => $this->input->post("bpjs$status"),
-        "jumlahops" => $this->input->post("jumlahops$status"),
-        "jumlahtrk" => $this->input->post("jumlahtrk$status"),
-        "total" => $this->input->post("total$status"),
-        "statusbayar" => "RTP",
-      ];
+			  $this->insert_data_bpu($itemBudget, $payload, $payload["jumlahtrk"], $dinasTerm, "STKB TRK Jakarta", $waktuBudget, $metodePembayaran);
+			  $idBpu = $this->getLastDataNoidBpu();
+			  if ($payload["jumlahtrk"] < $maxTransfer && $payload["jumlahtrk"] > 0) {
+				  $dataTransfer = $this->pushToMriTransfer($payload["nomorstkb"], $dataRekening['no'], $userPic["Nama"], $userPic['Email'], $dataRekening['nama_bank'], $dataRekening['kode_bank'], "", $payload["jumlahtrk"], "", $userCreator['name'], "Sistem", $itemBudget['status'], $project['nama'], $idBpu, $sourceAccountBank, $isTerm1);
+				  if (!in_array($userPic['HP'], $duplicateNumber)) {
+					  $duplicateNumber[] = $userPic['HP'];
+					  $arrDataNotifikasiWaa[] = $this->setDataNotifWa($payload["nomorstkb"], $userPic, $dataTransfer, $dataRekening, $payload["jumlahtrk"], $project);
+				  }
+			  }
+		  } else {
+			  $itemBudget = $this->data_item_budget($waktuBudget, "STKB TRK Luar Kota");
+			  $luarKotaTerm = $this->max_term_bpu($waktuBudget, $itemBudget["no"]);
+			  $metodePembayaran = $this->metode_pembayaran($payload["jumlahtrk"], $maxTransfer);
 
-      array_push($insert, $data);
+			  $this->insert_data_bpu($itemBudget, $payload, $payload["jumlahtrk"], $luarKotaTerm, "STKB TRK Luar Kota", $waktuBudget, $metodePembayaran);
+			  $idBpu = $this->getLastDataNoidBpu();
+			  if ($payload["jumlahtrk"] < $maxTransfer && $payload["jumlahtrk"] > 0) {
+				  $dataTransfer = $this->pushToMriTransfer($payload["nomorstkb"], $dataRekening['no'], $userPic["Nama"], $userPic['Email'], $dataRekening['nama_bank'], $dataRekening['kode_bank'], "", $payload["jumlahtrk"], "", $userCreator['name'], "Sistem", $itemBudget['status'], $project['nama'], $idBpu, $sourceAccountBank, $isTerm1);
+				  if (!in_array($userPic['HP'], $duplicateNumber)) {
+					  $duplicateNumber[] = $userPic['HP'];
+					  $arrDataNotifikasiWaa[] = $this->setDataNotifWa($payload["nomorstkb"], $userPic, $dataTransfer, $dataRekening, $payload["jumlahtrk"], $project);
+				  }
+			  }
+		  }
 
-			
-      // Masuk budget Online
-      $kodepro = $this->input->post("kodeproject$status");
-      $caribudget = $db3->query("SELECT * FROM pengajuan WHERE kodeproject='$kodepro'")->row_array();
-      $waktubudget = $caribudget['waktu'];
-			
-			$project = $this->db->query("SELECT * FROM project WHERE kode='$kodepro'")->row_array();
-			$user = $this->db->query("SELECT * FROM id_data WHERE id='$data[idpic]'")->row_array();
-			$idUser = $this->session->userdata('id_user');
-			$userCreator = $this->db->query("SELECT * FROM user WHERE noid='$idUser'")->row_array();
+		  $nomorstkb = $payload["nomorstkb"];
+		  $term = $payload["term"];
 
+		  // FROM OLD
+		  if ($term == 1) {
+			  // CARI APAKAH NOMORSTKB INI MERUPAKAN ATM CENTER = 1 / NON ATM CENTER = 0
+			  $cekatmbukan = $this->db->query("SELECT project FROM plan WHERE nomorstkb = '$nomorstkb' AND kunjungan IN ('064','065','066','067') GROUP BY nomorstkb,kunjungan")->num_rows();
+			  // ==== //
+			  // HITUNG JUMLAH BANK BERDASARKAN KODE BANK DI TABEL ATMCENTER/CABANG DALAM SATU STKB
+			  if ($cekatmbukan >= 1) {
+				  $totalbankstkb = $this->db->query("SELECT a.project FROM plan a JOIN atmcenter z ON a.project = z.project WHERE a.kode = z.cabang AND a.nomorstkb = '$nomorstkb' GROUP BY z.kodebank")->num_rows();
+			  } else {
+				  $totalbankstkb = $this->db->query("SELECT a.project FROM plan a JOIN cabang y ON a.project = y.project WHERE a.kode = y.kode AND a.nomorstkb = '$nomorstkb' GROUP BY y.kodebank")->num_rows();
+			  }
+			  // ==== //
+			  $data['printtrk'] = $this->Stkb_model->getprinttrk($nomorstkb, $cekatmbukan);
+			  foreach ($data['printtrk'] as $project) {
+				  if ($totalbankstkb > 1) {
+					  $kodebank = $project['kodebank'];
+				  } else {
+					  if ($project['tabelnya'] == 'cabang') {
+						  $cek = $this->db->query("SELECT y.kodebank AS kodebank FROM plan a JOIN cabang y ON a.project = y.project WHERE a.kode = y.kode AND a.nomorstkb = '$nomorstkb' AND y.kodebank = y.kodebank GROUP BY y.kodebank")->row_array();
+					  } else {
+						  $cek = $this->db->query("SELECT z.kodebank AS kodebank FROM plan a JOIN atmcenter z ON a.project = z.project WHERE a.kode = z.cabang AND a.nomorstkb = '$nomorstkb' AND z.kodebank = z.kodebank GROUP BY z.kodebank")->row_array();
+					  }
 
-      $cariops = $db3->query("SELECT * FROM selesai WHERE status='STKB OPS' AND waktu='$waktubudget'")->row_array();
-      $noselops = $cariops['no'];
+					  if ($cek['kodebank'] == NULL) {
+						  $kode = $this->db->query("SELECT bank FROM project WHERE kode = '$project[kodeproject]'")->row_array();
+						  $kodebank = $kode['bank'];
+					  } else {
+						  $kodebank = $cek['kodebank'];
+					  }
+				  }
+				  $dataProject = array(
+					  'nostkb' => $project['nomorstkb'],
+					  'kodeproject' => $project['kodeproject'],
+					  'kodebank' => $kodebank,
+					  'skenario' => $project['skenario'],
+					  'jumlah' => $project['jumlah'],
+					  'kunjungan' => $project['kunjungan'],
+					  'harga' => $project['harga']
+				  );
+				  $this->db->insert('stkb1project_final', $dataProject);
+			  }
+		  }
+	  }
 
-      $maxbpuops = $db3->query("SELECT max(term) AS maxt FROM bpu WHERE waktu='$waktubudget' AND no='$noselops'")->row_array();
-      $opsterm = $maxbpuops['maxt'] + 1;
+	  $this->send_message_transfer($arrDataNotifikasiWaa);
 
-			$metodePembayaran = "MRI PAL";
-			if ($jumlahops > $maxTransfer) {
-				$metodePembayaran = "MRI KAS";
-			}
+	  $dbJay2->insert_batch('stkb_pembayaran', $dataInsert);
+	  $this->session->set_flashdata('flash', 'STKB Berhasil Pindah Ke RTP');
+	  redirect("stkb/pengajuan");
+  }
 
-      $db3->query("INSERT INTO bpu (no,statusbpu,jumlah,tglcair,namabank,norek,namapenerima,pengaju,divisi,waktu,status,persetujuan,jumlahbayar,novoucher,tanggalbayar,pembayar,divpemb,term,nomorstkb,termstkb, metode_pembayaran)
-                                      VALUES
-                                      ('$noselops','STKB OPS','$jumlahops','0000-00-00','-','-','TLF','Sistem','Sistem','$waktubudget','Belum Di Bayar','Disetujui (Direksi)','0','','','','','$opsterm','$nomorstkb','$term', '$metodePembayaran')");
-      
-      $id = $this->getLastDataNoidBpu();
-      $dataRekening = $this->dataRekening($data['idpic']);
+  private function is_jabodetabek($kota)
+  {
+	  $arrayJabodetabek = ["jakarta", "bogor", "depok"];
+	  return in_array(strtolower($kota), $arrayJabodetabek);
+  }
 
+  private function get_kotadinas_stkb($nomorStkb)
+  {
+	  $dbJay2 = $this->load->database('database_kedua', TRUE);
+	  return $dbJay2->query("SELECT kotadinas FROM stkb_ops WHERE nomorstkb='$nomorStkb'")->row_array();
+  }
 
-      if ($jumlahops < $maxTransfer) {
+  private function source_account_bank()
+  {
+	  $dbDevelop = $this->load->database('db_develop', TRUE);
+	  $queryDbKas = $dbDevelop->query("SELECT rekening FROM kas WHERE label_kas = 'Kas Project'")->row_array();
 
-				$biayaTransfer = $this->setBiayaTransfer($dataRekening['kode_bank']);
-				$jumlahops = $jumlahops - $biayaTransfer;
-        $dataTransfer = $this->pushToMriTransfer($nomorstkb, $dataRekening['no'], $user["Nama"], $user['Email'], $dataRekening['nama_bank'], $dataRekening['kode_bank'], "", $jumlahops, "", $userCreator['name'], "Sistem", $caribudget['jenis'], $project['nama'], $id, $rekeningSumber, $isTerm1);
-				if (!in_array($user['HP'], $duplicateNumber)) {
-					array_push($duplicateNumber, $user['HP']);
-					array_push($arrDataNotifikasiWaa, $this->setDataNotifWa($nomorstkb, $user, $dataTransfer,$dataRekening, $jumlahops, $project));
-				}
-      }
+	  return $queryDbKas['rekening'] == null ? 0 : $queryDbKas['rekening'];
+  }
 
-      $carijakorluar = $db2->query("SELECT kotadinas FROM stkb_ops WHERE nomorstkb='$nomorstkb'")->row_array();
-	  	$arrayJabodetabek = ["jakarta", "bogor", "depok"];
+  private function max_transfer()
+  {
+	  $dbMri = $this->load->database('db_mritransfer', TRUE);
+	  $jenisPembayaran = $dbMri->query("SELECT max_transfer FROM jenis_pembayaran WHERE jenispembayaran = 'STKB'")->row_array();
+	  return $jenisPembayaran['max_transfer'] == null ? 0 : $jenisPembayaran['max_transfer'];
+  }
 
+  private function post_input($key)
+  {
+	  return $this->input->post($key);
+  }
 
-      if (in_array(strtolower($carijakorluar['kotadinas']), $arrayJabodetabek)) {
+  private function payload_rtp($status)
+  {
+	  return [
+		  'nomorstkb' => $this->post_input("nomorstkb$status"),
+		  "term" => $this->rtpGetStatusTerm($this->post_input("term$status")),
+		  "tanggalbuat" => $this->post_input("tanggalbuat$status"),
+		  "kodeproject" => $this->post_input("kodeproject$status"),
+		  "idpic" => $this->post_input("idpic$status"),
+		  "perdin" => $this->post_input("perdin$status"),
+		  "akomodasi" => $this->post_input("akomodasi$status"),
+		  "bpjs" => $this->post_input("bpjs$status"),
+		  "jumlahops" => $this->post_input("jumlahops$status"),
+		  "jumlahtrk" => $this->post_input("jumlahtrk$status"),
+		  "total" => $this->post_input("total$status"),
+		  "statusbayar" => "RTP",
+	  ];
+  }
 
-        $caritrkjak = $db3->query("SELECT * FROM selesai WHERE status='STKB TRK Jakarta' AND waktu='$waktubudget'")->row_array();
-        $noseltrkjak = $caritrkjak['no'];
+  private function key_waktu_budget($kodepro)
+  {
+	  $dbBudget = $this->load->database('database_ketiga', TRUE);
+	  $caribudget = $dbBudget->query("SELECT * FROM pengajuan WHERE kodeproject='$kodepro'")->row_array();
+	  return $caribudget['waktu'];
+  }
 
-        $maxbputrkjak = $db3->query("SELECT max(term) AS maxt FROM bpu WHERE waktu='$waktubudget' AND no='$noseltrkjak'")->row_array();
-        $trkjakterm = $maxbputrkjak['maxt'] + 1;
+  public function project($kodepro)
+  {
+	  return $this->db->query("SELECT * FROM project WHERE kode='$kodepro'")->row_array();
+  }
 
-				$metodePembayaran = "MRI PAL";
-				if ($jumlahtrk > $maxTransfer) {
-					$metodePembayaran = "MRI KAS";
-				}
+  public function user_pic($idPic)
+  {
+	  return $this->db->query("SELECT * FROM id_data WHERE id='$idPic'")->row_array();
+  }
 
-        $db3->query("INSERT INTO bpu (no,statusbpu,jumlah,tglcair,namabank,norek,namapenerima,pengaju,divisi,waktu,status,persetujuan,jumlahbayar,novoucher,tanggalbayar,pembayar,divpemb,term,nomorstkb,termstkb, metode_pembayaran)
-                                        VALUES
-                                        ('$noseltrkjak','STKB TRK Jakarta','$jumlahtrk','0000-00-00','-','-','TLF','Sistem','Sistem','$waktubudget','Belum Di Bayar','Disetujui (Direksi)','0','','','','','$trkjakterm','$nomorstkb','$term','$metodePembayaran')");
+  public function data_item_budget($waktuBudget, $status)
+  {
+	  $dbBudget = $this->load->database('database_ketiga', TRUE);
+	  $itemBudget = $dbBudget->query("SELECT * FROM selesai WHERE status='$status' AND waktu='$waktuBudget'")->row_array();
+	  return $itemBudget;
+  }
 
-        $id = $this->getLastDataNoidBpu();
-				if ($jumlahtrk < $maxTransfer) {
-					$dataTransfer = $this->pushToMriTransfer($nomorstkb,$dataRekening['no'], $user["Nama"], $user['Email'], $dataRekening['nama_bank'], $dataRekening['kode_bank'], "", $jumlahtrk, "", $userCreator['name'], "Sistem", $caribudget['jenis'], $project['nama'], $id, $rekeningSumber, $isTerm1);
-					if (!in_array($user['HP'], $duplicateNumber)) {
-						array_push($duplicateNumber, $user['HP']);
-						array_push($arrDataNotifikasiWaa, $this->setDataNotifWa($nomorstkb, $user, $dataTransfer,$dataRekening, $jumlahops, $project));
-					}
-				}
-      } else {
+  private function max_term_bpu($waktubudget, $noItemBudget)
+  {
+	  $dbBudget = $this->load->database('database_ketiga', TRUE);
+	  $maxTerm = $dbBudget->query("SELECT max(term) AS maxt FROM bpu WHERE waktu='$waktubudget' AND no='$noItemBudget'")->row_array();
+	  return $maxTerm['maxt'] == null ? 0 : $maxTerm['maxt'];
+  }
 
-        $caritrkluar = $db3->query("SELECT * FROM selesai WHERE status='STKB TRK Luar Kota' AND waktu='$waktubudget'")->row_array();
+  private function metode_pembayaran($jumlah, $maxTransfer)
+  {
+	  if ($jumlah > $maxTransfer || $jumlah < 0) return "MRI KAS";
+	  return "MRI PAL";
+  }
 
-        $noseltrkluar = $caritrkluar['no'];
-
-        $maxbputrkluar = $db3->query("SELECT max(term) AS maxt FROM bpu WHERE waktu='$waktubudget' AND no='$noseltrkluar'")->row_array();
-        $trkluarterm = $maxbputrkluar['maxt'] + 1;
-
-				if ($jumlahtrk > $maxTransfer) {
-					$metodePembayaran = "MRI KAS";
-				}
-
-        $db3->query("INSERT INTO bpu (no,statusbpu,jumlah,tglcair,namabank,norek,namapenerima,pengaju,divisi,waktu,status,persetujuan,jumlahbayar,novoucher,tanggalbayar,pembayar,divpemb,term,nomorstkb,termstkb, metode_pembayaran)
-                                        VALUES
-                                        ('$noseltrkluar','STKB TRK Luar Kota','$jumlahtrk','0000-00-00','-','-','TLF','Sistem','Sistem','$waktubudget','Belum Di Bayar','Disetujui (Direksi)','0','','','','','$trkluarterm','$nomorstkb','$term','$metodePembayaran')");
-        $id = $this->getLastDataNoidBpu();
-				if ($jumlahtrk < $maxTransfer) {
-					$dataTransfer = $this->pushToMriTransfer($nomorstkb, $dataRekening['no'], $user["Nama"], $user['Email'], $dataRekening['nama_bank'], $dataRekening['kode_bank'], "", $jumlahtrk, "", $userCreator['name'], "Sistem", $caribudget['jenis'], $project['nama'], $id, $rekeningSumber, $isTerm1);
-					if (!in_array($user['HP'], $duplicateNumber)) {
-						array_push($duplicateNumber, $user['HP']);
-						array_push($arrDataNotifikasiWaa, $this->setDataNotifWa($nomorstkb, $user, $dataTransfer,$dataRekening, $jumlahops, $project));
-					}
-				}
-      }
-      //Masuk Budget Online
-
-      //TAMBAHAN ADAM SANTOSO - RTP
-      if ($term == 1) {
-        // CARI APAKAH NOMORSTKB INI MERUPAKAN ATM CENTER = 1 / NON ATM CENTER = 0
-        $cekatmbukan = $this->db->query("SELECT project FROM plan WHERE nomorstkb = '$nomorstkb' AND kunjungan IN ('064','065','066','067') GROUP BY nomorstkb,kunjungan")->num_rows();
-        // ==== //
-        // HITUNG JUMLAH BANK BERDASARKAN KODE BANK DI TABEL ATMCENTER/CABANG DALAM SATU STKB
-        if ($cekatmbukan >= 1) {
-          $totalbankstkb = $this->db->query("SELECT a.project FROM plan a JOIN atmcenter z ON a.project = z.project WHERE a.kode = z.cabang AND a.nomorstkb = '$nomorstkb' GROUP BY z.kodebank")->num_rows();
-        } else {
-          $totalbankstkb = $this->db->query("SELECT a.project FROM plan a JOIN cabang y ON a.project = y.project WHERE a.kode = y.kode AND a.nomorstkb = '$nomorstkb' GROUP BY y.kodebank")->num_rows();
-        }
-        // ==== //
-        $data['printtrk'] = $this->Stkb_model->getprinttrk($nomorstkb, $cekatmbukan);
-        foreach ($data['printtrk'] as $project) {
-          if ($totalbankstkb > 1) {
-            $kodebank = $project['kodebank'];
-          } else {
-            if ($project['tabelnya'] == 'cabang') {
-              $cek = $this->db->query("SELECT y.kodebank AS kodebank FROM plan a JOIN cabang y ON a.project = y.project WHERE a.kode = y.kode AND a.nomorstkb = '$nomorstkb' AND y.kodebank = y.kodebank GROUP BY y.kodebank")->row_array();
-            } else {
-              $cek = $this->db->query("SELECT z.kodebank AS kodebank FROM plan a JOIN atmcenter z ON a.project = z.project WHERE a.kode = z.cabang AND a.nomorstkb = '$nomorstkb' AND z.kodebank = z.kodebank GROUP BY z.kodebank")->row_array();
-            }
-
-            if ($cek['kodebank'] == NULL) {
-              $kode = $this->db->query("SELECT bank FROM project WHERE kode = '$project[kodeproject]'")->row_array();
-              $kodebank = $kode['bank'];
-            } else {
-              $kodebank = $cek['kodebank'];
-            }
-          }
-          $dataProject = array(
-            'nostkb' => $project['nomorstkb'],
-            'kodeproject' => $project['kodeproject'],
-            'kodebank' => $kodebank,
-            'skenario' => $project['skenario'],
-            'jumlah' => $project['jumlah'],
-            'kunjungan' => $project['kunjungan'],
-            'harga' => $project['harga']
-          );
-          $this->db->insert('stkb1project_final', $dataProject);
-        }
-      }
-    }
-
-		$this->send_message_transfer($arrDataNotifikasiWaa);
-
-    $db2->insert_batch('stkb_pembayaran', $insert);
-    $this->session->set_flashdata('flash', 'STKB Berhasil Pindah Ke RTP');
-    redirect("stkb/pengajuan");
+  public function insert_data_bpu($dataItemBpu, $dataStkb, $jumlah, $termBpu, $statusBpu, $waktuBudget, $metodePembayaran)
+  {
+	  $dbBudget = $this->load->database('database_ketiga', TRUE);
+	  $data = [
+		  "no" => $dataItemBpu["no"],
+		  "statusbpu" => $statusBpu,
+		  "jumlah" => $dataStkb['jumlahops'],
+		  "tglcair" => '0000-00-00',
+		  "namabank" => '-',
+		  "norek" => 'TLF',
+		  "namapenerima" => 'Sistem',
+		  "pengaju" => 'Sistem',
+		  "divisi" => '',
+		  "waktu" => $waktuBudget,
+		  "status" => 'Belum Di Bayar',
+		  "persetujuan" => 'Disetujui (Direksi)',
+		  "jumlahbayar" => '0',
+		  "novoucher" => '',
+		  "tanggalbayar" => '',
+		  "pembayar" => '',
+		  "divpemb" => '',
+		  "term" => $termBpu,
+		  "nomorstkb" => $dataStkb["nomorstkb"],
+		  "termstkb" => $dataStkb["term"],
+		  "metode_pembayaran" => $metodePembayaran,
+	  ];
+	  $dbBudget->insert('bpu', $data);
   }
 
 	private function rtpGetStatusTerm($term)
@@ -2183,33 +2190,13 @@ class Stkb extends Whatsapp
 
   public function tambah_sdmstkb()
   {
-    date_default_timezone_set('Asia/Jakarta');
-
     $Id = $this->input->post('Id');
-    $getnama = $this->db->get_where('id_data', array('Id' => $Id))->row_array();
-    $kota = $this->input->post('kota_asal');
-    $jabatan = $this->input->post('jabatan');
-
+    
     $cek = $this->db->get_where('stkb_sdm', array('id' => $Id))->num_rows();
-
-    //UPLOAD MEMO
-    $extension_memo  = pathinfo($_FILES['memo_sdm']['name'], PATHINFO_EXTENSION);
-    $memo_name = "memo_sdmstkb_" . time() . "." . $extension_memo;
-    $memo_tmp = $_FILES['memo_sdm']['tmp_name'];
-    move_uploaded_file($memo_tmp, "assets/file/memo/" . $memo_name);
-
-    $data = [
-      'id' => $Id,
-      'nama' => strtoupper($getnama['Nama']),
-      'kota_asal' => strtoupper($kota),
-      'jabatan' => $jabatan,
-      'memo' => $memo_name,
-      'id_update' => $this->session->userdata('id_user'),
-      'last_update' => date('Y-m-d H:i:s')
-
-    ];
+    
     if ($cek == 0) {
-      $this->db->insert('stkb_sdm', $data);
+      $this->Stkb_model->tambah_sdmstkb();
+
       $this->session->set_flashdata('flash', 'Berhasil Menambah Data');
       redirect('stkb/sdm_stkb');
     } else {
@@ -2224,32 +2211,7 @@ class Stkb extends Whatsapp
 
   public function edit_sdmstkb()
   {
-    $no = $this->input->post('no');
-    $nama = $this->input->post('nama');
-    $kota = $this->input->post('kota_asal');
-    $kota_penugasan = $this->input->post('kota_penugasan');
-
-    $jabatan = $this->input->post('jabatan');
-
-    //UPLOAD MEMO
-    $extension_memo  = pathinfo($_FILES['memo_sdm']['name'], PATHINFO_EXTENSION);
-    $memo_name = "memo_sdmstkb_" . time() . "." . $extension_memo;
-    $memo_tmp = $_FILES['memo_sdm']['tmp_name'];
-    move_uploaded_file($memo_tmp, "assets/file/memo/" . $memo_name);
-
-    $data = [
-      'nama' => $nama,
-      'kota_asal' => $kota,
-      'kota_penugasan' => $kota_penugasan,
-      'jabatan' => $jabatan,
-      'memo' => $memo_name,
-      'id_update' => $this->session->userdata('id_user'),
-      'last_update' => date('Y-m-d H:i:s')
-    ];
-    $where = ['no' => $no];
-
-    $this->db->where($where);
-    $this->db->update('stkb_sdm', $data);
+    $this->Stkb_model->edit_sdmstkb();
 
     $this->session->set_flashdata('flash', 'Berhasil Diubah');
     redirect('stkb/sdm_stkb');
@@ -2773,14 +2735,14 @@ class Stkb extends Whatsapp
     }
 
     $inList = "('" . implode("','", $listKota) . "')";
-    $sdm = $this->db->query("SELECT a.id_data_id as id, b.Nama as nama, c.nm_kota as kota_asal 
+    $sdm = $this->db->query("SELECT a.id_data_id as id, b.Nama as nama, c.nm_kota as kota_asal, a.aktif
                               FROM field_sdm a 
                               JOIN id_data b ON a.id_data_id = b.Id 
                               LEFT JOIN kota c ON a.kota_id = c.id  
                               WHERE  a.id != '0' AND a.kota_id 
                               IN $inList
                               UNION
-                              SELECT a.pic as id, b.Nama as nama, b.KotaTgl as kota_asal 
+                              SELECT a.pic as id, b.Nama as nama, b.KotaTgl as kota_asal, a.aktif 
                               FROM data_pengajuan_sdm a
                               JOIN id_data b ON a.pic = b.Id 
                               WHERE a.project = '$_POST[project]' AND a.status='1'

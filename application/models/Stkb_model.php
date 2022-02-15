@@ -567,9 +567,10 @@ class Stkb_model extends CI_model
   public function getallnama()
   {
     $db2 = $this->load->database('database_kedua', TRUE);
-    $db2->select('id,nama,kota_asal');
-    $db2->from('stkb_sdm');
-    $db2->order_by('nama', 'asc');
+    $db2->select('a.id,a.nama,a.kota_asal, b.aktif');
+    $db2->from('stkb_sdm a');
+    $db2->join('field_sdm b', 'a.id=b.id_data_id', 'left');
+    $db2->order_by('a.nama', 'asc');
     return $db2->get()->result_array();
   }
 
@@ -632,6 +633,41 @@ class Stkb_model extends CI_model
      $db2->order_by('nama', 'ASC');
      return $db2->get()->result_array();*/
 
+    //    $db2->select('a.cabang AS kocab, a.namacabang AS nacab, GROUP_CONCAT(b.att ORDER BY b.att ASC) skennya, GROUP_CONCAT(c.nama ORDER BY b.att ASC) namasken');
+    //   $db2->from('cabang a');
+    //   $db2->join('skenario b', 'a.project=b.project');
+    //   $db2->join('attribute c', 'b.att = c.kode');
+    //   $db2->where('a.project', $id);
+    //   $db2->where('a.kota', $kota);
+    //   $db2->where_in('b.att', $newatt);
+    //   $db2->group_by('a.cabang');
+    //   $db2->order_by('a.namacabang', 'ASC');
+    
+    // $atm = $db2->get()->result_array();
+    
+    // $data = array();
+    // foreach ($atm as $row) {
+    //   // $db2->get_where('plan', ['project' => $id, 'kode' => $row['kocab']]);
+    //   $count = $db2->query("SELECT kunjungan FROM plan WHERE project='$id' AND kode='$row[kocab]'")->num_rows();
+    //   log_message('info', $db2->last_query());
+      
+    //   log_message('info', 'Kode : '.$row['kocab'].' Total : '.$count);
+    //   if ($count == 0) {
+    //     array_push($data, $row);
+    //   }
+    // }
+
+    // return $data;
+
+     $att = $db2->select('kode')->get_where('attribute', ['kunjungan_q' => 1])->result_array();
+
+     $newatt = array();
+     foreach ($att as $new) {
+       array_push($newatt, $new['kode']);
+     }
+
+     $getatt = implode("','",$newatt);
+
     return $db2->query("SELECT
                         	a.kode kocab,
                         	a.nama nacab,
@@ -647,12 +683,13 @@ class Stkb_model extends CI_model
                         	a.project = '$id'
                         AND a.kota = '$kota'
                         AND b.att IN (
-                        	SELECT
-                        		kode
-                        	FROM
-                        		attribute
-                        	WHERE
-                        		kunjungan_q = 1
+                        	'$getatt'
+                          -- SELECT
+                        	-- 	kode
+                        	-- FROM
+                        	-- 	attribute
+                        	-- WHERE
+                        	-- 	kunjungan_q = 1
                         )
                         AND b.att NOT IN (SELECT kunjungan FROM plan WHERE project='$id' AND kode = a.kode)
                         GROUP BY
@@ -671,6 +708,47 @@ class Stkb_model extends CI_model
      $db2->order_by('nama', 'ASC');
      return $db2->get()->result_array();*/
 
+     $att = $db2->select('kode')->get_where('attribute', ['kunjungan_q' => 1])->result_array();
+
+     $newatt = array();
+     foreach ($att as $new) {
+       array_push($newatt, $new['kode']);
+     }
+
+      
+
+    //   $db2->select('a.cabang AS kocab, a.namacabang AS nacab, GROUP_CONCAT(b.att ORDER BY b.att ASC) skennya, GROUP_CONCAT(c.nama ORDER BY b.att ASC) namasken');
+    //   $db2->from('atmcenter a');
+    //   $db2->join('skenario b', 'a.project=b.project');
+    //   $db2->join('attribute c', 'b.att = c.kode');
+    //   $db2->where('a.project', $id);
+    //   $db2->where('a.kota', $kota);
+    //   $db2->where_in('b.att', $newatt);
+    //   $db2->group_by('a.cabang');
+    //   $db2->order_by('a.namacabang', 'ASC');
+    
+    // $atm = $db2->get()->result_array();
+    
+    // $data = array();
+    // foreach ($atm as $row) {
+    //   // $db2->get_where('plan', ['project' => $id, 'kode' => $row['kocab']]);
+    //   $count = $db2->query("SELECT kunjungan FROM plan WHERE project='$id' AND kode='$row[kocab]'")->num_rows();
+    //   log_message('info', $db2->last_query());
+      
+    //   log_message('info', 'Kode : '.$row['kocab'].' Total : '.$count);
+    //   if ($count == 0) {
+    //     array_push($data, $row);
+    //   }
+    // }
+
+    // return $data;
+
+    // $newplan = array();
+    // foreach ($plan as $key => $value) {
+    //   # code...
+    // }
+
+     $getatt = implode("','",$newatt);
 
     return $db2->query("SELECT
                         	a.cabang kocab,
@@ -687,18 +765,21 @@ class Stkb_model extends CI_model
                         	a.project = '$id'
                         AND a.kota = '$kota'
                         AND b.att IN (
-                        	SELECT
-                        		kode
-                        	FROM
-                        		attribute
-                        	WHERE
-                        		kunjungan_q = 1
+                        '$getatt'
+                        	-- SELECT
+                        	-- 	kode
+                        	-- FROM
+                        	-- 	attribute
+                        	-- WHERE
+                        	-- 	kunjungan_q = 1
                         )
                         AND b.att NOT IN (SELECT kunjungan FROM plan WHERE project='$id' AND kode = a.cabang)
                         GROUP BY
                         	kocab
                         ORDER BY
                         	a.namacabang")->result_array();
+
+     log_message('info', $db2->last_query());
   }
 
   public function kotakabupaten()
@@ -760,7 +841,8 @@ class Stkb_model extends CI_model
                                   AND a.kota = c.kota 
                                   WHERE a.project = '$id'
                                    AND a.kota IN ('Jakarta', 'Bekasi', 'Bogor', 'Tangerang', 'Depok', 'Sukabumi', 'Serang', 'Cilegon', 'Cibubur', 'Cibinong', 'Cianjur', 'Ciputat')
-                                  
+                                  GROUP BY a.cabang
+
                                   UNION ALL
                               SELECT a.*, 
                                 b.nama as nama_project, 
@@ -773,7 +855,8 @@ class Stkb_model extends CI_model
                                   AND a.kota = c.kota 
                                   WHERE a.project = '$id'
                                   AND a.kota NOT IN ('Jakarta', 'Bekasi', 'Bogor', 'Tangerang', 'Depok', 'Sukabumi', 'Serang', 'Cilegon', 'Cibubur', 'Cibinong', 'Cianjur', 'Ciputat')
-                                  
+                                  GROUP BY a.cabang
+
                                   ORDER BY cabang
                                   ")->result_array();
   }
@@ -1245,6 +1328,8 @@ class Stkb_model extends CI_model
     $iddata = $this->input->post('nama_fo');
     $penugasan = $this->input->post('penugasan');
     $projectnya = $this->input->post('project');
+
+    $this->db->update('field_sdm', ['kota_dinas' => strtoupper($this->input->post('kotadinas'))], ['id_data_id' => $iddata]);
 
     $get_sdm = $this->db->query("SELECT * FROM field_sdm a JOIN id_data b ON a.id_data_id = b.Id WHERE id_data_id='$iddata'")->row_array();
     $nama_pic = $get_sdm['Nama'];
@@ -2295,6 +2380,10 @@ class Stkb_model extends CI_model
       a.nomorstkb AS nmrstkb,
       a.tglbuat AS tanggalbuat,
       a.kode_iddata AS idpic,
+      e.aktif AS status_sdm,
+			a.jml_hari,
+			a.quota,
+      a.kotadinas,
       IF(a.perdin IS NULL, 0, a.perdin) AS perdin,
       IF(a.akomodasi IS NULL, 0, a.akomodasi) AS akomodasi,
       IF(a.bpjs IS NULL, 0, a.bpjs) AS bpjs,
@@ -2311,6 +2400,8 @@ class Stkb_model extends CI_model
     $this->datatables->join('stkb_trk b', 'a.nomorstkb = b.nostkb');
     $this->datatables->join('stkb_sdm c', 'a.kode_iddata = c.id');
     $this->datatables->join('project d', 'a.project = d.kode');
+    $this->datatables->join('field_sdm e', 'a.kode_iddata = e.id_data_id', 'left');
+
 
     // $this->datatables->join('plan z', 'a.nomorstkb = z.nomorstkb');
     // if ($divisi2 != '7') {
@@ -2319,6 +2410,8 @@ class Stkb_model extends CI_model
     $this->datatables->where('d.type = "n" AND a.term1 + b.term1 != 0 AND a.nomorstkb', NULL, FALSE);
     $this->datatables->add_column('cek', '<input type="checkbox" style="width: 30px" class="checkbox form-control" id="agree1" name="statusbayar[]" value="$1" /><input type="hidden" name="nomorstkb$1" value="$1"><input type="hidden" name="term$1" value="Term 1"><input type="hidden" name="tanggalbuat$1" value="$2"><input type="hidden" name="kodeproject$1" value="$3"><input type="hidden" name="idpic$1" value="$4"><input type="hidden" name="perdin$1" value="$5">', 'nmrstkb,tanggalbuat,kodeproject,idpic,perdin');
     $this->datatables->add_column('print', '<a href="printstkb/$1/0" target="_blank"><i class="fa fa-print"></i> Print</a><input type="hidden" name="akomodasi$1" value="$2"><input type="hidden" name="bpjs$1" value="$3"><input type="hidden" name="jumlahops$1" value="$4"><input type="hidden" name="jumlahtrk$1" value="$5"><input type="hidden" name="total$1" value="$6">', 'nmrstkb,akomodasi,bpjs,jumlahops,jumlahtrk,total');
+
+    $this->datatables->add_column('cek_disabled', '<input type="checkbox" style="width: 30px" class="checkbox form-control" id="agree1" name="statusbayar[]" value="$1" disabled title="PIC tersebut sudah di blaclist dari list PIC" /><input type="hidden" name="nomorstkb$1" value="$1"><input type="hidden" name="term$1" value="Term 1"><input type="hidden" name="tanggalbuat$1" value="$2"><input type="hidden" name="kodeproject$1" value="$3"><input type="hidden" name="idpic$1" value="$4"><input type="hidden" name="perdin$1" value="$5">', 'nmrstkb,tanggalbuat,kodeproject,idpic,perdin');
     // $this->db->group_by('a.nomorstkb');
     $this->db->order_by('a.nomorstkb', 'ASC');
     $data = json_decode($this->datatables->generate(), TRUE);
@@ -2328,6 +2421,12 @@ class Stkb_model extends CI_model
     foreach ($data['data'] as $keyy) {
       if (!in_array($keyy['nmrstkb'], $newT1)) {
         $rek = $this->db->query("SELECT b.nama, d.NoRek as no FROM datarekening d JOIN bank b ON d.CodeBank = b.kode WHERE d.Id = '$keyy[idpic]'")->row_array();
+
+        if($keyy['status_sdm'] == 1 OR $keyy['status_sdm'] == NULL){
+          $cek = $keyy['cek'];
+        } else {
+          $cek = $keyy['cek_disabled'];
+        }
         $newArray[] = array(
           "nmrstkb" => $keyy['nmrstkb'],
           "termnya" => $keyy['termnya'],
@@ -2343,10 +2442,14 @@ class Stkb_model extends CI_model
           "perdin" => $keyy['perdin'],
           "akomodasi" => $keyy['akomodasi'],
           "bpjs" => $keyy['bpjs'],
-          "cek" => $keyy['cek'],
+          "cek" => $cek,
           "print" => $keyy['print'],
           "bank" => $rek['nama'],
-          "rekening" => $rek['no']
+          "rekening" => $rek['no'],
+          "status_sdm" => $keyy["status_sdm"],
+					"jumlah_hari" => $keyy['jml_hari'],
+					"jumlah_cabang" => $keyy['quota'],
+          "kota_dinas" => $keyy['kotadinas']
         );
         $no++;
       }
@@ -2372,6 +2475,10 @@ class Stkb_model extends CI_model
       a.nomorstkb AS nmrstkb,
       a.tgl_buat_term2 AS tanggalbuat,
       a.kode_iddata AS idpic,
+      f.aktif AS status_sdm,
+      a.jml_hari,
+      a.quota,
+      a.kotadinas,
       IF(a.perdin IS NULL, 0, 0) AS perdin,
       IF(a.akomodasi IS NULL, 0, 0) AS akomodasi,
       IF(a.bpjs IS NULL, 0, 0) AS bpjs,
@@ -2389,10 +2496,14 @@ class Stkb_model extends CI_model
     $this->datatables->join('stkb_sdm c', 'a.kode_iddata = c.id');
     $this->datatables->join('project d', 'a.project = d.kode');
     $this->datatables->join('stkb_pembayaran e', 'a.nomorstkb = e.nomorstkb');
+    $this->datatables->join('field_sdm f', 'a.kode_iddata = f.id_data_id', 'left');
+
     // AND a.nomorstkb NOT IN (SELECT nomorstkb FROM stkb_pembayaran WHERE term = 2)
     $this->datatables->where('d.type = "n" AND e.statusbayar = "Paid" AND a.term2 + b.term2 != 0', NULL, FALSE);
     $this->datatables->add_column('cek', '<input type="checkbox" style="width: 30px" class="checkbox form-control" id="agree2" name="statusbayar[]" value="$1" />', 'nmrstkb');
     $this->datatables->add_column('print', '<a href="printstkb/$1/$2" target="_blank"><i class="fa fa-print"></i> Print</a>', 'nmrstkb,0');
+
+    $this->datatables->add_column('cek_disabled', '<input type="checkbox" style="width: 30px" class="checkbox form-control" id="agree2" name="statusbayar[]" value="$1" disabled />', 'nmrstkb');
     $this->db->order_by('a.nomorstkb', 'ASC');
     //return $this->datatables->generate();
     $data = json_decode($this->datatables->generate(), TRUE);
@@ -2458,6 +2569,13 @@ class Stkb_model extends CI_model
           }
 
           $rek = $this->db->query("SELECT b.nama, d.NoRek as no FROM datarekening d JOIN bank b ON d.CodeBank = b.kode WHERE d.Id = '$keyy[idpic]'")->row_array();
+
+          if($keyy['status_sdm'] == 1 OR $keyy['status_sdm'] == NULL){
+            $cek = '<input type="checkbox" style="width: 30px" class="checkbox form-control" id="agree2" name="statusbayar[]" value="' . $keyy['nmrstkb'] . '" /><input type="hidden" name="nomorstkb' . $keyy['nmrstkb'] . '" value="' . $keyy['nmrstkb'] . '"><input type="hidden" name="term' . $keyy['nmrstkb'] . '" value="' . $keyy['termnya'] . '"><input type="hidden" name="tanggalbuat' . $keyy['nmrstkb'] . '" value="' . $keyy['tanggalbuat'] . '"><input type="hidden" name="kodeproject' . $keyy['nmrstkb'] . '" value="' . $keyy['kodeproject'] . '"><input type="hidden" name="idpic' . $keyy['nmrstkb'] . '" value="' . $keyy['idpic'] . '">';
+          } else {
+            $cek = '<input type="checkbox" style="width: 30px" class="checkbox form-control" id="agree2" name="statusbayar[]" value="' . $keyy['nmrstkb'] . '" disabled title="PIC tersebut sudah di blaclist dari list PIC"/><input type="hidden" name="nomorstkb' . $keyy['nmrstkb'] . '" value="' . $keyy['nmrstkb'] . '"><input type="hidden" name="term' . $keyy['nmrstkb'] . '" value="' . $keyy['termnya'] . '"><input type="hidden" name="tanggalbuat' . $keyy['nmrstkb'] . '" value="' . $keyy['tanggalbuat'] . '"><input type="hidden" name="kodeproject' . $keyy['nmrstkb'] . '" value="' . $keyy['kodeproject'] . '"><input type="hidden" name="idpic' . $keyy['nmrstkb'] . '" value="' . $keyy['idpic'] . '">';
+          }
+
           $newArray[] = array(
             "nmrstkb" => $keyy['nmrstkb'],
             "termnya" => $keyy['termnya'],
@@ -2473,10 +2591,14 @@ class Stkb_model extends CI_model
             "perdin" => $keyy['perdin'],
             "akomodasi" => $keyy['akomodasi'],
             "bpjs" => $keyy['bpjs'],
-            "cek" => '<input type="checkbox" style="width: 30px" class="checkbox form-control" id="agree2" name="statusbayar[]" value="' . $keyy['nmrstkb'] . '" /><input type="hidden" name="nomorstkb' . $keyy['nmrstkb'] . '" value="' . $keyy['nmrstkb'] . '"><input type="hidden" name="term' . $keyy['nmrstkb'] . '" value="' . $keyy['termnya'] . '"><input type="hidden" name="tanggalbuat' . $keyy['nmrstkb'] . '" value="' . $keyy['tanggalbuat'] . '"><input type="hidden" name="kodeproject' . $keyy['nmrstkb'] . '" value="' . $keyy['kodeproject'] . '"><input type="hidden" name="idpic' . $keyy['nmrstkb'] . '" value="' . $keyy['idpic'] . '">',
+            "cek" => $cek,
             "print" => '<a href="printstkb/' . $keyy['nmrstkb'] . '/0" target="_blank"><i class="fa fa-print"></i> Print</a><input type="hidden" name="perdin' . $keyy['nmrstkb'] . '" value="0"><input type="hidden" name="akomodasi' . $keyy['nmrstkb'] . '" value="0"><input type="hidden" name="bpjs' . $keyy['nmrstkb'] . '" value="0"><input type="hidden" name="jumlahops' . $keyy['nmrstkb'] . '" value="' . $keyy['jumlahops'] . '"><input type="hidden" name="jumlahtrk' . $keyy['nmrstkb'] . '" value="' . $keyy['jumlahtrk'] . '"><input type="hidden" name="total' . $keyy['nmrstkb'] . '" value="' . $keyy['total'] . '">',
             "bank" => $rek['nama'],
-            "rekening" => $rek['no']
+            "rekening" => $rek['no'],
+            "status_sdm" => $keyy['status_sdm'],
+          "jumlah_hari" => $keyy['jml_hari'],
+          "jumlah_cabang" => $keyy['quota'],
+          "kota_dinas" => $keyy['kotadinas']
           );
           $no++;
         }
@@ -2509,6 +2631,10 @@ class Stkb_model extends CI_model
       a.nomorstkb AS nmrstkb,
       a.tgl_buat_term3 AS tanggalbuat,
       a.kode_iddata AS idpic,
+      e.aktif AS status_sdm,
+      a.jml_hari,
+      a.quota,
+      a.kotadinas,
       c.nama AS namapic,
       a.project AS kodeproject,
       d.nama AS namaproject,
@@ -2525,6 +2651,7 @@ class Stkb_model extends CI_model
     $this->datatables->join('stkb_trk b', 'a.nomorstkb = b.nostkb');
     $this->datatables->join('stkb_sdm c', 'a.kode_iddata = c.id');
     $this->datatables->join('project d', 'a.project = d.kode');
+    $this->datatables->join('field_sdm e', 'a.kode_iddata = e.id_data_id', 'left');
     $this->datatables->where('d.type = "n" AND a.term3 + b.term3 != 0', NULL, FALSE);
     $this->datatables->add_column('cek', '<input type="checkbox" style="width: 30px" class="checkbox form-control" id="agree3" name="statusbayar[]" value="$1" />', 'nmrstkb');
     $this->datatables->add_column('print', '<a href="printstkb/$1/$2" target="_blank"><i class="fa fa-print"></i> Print</a>', 'nmrstkb,0');
@@ -2593,6 +2720,12 @@ class Stkb_model extends CI_model
             $insert = $this->db->query("UPDATE stkb_ops SET tgl_buat_term3 = '$date' WHERE nomorstkb = '$keyy[nmrstkb]' AND project = '$keyy[kodeproject]'");
           }
 
+          if($keyy['status_sdm'] == 1 OR $keyy['status_sdm'] == NULL){
+            $cek = '<input type="checkbox" style="width: 30px" class="checkbox form-control" id="agree3" name="statusbayar[]" value="' . $keyy['nmrstkb'] . '" /><input type="hidden" name="nomorstkb' . $keyy['nmrstkb'] . '" value="' . $keyy['nmrstkb'] . '"><input type="hidden" name="term' . $keyy['nmrstkb'] . '" value="' . $keyy['termnya'] . '"><input type="hidden" name="tanggalbuat' . $keyy['nmrstkb'] . '" value="' . $keyy['tanggalbuat'] . '"><input type="hidden" name="kodeproject' . $keyy['nmrstkb'] . '" value="' . $keyy['kodeproject'] . '"><input type="hidden" name="idpic' . $keyy['nmrstkb'] . '" value="' . $keyy['idpic'] . '">';
+          } else {
+            $cek = '<input type="checkbox" style="width: 30px" class="checkbox form-control" id="agree3" name="statusbayar[]" value="' . $keyy['nmrstkb'] . '" disabled title="PIC tersebut sudah di blaclist dari list PIC" /><input type="hidden" name="nomorstkb' . $keyy['nmrstkb'] . '" value="' . $keyy['nmrstkb'] . '"><input type="hidden" name="term' . $keyy['nmrstkb'] . '" value="' . $keyy['termnya'] . '"><input type="hidden" name="tanggalbuat' . $keyy['nmrstkb'] . '" value="' . $keyy['tanggalbuat'] . '"><input type="hidden" name="kodeproject' . $keyy['nmrstkb'] . '" value="' . $keyy['kodeproject'] . '"><input type="hidden" name="idpic' . $keyy['nmrstkb'] . '" value="' . $keyy['idpic'] . '">';
+          }
+
           $newArray[] = array(
             "nmrstkb" => $keyy['nmrstkb'],
             "termnya" => $keyy['termnya'],
@@ -2608,10 +2741,14 @@ class Stkb_model extends CI_model
             "perdin" => $keyy['perdin'],
             "akomodasi" => $keyy['akomodasi'],
             "bpjs" => $keyy['bpjs'],
-            "cek" => '<input type="checkbox" style="width: 30px" class="checkbox form-control" id="agree3" name="statusbayar[]" value="' . $keyy['nmrstkb'] . '" /><input type="hidden" name="nomorstkb' . $keyy['nmrstkb'] . '" value="' . $keyy['nmrstkb'] . '"><input type="hidden" name="term' . $keyy['nmrstkb'] . '" value="' . $keyy['termnya'] . '"><input type="hidden" name="tanggalbuat' . $keyy['nmrstkb'] . '" value="' . $keyy['tanggalbuat'] . '"><input type="hidden" name="kodeproject' . $keyy['nmrstkb'] . '" value="' . $keyy['kodeproject'] . '"><input type="hidden" name="idpic' . $keyy['nmrstkb'] . '" value="' . $keyy['idpic'] . '">',
+            "cek" => $cek,
             "print" => '<a href="printstkb/' . $keyy['nmrstkb'] . '/0" target="_blank"><i class="fa fa-print"></i> Print</a><input type="hidden" name="perdin' . $keyy['nmrstkb'] . '" value="0"><input type="hidden" name="akomodasi' . $keyy['nmrstkb'] . '" value="0"><input type="hidden" name="bpjs' . $keyy['nmrstkb'] . '" value="0"><input type="hidden" name="jumlahops' . $keyy['nmrstkb'] . '" value="' . $keyy['jumlahops'] . '"><input type="hidden" name="jumlahtrk' . $keyy['nmrstkb'] . '" value="' . $keyy['jumlahtrk'] . '"><input type="hidden" name="total' . $keyy['nmrstkb'] . '" value="' . $keyy['total'] . '">',
             "bank" => $rek['nama'],
-            "rekening" => $rek['no']
+            "rekening" => $rek['no'],
+            "status_sdm" => $keyy['status_sdm'],
+          "jumlah_hari" => $keyy['jml_hari'],
+          "jumlah_cabang" => $keyy['quota'],
+          "kota_dinas" => $keyy['kotadinas']
           );
           $no++;
         }
@@ -2633,6 +2770,9 @@ class Stkb_model extends CI_model
       a.term AS term,
       a.tanggalbuat AS tanggalbuat,
       a.idpic AS idpic,
+      e.jml_hari,
+      e.quota,
+      e.kotadinas,
       IF(a.perdin IS NULL, 0, a.perdin) AS perdin,
       IF(a.akomodasi IS NULL, 0, a.akomodasi) AS akomodasi,
       IF(a.bpjs IS NULL, 0, a.bpjs) AS bpjs,
@@ -2648,12 +2788,13 @@ class Stkb_model extends CI_model
     $this->datatables->join('stkb_sdm c', 'a.idpic = c.id');
     $this->datatables->join('datarekening d', 'a.idpic = d.Id');
     $this->datatables->join('bank b2', 'd.CodeBank = b2.kode');
+    $this->datatables->join('stkb_ops e', 'a.nomorstkb = e.nomorstkb', 'left');
     $this->datatables->where('a.statusbayar = "RTP" AND b.type = "n"', NULL, FALSE);
 
     if ($this->session->userdata('id_divisi') == 7) {
       $this->datatables->add_column('bayar', '<a href="javascript;" data-toggle="modal" data-target="#bayarstkb" data-nomorstkb="$1" data-pembayar="$1" data-totalnya="$4" data-term="$5" data-ops="$2" data-trk="$3" data-perdin="$6" data-akomodasi="$7" data-bpjs="$8" class="btn-success btn-sm"><i class="fa fa-money"></i> Paid</a>', 'nomorstkb,jumlahops,jumlahtrk,total,term,perdin,akomodasi,bpjs');
     } else {
-      $this->datatables->add_column('bayar');
+      $this->datatables->add_column('bayar', '', '');
     }
     $this->datatables->add_column('print', '<a href="printstkb/$1/$2" target="_blank"><i class="fa fa-print"></i> Print</a>', 'nomorstkb,term');
     $this->db->order_by('a.nomorstkb', 'ASC');
@@ -3247,6 +3388,150 @@ class Stkb_model extends CI_model
                                   ;");
     return $getprint->result_array();
   }
+
+  public function getdata_q()
+  {
+    return $this->db->query("SELECT
+                                                              a.*, b.nama namanya, b.status statusnya, c.nama namaproject
+                                                            FROM
+                                                              stkb_trk a
+                                                            JOIN stkb_sdm b ON a.nama = b.id
+                                                            JOIN project c ON a.project = c.kode
+                                                            WHERE c.type = 'n' AND a.term1 <= -1 OR a.term2 <= -1 OR a.term3 <= -1
+                                                            ORDER BY
+                                                              nostkb DESC ")->result();
+  }
+
+  public function tambah_lskontrak($jenkot)
+  {
+    $data = [
+        'kota' => $jenkot,
+        'jabatan' => $this->input->post('jabatan'),
+        'penempatan' => $this->input->post('penempatan'),
+        'dinas' => $this->input->post('dinas'),
+        // 'lsharikerja' => $this->input->post('lsharikerja'),
+        'biaya_pulsa' => $this->input->post('biaya_pulsa'),
+        'biaya_atk' => $this->input->post('biaya_atk'),
+        'transport_harian' => $this->input->post('transport_harian'),
+        'biaya_fc' => $this->input->post('biaya_fc'),
+        'biaya_pengiriman' => $this->input->post('biaya_pengiriman'),
+        'transport_kecabang' => $this->input->post('transport_kecabang'),
+
+        'kunjungan' => $this->input->post('kunjungan'),
+        'atmcentermalam' => $this->input->post('atmcentermalam'),
+        // 'lsops' => $this->input->post('lsops'),
+        'lsakomodasi1_8' => $this->input->post('lsakomodasi1_8'),
+        'lsakomodasi9_16' => $this->input->post('lsakomodasi9_16'),
+        'bpjs' => $this->input->post('bpjs'),
+        'id_update' => $this->session->userdata('id_user'),
+        'last_update' => date('Y-m-d H:i:s')
+
+      ];
+
+      $this->db->insert('stkb_lskontrak', $data);
+  }
+
+  public function edit_lskontrak()
+  {
+    date_default_timezone_set('Asia/Jakarta');
+    $data = [
+      'kota' => $this->input->post('kota'),
+      'jabatan' => $this->input->post('jabatan'),
+      'penempatan' => $this->input->post('penempatan'),
+      'dinas' => $this->input->post('dinas'),
+      // 'lsharikerja' => $this->input->post('lsharikerja'),
+      'biaya_pulsa' => $this->input->post('biaya_pulsa'),
+      'biaya_atk' => $this->input->post('biaya_atk'),
+      'transport_harian' => $this->input->post('transport_harian'),
+      'biaya_fc' => $this->input->post('biaya_fc'),
+      'biaya_pengiriman' => $this->input->post('biaya_pengiriman'),
+      'transport_kecabang' => $this->input->post('transport_kecabang'),
+
+      'kunjungan' => $this->input->post('kunjungan'),
+      'atmcentermalam' => $this->input->post('atmcentermalam'),
+      // 'lsops' => $this->input->post('lsops'),
+      'lsakomodasi1_8' => $this->input->post('lsakomodasi1_8'),
+      'lsakomodasi9_16' => $this->input->post('lsakomodasi9_16'),
+      'bpjs' => $this->input->post('bpjs'),
+      'id_update' => $this->session->userdata('id_user'),
+      'last_update' => date('Y-m-d H:i:s')
+    ];
+
+    $where = ['no' => $this->input->post('no')];
+
+    $this->db->where($where);
+    $this->db->update('stkb_lskontrak', $data);
+  }
+
+  public function tambah_sdmstkb()
+  {
+    date_default_timezone_set('Asia/Jakarta');
+
+    $Id = $this->input->post('Id');
+    $getnama = $this->db->get_where('id_data', array('Id' => $Id))->row_array();
+    $kota = $this->input->post('kota_asal');
+    $jabatan = $this->input->post('jabatan');
+
+
+    //UPLOAD MEMO
+    $extension_memo  = pathinfo($_FILES['memo_sdm']['name'], PATHINFO_EXTENSION);
+    $memo_name = "memo_sdmstkb_" . time() . "." . $extension_memo;
+    $memo_tmp = $_FILES['memo_sdm']['tmp_name'];
+    move_uploaded_file($memo_tmp, "assets/file/memo/" . $memo_name);
+
+    $data = [
+      'id' => $Id,
+      'nama' => strtoupper($getnama['Nama']),
+      'kota_asal' => strtoupper($kota),
+      'jabatan' => $jabatan,
+      'memo' => $memo_name,
+      'id_update' => $this->session->userdata('id_user'),
+      'last_update' => date('Y-m-d H:i:s'),
+      'status' => 'Enable'
+    ];
+      $this->db->insert('stkb_sdm', $data);
+      
+  }
+
+  public function edit_sdmstkb()
+  {
+    $no = $this->input->post('no');
+    $nama = $this->input->post('nama');
+    $kota = $this->input->post('kota_asal');
+    $kota_penugasan = $this->input->post('kota_penugasan');
+
+    $jabatan = $this->input->post('jabatan');
+    $status = $this->input->post('status');
+
+    $get = $this->db->get_where('stkb_sdm', ['no' => $no])->row_array();
+
+    //UPLOAD MEMO
+    if ($_FILES['memo_sdm']['name'] == NULL) {
+      $memo_name = $get['memo'];
+    } else {
+      $extension_memo  = pathinfo($_FILES['memo_sdm']['name'], PATHINFO_EXTENSION);
+      $memo_name = "memo_sdmstkb_" . time() . "." . $extension_memo;
+      $memo_tmp = $_FILES['memo_sdm']['tmp_name'];
+      move_uploaded_file($memo_tmp, "assets/file/memo/" . $memo_name);
+    }
+
+
+    $data = [
+      'nama' => $nama,
+      'kota_asal' => $kota,
+      'kota_penugasan' => $kota_penugasan,
+      'jabatan' => $jabatan,
+      'memo' => $memo_name,
+      'id_update' => $this->session->userdata('id_user'),
+      'last_update' => date('Y-m-d H:i:s'),
+      'status' => $status
+    ];
+    $where = ['no' => $no];
+
+    $this->db->where($where);
+    $this->db->update('stkb_sdm', $data);
+  }
+
   // UPDATE ADAM SANTOSO
   public function triggerGetPrintTRK($datanya)
   {
@@ -3311,6 +3596,7 @@ class Stkb_model extends CI_model
     }
     return $result;
   }
+
   function multi_array_search($array, $search)
   {
     $result = array();

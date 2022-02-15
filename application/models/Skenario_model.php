@@ -865,68 +865,70 @@ return $this->db->query("SELECT a.*, b.*,
                  redirect('skenario/ebanking');
              } else {
 
-                $data = [];
-                $j = 0;
+                foreach ($bank as $key => $val) :
+                        $data = [];
+                        $j = 0;
 
-                if($os != NULL) {
-                foreach ($os as $key => $val_os) {
-                    foreach ($provider as $row => $val_provider) {
-                    
-                    
-                        for($i=1; $i<=$jumlahskenario; $i++){
-                          $hari = htmlspecialchars($this->input->post("hari".$i, true));
-                          $waktu = htmlspecialchars($this->input->post("waktu".$i, true));
-                          $kuota = htmlspecialchars($this->input->post("kuota".$i, true));
-                           for($t=1; $t<=$kuota; $t++) {
-                              $data1 = [
-                                  'project' => $project,
-                                  'channel' => $channel,
-                                  'bank' => $bank,
-                                  'transaksi' => $transaksi,
-                                  'os' => $val_os,
-                                  'provider' => $val_provider,
-                                    'hari' => $hari,
-                                  'waktu' => $waktu,
-                                  'trx_ke' => $t
-                                ];
-                          
-                        $this->db->insert('ebanking', $data1);
+                        if($os != NULL) {
+                        foreach ($os as $key => $val_os) {
+                            foreach ($provider as $row => $val_provider) {
+                            
+                            
+                                for($i=1; $i<=$jumlahskenario; $i++){
+                                  $hari = htmlspecialchars($this->input->post("hari".$i, true));
+                                  $waktu = htmlspecialchars($this->input->post("waktu".$i, true));
+                                  $kuota = htmlspecialchars($this->input->post("kuota".$i, true));
+                                   for($t=1; $t<=$kuota; $t++) {
+                                      $data1 = [
+                                          'project' => $project,
+                                          'channel' => $channel,
+                                          'bank' => $val,
+                                          'transaksi' => $transaksi,
+                                          'os' => $val_os,
+                                          'provider' => $val_provider,
+                                            'hari' => $hari,
+                                          'waktu' => $waktu,
+                                          'trx_ke' => $t
+                                        ];
+                                  
+                                $this->db->insert('ebanking', $data1);
+                                }
+                                $j++;
+                             
+                                }
+                            }
                         }
-                        $j++;
-                     
-                        }
-                    }
-                }
-                } else {
-                    $val_os= NULL;
-                     foreach ($provider as $row => $val_provider) {
-                    
-                    
-                        for($i=1; $i<=$jumlahskenario; $i++){
-                          $hari = htmlspecialchars($this->input->post("hari".$i, true));
-                          $waktu = htmlspecialchars($this->input->post("waktu".$i, true));
-                          $kuota = htmlspecialchars($this->input->post("kuota".$i, true));
-                           for($t=1; $t<=$kuota; $t++) {
-                              $data1 = [
-                                  'project' => $project,
-                                  'channel' => $channel,
-                                  'bank' => $bank,
-                                  'transaksi' => $transaksi,
-                                  'os' => $val_os,
-                                  'provider' => $val_provider,
-                                    'hari' => $hari,
-                                  'waktu' => $waktu,
-                                  'trx_ke' => $t
-                                ];
-                          
-                        $this->db->insert('ebanking', $data1);
-                        }
-                        $j++;
-                     
-                        }
-                    }
+                        } else {
+                            $val_os= NULL;
+                             foreach ($provider as $row => $val_provider) {
+                            
+                            
+                                for($i=1; $i<=$jumlahskenario; $i++){
+                                  $hari = htmlspecialchars($this->input->post("hari".$i, true));
+                                  $waktu = htmlspecialchars($this->input->post("waktu".$i, true));
+                                  $kuota = htmlspecialchars($this->input->post("kuota".$i, true));
+                                   for($t=1; $t<=$kuota; $t++) {
+                                      $data1 = [
+                                          'project' => $project,
+                                          'channel' => $channel,
+                                          'bank' => $val,
+                                          'transaksi' => $transaksi,
+                                          'os' => $val_os,
+                                          'provider' => $val_provider,
+                                            'hari' => $hari,
+                                          'waktu' => $waktu,
+                                          'trx_ke' => $t
+                                        ];
+                                  
+                                $this->db->insert('ebanking', $data1);
+                                }
+                                $j++;
+                             
+                                }
+                            }
 
-                }
+                        }
+                    endforeach;
 
                 
                 //     for($i=1; $i<=$jumlahskenario; $i++){
@@ -1352,7 +1354,7 @@ return $this->db->query("SELECT a.*, b.*,
         if($atmBukan){
           $this->db->select('
           project.nama as projectnama,
-          plan.no, plan.planstart, plan.planend, plan.project as kodeproject,
+          plan.no, plan.planstart, plan.planend, plan.project as kodeproject, plan.nomorstkb,
           atmcenter.cabang as kodecabang, atmcenter.namacabang as namacabang,
           attribute.kode as kodekunjungan, attribute.nama as namaatt');
           $this->db->from('plan');
@@ -1370,7 +1372,7 @@ return $this->db->query("SELECT a.*, b.*,
         }else{
           $this->db->select('
           project.nama as projectnama,
-          plan.no, plan.planstart, plan.planend, plan.project as kodeproject,
+          plan.no, plan.planstart, plan.planend, plan.project as kodeproject, plan.nomorstkb,
           cabang.kode as kodecabang, cabang.nama as namacabang,
           attribute.kode as kodekunjungan, attribute.nama as namaatt');
           $this->db->from('plan');

@@ -57,6 +57,7 @@ if ($this->db->get_where('user', ['noid' => $id_user])->num_rows() >= 1) {
                             <th>Nama Kepala Field</th>
                             <th>Nama Pengangkat Kaderisasi</th>
                             <th>Memo</th>
+                            <th>Status</th>
                             <th width="150px">Action</th>
                           </tr>
                         </thead>
@@ -120,10 +121,17 @@ if ($this->db->get_where('user', ['noid' => $id_user])->num_rows() >= 1) {
                                         } ?>
                                 </center>
                               </td>
+                              <td><center>
+                            <?php if($data['aktif'] == '1'){ ?>
+                              <a type="button" class="btn btn-success btn-round btn-xs" title="Enable" onclick="return(false);"><i class="fas fa-check-circle" ></i> &nbsp;&nbsp;Enable</a>
+                            <?php } else if($data['aktif'] == '0') { ?>
+                              <a type="button" class="btn btn-danger btn-round btn-xs" title="Disable" onclick="return(false);"><i class="fas fa-times-circle" ></i> &nbsp;&nbsp;Disable</a>
+                            <?php } ?>
+                          </center></td>
                               <td>
                                 <center>
                                   <?php if ($user['id_divisi'] == 99) : ?>
-                                    <a data-toggle="modal" data-target="#edit-fieldsdm" class="btn-success btn-sm btn-edit-field" data-id="<?= $data['id'] ?>" data-id_data="<?= $data['id_data_id'] ?>" data-kota_id="<?= $data['kota_id'] ?>" data-posisi="<?= $data['posisi'] ?>" data-status="<?= $data['status'] ?>" data-tanggal_mulai="<?= $data['tanggal_mulai'] ?>" data-tanggal_selesai="<?= $data['tanggal_selesai'] ?>" data-tanggal_kaderisasi="<?= $data['tanggal_kaderisasi'] ?>" data-kader_id="<?= $data['kader_id'] ?>" data-jumlah_kaderisasi="<?= $data['jumlah_kaderisasi'] ?>" data-mulai_kaderisasi="<?= $data['mulai_kaderisasi'] ?>" data-selesai_kaderisasi="<?= $data['selesai_kaderisasi'] ?>" data-penanggung_jawab_kaderisasi="<?= $data['penanggung_jawab_kaderisasi'] ?>">
+                                    <a data-toggle="modal" data-target="#edit-fieldsdm" class="btn-success btn-sm btn-edit-field" data-id="<?= $data['id'] ?>" data-id_data="<?= $data['id_data_id'] ?>" data-kota_id="<?= $data['kota_id'] ?>" data-posisi="<?= $data['posisi'] ?>" data-status="<?= $data['status'] ?>" data-tanggal_mulai="<?= $data['tanggal_mulai'] ?>" data-tanggal_selesai="<?= $data['tanggal_selesai'] ?>" data-tanggal_kaderisasi="<?= $data['tanggal_kaderisasi'] ?>" data-kader_id="<?= $data['kader_id'] ?>" data-jumlah_kaderisasi="<?= $data['jumlah_kaderisasi'] ?>" data-mulai_kaderisasi="<?= $data['mulai_kaderisasi'] ?>" data-selesai_kaderisasi="<?= $data['selesai_kaderisasi'] ?>" data-penanggung_jawab_kaderisasi="<?= $data['penanggung_jawab_kaderisasi'] ?>" data-aktif="<?= $data['aktif'] ?>">
                                       <i class="fa fa-edit"></i> Edit</a>
                                     <a href="<?php echo base_url(); ?>stkb/hapus_fieldsdm/<?php echo $data['id']; ?> " class="btn-danger btn-sm tombol-hapus"><i class="fa fa-trash"></i> Delete</a>
                                   <?php endif; ?>
@@ -167,6 +175,7 @@ if ($this->db->get_where('user', ['noid' => $id_user])->num_rows() >= 1) {
                             <th>Nama Kepala Field</th>
                             <th>Nama Pengangkat Kaderisasi</th>
                             <th>Memo</th>
+                            <th>Status</th>
                             <th width="150px">Action</th>
                           </tr>
                         </thead>
@@ -230,6 +239,13 @@ if ($this->db->get_where('user', ['noid' => $id_user])->num_rows() >= 1) {
                                         } ?>
                                 </center>
                               </td>
+                              <td><center>
+                            <?php if($data['aktif'] == '1'){ ?>
+                              <a type="button" class="btn btn-success btn-round btn-xs" title="Enable" onclick="return(false);"><i class="fas fa-check-circle" ></i> &nbsp;&nbsp;Enable</a>
+                            <?php } else if($data['aktif'] == '0') { ?>
+                              <a type="button" class="btn btn-danger btn-round btn-xs" title="Disable" onclick="return(false);"><i class="fas fa-times-circle" ></i> &nbsp;&nbsp;Disable</a>
+                            <?php } ?>
+                          </center></td>
                               <td>
                                 <center>
                                   <?php if ($user['id_divisi'] == 99) : ?>
@@ -271,6 +287,8 @@ if ($this->db->get_where('user', ['noid' => $id_user])->num_rows() >= 1) {
                             <th>Nama Kepala Field</th>
                             <th>Nama Pengangkat Kaderisasi</th>
                             <th>Memo</th>
+                            <th>Status</th>
+
                             <th width="150px">Action</th>
                           </tr>
                         </thead>
@@ -313,6 +331,13 @@ if ($this->db->get_where('user', ['noid' => $id_user])->num_rows() >= 1) {
                                         } ?>
                                 </center>
                               </td>
+                              <td><center>
+                            <?php if($data['aktif'] == '1'){ ?>
+                              <a type="button" class="btn btn-success btn-round btn-xs" title="Enable" onclick="return(false);"><i class="fas fa-check-circle" ></i> &nbsp;&nbsp;Enable</a>
+                            <?php } else if($data['aktif'] == '0') { ?>
+                              <a type="button" class="btn btn-danger btn-round btn-xs" title="Disable" onclick="return(false);"><i class="fas fa-times-circle" ></i> &nbsp;&nbsp;Disable</a>
+                            <?php } ?>
+                          </center></td>
                               <td>
                                 <center>
                                   <?php if ($user['id_divisi'] == 99) : ?>
@@ -479,6 +504,14 @@ $dataAreaHead = $this->db->query("SELECT * FROM field_sdm JOIN id_data ON id_dat
             <input type="file" name="memo_sdm" accept="application/pdf" class="form-control" required>
             <span class="bg-info p-1">NOTE!</span>&nbsp;&nbsp;Format Memo(.pdf)
           </div>
+          <div class="form-group row-nama-kaderisasi">
+            <label>Status Aktif</label>
+            <select name="aktif" class="form-control form-control-user">
+              <option value="" selected>--Pilih Status--</option>
+              <option value="1">Enable</option>
+              <option value="0">Disable</option> 
+            </select>
+          </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -603,6 +636,14 @@ $dataAreaHead = $this->db->query("SELECT * FROM field_sdm JOIN id_data ON id_dat
             <label>Upload Memo</label>
             <input type="file" name="memo_sdm" accept="application/pdf" class="form-control">
             <span class="bg-info p-1">NOTE!</span>&nbsp;&nbsp;Format Memo(.pdf)
+          </div>
+          <div class="form-group">
+            <label>Status Aktif</label>
+            <select name="aktif" class="form-control form-control-user">
+              <option value="" selected>--Pilih Status--</option>
+              <option value="1">Enable</option>
+              <option value="0">Disable</option> 
+            </select>
           </div>
         </div>
         <div class="modal-footer">
@@ -764,6 +805,8 @@ $dataAreaHead = $this->db->query("SELECT * FROM field_sdm JOIN id_data ON id_dat
     $('#edit-fieldsdm [name=mulai_kaderisasi]').val($(this).data('mulai_kaderisasi')).change();
     $('#edit-fieldsdm [name=selesai_kaderisasi]').val($(this).data('selesai_kaderisasi')).change();
     $('#edit-fieldsdm [name=penanggung_jawab_kaderisasi]').val($(this).data('penanggung_jawab_kaderisasi')).change();
+    $('#edit-fieldsdm [name=aktif]').val($(this).data('aktif'));
+
 
   });
 

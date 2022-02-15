@@ -27,6 +27,9 @@
           <th>Term</th>
           <th>Tanggal Buat</th>
           <th>Tanggal Mulai</th>
+          <th>Total Hari</th>
+          <th>Total Cabang</th>
+          <th>Kota Dinas</th>
           <th>Project</th>
           <th>Nama</th>
           <th>Bank</th>
@@ -120,8 +123,20 @@
           "data": "tanggalbuat"
         },
         {
-          "data": "tglm"
+          "data": "jumlah_hari"
         },
+
+        {
+          "data": "jumlah_cabang"
+        },
+
+        {
+          "data": "kota_dinas"
+        },
+
+				{
+					"data": "tglm"
+				},
         {
           "data": "namaproject",
           render: function(data, type, row) {
@@ -208,7 +223,13 @@
       footerCallback: function(row, data, start, end, display) {
         var totalnya = 0;
         for (var i = 0; i < data.length; i++) {
-          totalnya += parseInt(data[i]['total']);
+          if(data[i]['status_sdm'] == 1 || data[i]['status_sdm'] == null){
+            var total = data[i]['total'];
+          } else {
+            var total = 0;
+          }
+          // totalnya += parseInt(data[i]['total']);
+          totalnya += parseInt(total);
         }
         if (totalnya < 0) {
           $('#totalterm2perpage').html(formatRupiah(totalnya.toString(), 'Rp. -'));

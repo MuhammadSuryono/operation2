@@ -86,11 +86,13 @@ date_default_timezone_set('Asia/Jakarta');
                                                 <select>
                                         </div>
                                         <br>
+
                                         <div>
                                             <label><b>Nama Field Officer :</b></label><a href="javascript;" data-toggle="modal" data-target="#pengajuanLintasPulau" class="btn btn-primary" style="font-size:10px;float:right;">Ajukan Nama Lain</a>
                                             <select class="form-control selectpicker" data-live-search="true" name="nama_fo" id="namafo" required>
                                                 <option value="">Pilih Nama</option>
                                                 <select>
+                                            <span>Note : Jika nama field officer tidak dapat dipilih dikarenakan statusnya sudah di blacklist.</span>
                                         </div>
                                     </div>
 

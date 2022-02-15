@@ -175,6 +175,54 @@ class Aktual extends CI_Controller
         redirect('aktual/pending');
     }
 
+    public function historykunjungan()
+    {
+     $data['judul'] = 'Daftar History Kunjungan';
+      
+     $data['project'] = $this->Aktual_model->getproject();
+
+        $this->load->view('templates/header', $data);
+        $this->load->view('templates/sidebar');
+        $this->load->view('aktual/historykunjungan', $data);
+        $this->load->view('templates/footer');   
+    }
+
+    public function pengulangan()
+    {
+     $data['judul'] = 'Daftar Kunjungan Pengulangan';
+      
+     $data['project'] = $this->Aktual_model->getproject();
+
+        $this->load->view('templates/header', $data);
+        $this->load->view('templates/sidebar');
+        $this->load->view('aktual/pengulangan', $data);
+        $this->load->view('templates/footer');   
+    }
+
+     public function gethistory_aktual()
+      {
+        $project = $_POST['project'];
+        
+        $data = $this->Aktual_model->gethistory_aktual($project);
+        echo json_encode($data);
+      }
+
+      public function getkunjungan_pengulangan()
+      {
+        $project = $_POST['project'];
+        
+        $data = $this->Aktual_model->getkunjungan_pengulangan($project);
+        echo json_encode($data);
+      }
+
+      public function getpenolakan_validasi()
+      {
+        $project = $_POST['project'];
+        
+        $data = $this->Aktual_model->getpenolakan_validasi($project);
+        echo json_encode($data);
+      }
+
     public function index()
     {
         $data['judul'] = 'Daftar Aktual Success';
@@ -1708,14 +1756,19 @@ class Aktual extends CI_Controller
         $greet_akhir_after = serialize($this->input->post('greeting_akhir_after'));
 
 
-        $image_name = serialize($_FILES['bukti_transaksi']['name']);
         
-
+        $img = [];
+        
         foreach($_FILES["bukti_transaksi"]["tmp_name"] as $key=>$tmp_name) {
-            $format_name = $_FILES['bukti_transaksi']['name'][$key];
-            $format_tmp = $_FILES['bukti_transaksi']['tmp_name'][$key];
+            $extension_format  = pathinfo($_FILES['bukti_transaksi']['name'][$key], PATHINFO_EXTENSION);
+            $format_name = "BuktiEval_".$project."_".$bank."_".$platform."_".$skenario."_".$num."_" . time()."_".$key. "." . $extension_format;
+             $format_tmp = $_FILES['bukti_transaksi']['tmp_name'][$key];
             move_uploaded_file($format_tmp, "assets/file/buktitrk/" . $format_name);
+
+            $img[] = $format_name;
         }
+        $image_name = serialize($img);
+
 
         $data = [
                 'user_input' => $id_user,
@@ -1756,6 +1809,14 @@ class Aktual extends CI_Controller
         $num = $this->input->post('num');
         $datenow = date('Y-m-d');
 
+        $gr = $this->db->get_where('sosmed', ['num' => $num])->row_array();
+
+        $project = $gr['project'];
+        $bank = $gr['bank'];
+        $platform = $gr['platform'];
+        $skenario = $gr['skenario'];
+
+
         // $project = $this->input->post('project_2');
         // $bank = $this->input->post('bank_2');
         // $platform = $this->input->post('platform_2');
@@ -1790,14 +1851,17 @@ class Aktual extends CI_Controller
         $greet_akhir_after = serialize($this->input->post('greeting_akhir_after'));
 
 
-        $image_name = serialize($_FILES['bukti_transaksi']['name']);
+        $img = [];
         
-
         foreach($_FILES["bukti_transaksi"]["tmp_name"] as $key=>$tmp_name) {
-            $format_name = $_FILES['bukti_transaksi']['name'][$key];
-            $format_tmp = $_FILES['bukti_transaksi']['tmp_name'][$key];
+            $extension_format  = pathinfo($_FILES['bukti_transaksi']['name'][$key], PATHINFO_EXTENSION);
+            $format_name = "BuktiEval_".$project."_".$bank."_".$platform."_".$skenario."_".$num."_" . time()."_".$key. "." . $extension_format;
+             $format_tmp = $_FILES['bukti_transaksi']['tmp_name'][$key];
             move_uploaded_file($format_tmp, "assets/file/buktitrk/" . $format_name);
+
+            $img[] = $format_name;
         }
+        $image_name = serialize($img);
 
         $data = [
                 // 'user_input' => $id_user,

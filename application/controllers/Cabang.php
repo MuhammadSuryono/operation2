@@ -44,24 +44,7 @@ class Cabang extends CI_Controller {
 
     public function tambah_cabang()
     {
-       $kode = $this->input->post('project');
-       $get = $this->db->get_where('project', array('kode' => $kode ))->row_array();
-
-
-
-       $data = [
-                'project' => $kode,
-                'kode' => $this->input->post('kode'),
-                'nama' => $this->input->post('nama'),
-                'alamat' => $this->input->post('alamat'),
-                'kota' => ucwords(strtolower($this->input->post('kota'))),
-                'provinsi' => $this->input->post('provinsi'),
-                'kodepos' => $this->input->post('kodepos'),
-                'notelpon' => $this->input->post('notelpon'),
-                'fax' => $this->input->post('fax'),
-                'kodebank' => $this->input->post('bank')
-                ];
-        $this->db->insert('cabang', $data);
+       $this->Cabang_model->tambah_cabang();
         $this->session->set_flashdata('flash', 'Berhasil Menambahkan Cabang');
         redirect("cabang");
 
@@ -70,18 +53,7 @@ class Cabang extends CI_Controller {
 
     public function tambah_atmcenter()
     {
-       $kode = $this->input->post('project');
-       $get = $this->db->get_where('project', array('kode' => $kode ))->row_array();
-
-       $data = [
-                'project' => $kode,
-                'cabang' => $this->input->post('kode'),
-                'namacabang' => $this->input->post('nama'),
-                'alamat' => $this->input->post('alamat'),
-                'kota' => ucwords(strtolower($this->input->post('kota'))),
-                'kodebank' => $get['bank']
-                ];
-        $this->db->insert('atmcenter', $data);
+       $this->Cabang_model->tambah_atmcenter();
         $this->session->set_flashdata('flash', 'Berhasil Menambahkan Cabang');
         redirect("cabang");
     }
@@ -351,25 +323,18 @@ public function getcabang_edit()
     echo json_encode($data);
   }
 
+  public function getcabangatm_edit()
+  {
+    $num = $_POST['num'];
+    $data = $this->Cabang_model->getcabangatm_edit($num);
+    echo json_encode($data);
+  }
+
   public function edit_cabang()
     {
        
-       $data = [
-                'kode' => $this->input->post('kode'),
-                'nama' => $this->input->post('nama'),
-                'alamat' => $this->input->post('alamat'),
-                'kota' => $this->input->post('kota'),
-                'provinsi' => $this->input->post('provinsi'),
-                'kodepos' => $this->input->post('kodepos'),
-                'notelpon' => $this->input->post('notelpon'),
-                'fax' => $this->input->post('fax'),
-                'kodebank' => $this->input->post('kodebank')
-                ];
-        $num = $this->input->post('num');
-
-        $this->db->where('num', $num);
-        $this->db->update('cabang', $data);
-        $this->session->set_flashdata('flash', 'Berhasil Edit Cabang');
+       $this->Cabang_model->edit_cabang();
+       $this->session->set_flashdata('flash', 'Berhasil Edit Cabang');
         redirect("cabang");
 
 
@@ -378,12 +343,27 @@ public function getcabang_edit()
     public function hapus_cabang($num)
     {
        
-        $this->db->where('num', $num);
-        $this->db->delete('cabang');
+        $this->Cabang_model->hapus_cabang($num);
         $this->session->set_flashdata('flash', 'Berhasil Hapus Cabang');
         redirect("cabang");
 
 
+    }
+
+    public function edit_cabangatm()
+    {
+       
+       $this->Cabang_model->edit_cabangatm();
+        $this->session->set_flashdata('flash', 'Berhasil Edit Cabang');
+        redirect("cabang");
+    }
+
+    public function hapus_atm($num)
+    {
+       
+        $this->Cabang_model->hapus_atm($num);
+        $this->session->set_flashdata('flash', 'Berhasil Hapus Cabang ATM Center');
+        redirect("cabang");
     }
 
 
