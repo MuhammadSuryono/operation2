@@ -875,7 +875,7 @@ class Stkb extends Whatsapp
       $opsterm = $maxbpuops['maxt'] + 1;
 
 			$metodePembayaran = "MRI PAL";
-			if ($jumlahops > $maxTransfer) {
+			if ($jumlahops > $maxTransfer || $jumlahops < 0) {
 				$metodePembayaran = "MRI KAS";
 			}
 
@@ -911,7 +911,7 @@ class Stkb extends Whatsapp
         $trkjakterm = $maxbputrkjak['maxt'] + 1;
 
 				$metodePembayaran = "MRI PAL";
-				if ($jumlahtrk > $maxTransfer) {
+				if ($jumlahtrk > $maxTransfer || $jumlahtrk < 0) {
 					$metodePembayaran = "MRI KAS";
 				}
 
