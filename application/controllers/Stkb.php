@@ -936,7 +936,7 @@ class Stkb extends Whatsapp
         $maxbputrkluar = $db3->query("SELECT max(term) AS maxt FROM bpu WHERE waktu='$waktubudget' AND no='$noseltrkluar'")->row_array();
         $trkluarterm = $maxbputrkluar['maxt'] + 1;
 
-				if ($jumlahtrk > $maxTransfer) {
+				if ($jumlahtrk > $maxTransfer || $jumlahtrk < 0) {
 					$metodePembayaran = "MRI KAS";
 				}
 
