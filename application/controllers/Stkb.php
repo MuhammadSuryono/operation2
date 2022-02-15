@@ -887,7 +887,7 @@ class Stkb extends Whatsapp
       $dataRekening = $this->dataRekening($data['idpic']);
 
 
-      if ($jumlahops < $maxTransfer) {
+      if ($jumlahops < $maxTransfer && $jumlahops > 0) {
 
 				$biayaTransfer = $this->setBiayaTransfer($dataRekening['kode_bank']);
 				$jumlahops = $jumlahops - $biayaTransfer;
@@ -920,7 +920,7 @@ class Stkb extends Whatsapp
                                         ('$noseltrkjak','STKB TRK Jakarta','$jumlahtrk','0000-00-00','-','-','TLF','Sistem','Sistem','$waktubudget','Belum Di Bayar','Disetujui (Direksi)','0','','','','','$trkjakterm','$nomorstkb','$term','$metodePembayaran')");
 
         $id = $this->getLastDataNoidBpu();
-				if ($jumlahtrk < $maxTransfer) {
+				if ($jumlahtrk < $maxTransfer && $jumlahtrk > 0) {
 					$dataTransfer = $this->pushToMriTransfer($nomorstkb,$dataRekening['no'], $user["Nama"], $user['Email'], $dataRekening['nama_bank'], $dataRekening['kode_bank'], "", $jumlahtrk, "", $userCreator['name'], "Sistem", $caribudget['jenis'], $project['nama'], $id, $rekeningSumber, $isTerm1);
 					if (!in_array($user['HP'], $duplicateNumber)) {
 						array_push($duplicateNumber, $user['HP']);
@@ -944,7 +944,7 @@ class Stkb extends Whatsapp
                                         VALUES
                                         ('$noseltrkluar','STKB TRK Luar Kota','$jumlahtrk','0000-00-00','-','-','TLF','Sistem','Sistem','$waktubudget','Belum Di Bayar','Disetujui (Direksi)','0','','','','','$trkluarterm','$nomorstkb','$term','$metodePembayaran')");
         $id = $this->getLastDataNoidBpu();
-				if ($jumlahtrk < $maxTransfer) {
+				if ($jumlahtrk < $maxTransfer && $jumlahtrk > 0) {
 					$dataTransfer = $this->pushToMriTransfer($nomorstkb, $dataRekening['no'], $user["Nama"], $user['Email'], $dataRekening['nama_bank'], $dataRekening['kode_bank'], "", $jumlahtrk, "", $userCreator['name'], "Sistem", $caribudget['jenis'], $project['nama'], $id, $rekeningSumber, $isTerm1);
 					if (!in_array($user['HP'], $duplicateNumber)) {
 						array_push($duplicateNumber, $user['HP']);
