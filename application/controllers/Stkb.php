@@ -857,10 +857,14 @@ class Stkb extends Whatsapp
     $db2 = $this->load->database('database_kedua', TRUE);
     $db3 = $this->load->database('database_ketiga', TRUE);
 		$dbMri = $this->load->database('db_mritransfer', TRUE);
+		$dbDevelop = $this->load->database('db_develop', TRUE);
 
     $insert = [];
 		$arrDataNotifikasiWaa = [];
 		$duplicateNumber = [];
+
+		$queryDbKas = $dbDevelop->query("SELECT rekening FROM kas WHERE label_kas = 'Kas Project'")->row_array();
+		$rekeningSumber = $queryDbKas['rekening'];
 
 		$jenisPembayaran = $dbMri->query("SELECT max_transfer FROM jenis_pembayaran WHERE jenispembayaran = 'STKB'")->row_array();
 		$maxTransfer = $jenisPembayaran['max_transfer'];
@@ -932,7 +936,7 @@ class Stkb extends Whatsapp
 
 				$biayaTransfer = $this->setBiayaTransfer($dataRekening['kode_bank']);
 				$jumlahops = $jumlahops - $biayaTransfer;
-        $dataTransfer = $this->pushToMriTransfer($nomorstkb, $dataRekening['no'], $user["Nama"], $user['Email'], $dataRekening['nama_bank'], $dataRekening['kode_bank'], "", $jumlahops, "", $userCreator['name'], "Sistem", $caribudget['jenis'], $project['nama'], $id, "0613005908", $isTerm1);
+        $dataTransfer = $this->pushToMriTransfer($nomorstkb, $dataRekening['no'], $user["Nama"], $user['Email'], $dataRekening['nama_bank'], $dataRekening['kode_bank'], "", $jumlahops, "", $userCreator['name'], "Sistem", $caribudget['jenis'], $project['nama'], $id, $rekeningSumber, $isTerm1);
 				if (!in_array($user['HP'], $duplicateNumber)) {
 					array_push($duplicateNumber, $user['HP']);
 					array_push($arrDataNotifikasiWaa, $this->setDataNotifWa($nomorstkb, $user, $dataTransfer,$dataRekening, $jumlahops, $project));
@@ -962,7 +966,7 @@ class Stkb extends Whatsapp
 
         $id = $this->getLastDataNoidBpu();
 				if ($jumlahtrk < $maxTransfer) {
-					$dataTransfer = $this->pushToMriTransfer($nomorstkb,$dataRekening['no'], $user["Nama"], $user['Email'], $dataRekening['nama_bank'], $dataRekening['kode_bank'], "", $jumlahtrk, "", $userCreator['name'], "Sistem", $caribudget['jenis'], $project['nama'], $id, "0613005908", $isTerm1);
+					$dataTransfer = $this->pushToMriTransfer($nomorstkb,$dataRekening['no'], $user["Nama"], $user['Email'], $dataRekening['nama_bank'], $dataRekening['kode_bank'], "", $jumlahtrk, "", $userCreator['name'], "Sistem", $caribudget['jenis'], $project['nama'], $id, $rekeningSumber, $isTerm1);
 					if (!in_array($user['HP'], $duplicateNumber)) {
 						array_push($duplicateNumber, $user['HP']);
 						array_push($arrDataNotifikasiWaa, $this->setDataNotifWa($nomorstkb, $user, $dataTransfer,$dataRekening, $jumlahops, $project));
@@ -986,7 +990,7 @@ class Stkb extends Whatsapp
                                         ('$noseltrkluar','STKB TRK Luar Kota','$jumlahtrk','0000-00-00','-','-','TLF','Sistem','Sistem','$waktubudget','Belum Di Bayar','Disetujui (Direksi)','0','','','','','$trkluarterm','$nomorstkb','$term','$metodePembayaran')");
         $id = $this->getLastDataNoidBpu();
 				if ($jumlahtrk < $maxTransfer) {
-					$dataTransfer = $this->pushToMriTransfer($nomorstkb, $dataRekening['no'], $user["Nama"], $user['Email'], $dataRekening['nama_bank'], $dataRekening['kode_bank'], "", $jumlahtrk, "", $userCreator['name'], "Sistem", $caribudget['jenis'], $project['nama'], $id, "0613005908", $isTerm1);
+					$dataTransfer = $this->pushToMriTransfer($nomorstkb, $dataRekening['no'], $user["Nama"], $user['Email'], $dataRekening['nama_bank'], $dataRekening['kode_bank'], "", $jumlahtrk, "", $userCreator['name'], "Sistem", $caribudget['jenis'], $project['nama'], $id, $rekeningSumber, $isTerm1);
 					if (!in_array($user['HP'], $duplicateNumber)) {
 						array_push($duplicateNumber, $user['HP']);
 						array_push($arrDataNotifikasiWaa, $this->setDataNotifWa($nomorstkb, $user, $dataTransfer,$dataRekening, $jumlahops, $project));
@@ -1170,7 +1174,7 @@ class Stkb extends Whatsapp
 	 * @param string $rekeningSumber
 	 * @return mixed
 	 */
-  private function pushToMriTransfer($nomorstkb, $norek, $pemilikRekening, $emailPemilikRekening = "", $bank, $kodeBank, $beritaTrasnfer = "", $jumlah, $ketTransfer, $creator, $otorisasi = "Sistem", $statusBpu, $nmProject = "", $noIdBpu, $rekeningSumber = "0613005908", $isTerm1 = false)
+  private function pushToMriTransfer($nomorstkb, $norek, $pemilikRekening, $emailPemilikRekening = "", $bank, $kodeBank, $beritaTrasnfer = "", $jumlah, $ketTransfer, $creator, $otorisasi = "Sistem", $statusBpu, $nmProject = "", $noIdBpu, $rekeningSumber = "", $isTerm1 = false)
   {
 	  $dbBridge = $this->load->database('db_bridge', TRUE);
 		$trasnferRequestId = $this->lastRequestTransferId();
