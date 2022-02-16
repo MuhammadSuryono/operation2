@@ -63,6 +63,7 @@ Nama Project : ". $data['project'] . "
 No. Rekening Anda : " . $data['nomor_rekening'] . "
 Bank             : " . $data['bank'] . "
 Nama Penerima    : " . $data['pemilik_rekening'] . "
+Biaya Admin : Rp. " . number_format($data['biaya_trf'], 0, '', '.') . "
 Jumlah Dibayarkan : Rp. " . number_format($data['jumlah'], 0, '', '.') . "
 Status           : Dijadwalkan Pada,  Tanggal : " . $data['jadwal_transfer'] . "
 
