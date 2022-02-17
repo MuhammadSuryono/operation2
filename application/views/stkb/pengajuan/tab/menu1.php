@@ -165,9 +165,9 @@
           }
         },
         {
-          "data": "total",
+          "data": "total_biaya",
           render: function(data, type, row) {
-            return formatRupiah(row.total, 'Rp. ');
+            return formatRupiah(row.total_biaya, 'Rp. ');
           }
         },
         {

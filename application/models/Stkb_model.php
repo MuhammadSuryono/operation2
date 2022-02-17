@@ -2783,6 +2783,7 @@ class Stkb_model extends CI_model
       a.term AS term,
       a.tanggalbuat AS tanggalbuat,
       a.idpic AS idpic,
+      a.total AS total_biaya,
       e.jml_hari,
       e.quota,
       e.kotadinas,
