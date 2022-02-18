@@ -36,12 +36,13 @@ class Callback extends Whatsapp
 	{
 		$input_data = json_decode($this->input->raw_input_stream, true);
 		$this->dataInput = $input_data;
+		$this->dataInput["response"] = json_decode($this->dataInput["response"]);
 	}
 
 	private function is_success_process_transfer()
 	{
 		log_message("info", json_encode($this->dataInput));
-		return $this->dataInput['response']['TransactionID'] == $this->dataInput['transfer_req_id'];
+		return $this->dataInput['response']->TransactionID == $this->dataInput['transfer_req_id'];
 	}
 
 	private function set_input_post($data, $dataStkb)
@@ -119,7 +120,6 @@ class Callback extends Whatsapp
 		$data = $dbBridge->select('novoucher')->where('transfer_req_id LIKE', $date."%")->order_by('transfer_req_id',"desc")->limit(1)->get('data_transfer')->row();
     	$lastId = (int)substr($data->transfer_req_id, -4);
 
-		$formatId = $date . sprintf('%04d', $lastId + 1);
-		return $formatId;
+		return $date . sprintf('%04d', $lastId + 1);
 	}
 }
