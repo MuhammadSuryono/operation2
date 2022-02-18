@@ -1224,6 +1224,7 @@ class Stkb extends Whatsapp
   {
 	  $dbBridge = $this->load->database('db_bridge', TRUE);
 	  $trasnferRequestId = $this->lastRequestTransferId();
+	  $biayaTrf = $this->setBiayaTransfer($kodeBank);
 	  $timeNow = date('Y-m-d H:i:s');
 
 	  $norek = $this->correct_bank_account_number($norek);
@@ -1249,7 +1250,7 @@ class Stkb extends Whatsapp
 		  "rekening_sumber" => $rekeningSumber,
 		  "waktu_request" => $timeNow,
 		  "jadwal_transfer" => $transferSchedule,
-		  "biaya_trf" => 0,
+		  "biaya_trf" => $biayaTrf,
 		  "terotorisasi" => 2,
 		  "hasil_transfer" => 1,
 		  "nm_validasi" => "Sistem",
