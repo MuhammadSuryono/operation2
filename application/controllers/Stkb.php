@@ -901,7 +901,7 @@ class Stkb extends Whatsapp
 			  $dataTransfer = $this->pushToMriTransfer($payload["nomorstkb"], $dataRekening['no'], $userPic["Nama"], $userPic['Email'], $dataRekening['nama_bank'], $dataRekening['kode_bank'], "", $totalBiaya, "", $userCreator['name'], "Sistem", $pengajuan['jenis'], $project['nama'], $idBpu, $sourceAccountBank, $jadwalPembayaran, $isTerm1);
 			  if (!in_array($userPic['HP'], $duplicateNumber)) {
 				  $duplicateNumber[] = $userPic['HP'];
-				  $arrDataNotifikasiWaa[] = $this->setDataNotifWa($payload["nomorstkb"], $userPic, $dataTransfer, $dataRekening, $totalBiaya, $biayaTransfer, $project);
+				  $arrDataNotifikasiWaa[] = $this->setDataNotifWa($payload, $userPic, $dataTransfer, $dataRekening, $totalBiaya, $biayaTransfer, $project);
 			  }
 		  }
 
