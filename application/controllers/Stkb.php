@@ -848,7 +848,18 @@ class Stkb extends Whatsapp
 		  $jumlahops = $payload['jumlahops'] + $payload["perdin"] + $payload["bpjs"] + $payload["akomodasi"];
 
 		  // DATA PAYLOAD BPU
-		  $payloadBpu = $this->set_payload_bpu($dataItemBudget, 'STKB OPS', $jumlahops, $opsTerm, $userPic, $userCreator["name"], $dataRekening, $payload, $waktuBudget, $jadwalPembayaran, $metodePembayaran);
+		  $payloadBpu = $this->set_payload_bpu(
+				  $dataItemBudget,
+				  'STKB OPS',
+				  $jumlahops,
+				  $opsTerm,
+				  $userPic,
+				  $userCreator["name"],
+				  $dataRekening,
+				  $payload,
+				  $waktuBudget,
+				  $jadwalPembayaran,
+				  $metodePembayaran);
 
 
 		  // BPU OPS
@@ -884,7 +895,6 @@ class Stkb extends Whatsapp
 			  $biayaTransfer = $this->setBiayaTransfer($dataRekening['kode_bank']);
 			  $idBpu = $this->getLastDataNoidBpu();
 			  $totalBiaya = $payload["total"] - $biayaTransfer;
-			  $payload["total"] = $totalBiaya;
 
 			  $dataTransfer = $this->pushToMriTransfer($payload["nomorstkb"], $dataRekening['no'], $userPic["Nama"], $userPic['Email'], $dataRekening['nama_bank'], $dataRekening['kode_bank'], "", $totalBiaya, "", $userCreator['name'], "Sistem", $pengajuan['jenis'], $project['nama'], $idBpu, $sourceAccountBank, $jadwalPembayaran, $isTerm1);
 			  if (!in_array($userPic['HP'], $duplicateNumber)) {
@@ -1217,6 +1227,7 @@ class Stkb extends Whatsapp
 	 * @param string $nmProject
 	 * @param $noIdBpu
 	 * @param string $rekeningSumber
+	 * @param $transferSchedule
 	 * @param bool $isTerm1
 	 * @return mixed
 	 */
