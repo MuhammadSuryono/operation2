@@ -1121,20 +1121,22 @@ class Stkb extends Whatsapp
 		}
 	}
 
-	private function setDataNotifWa($nomorstkb, $user, $dataTransfer, $dataRekening, $jumlah, $biayaAdmin, $project)
+	private function setDataNotifWa($payload, $user, $dataTransfer, $dataRekening, $jumlah, $biayaAdmin, $project)
 	{
 		return [
-			"nomor_stkb" => $nomorstkb,
+			"nomor_stkb" => $payload["nomorstkb"],
 			"penerima" => $user['Nama'],
 			"msisdn" => $user['HP'],
 			"jenis_pembayaran" => "STKB",
 			"pemilik_rekening" => $user['Nama'],
 			"nomor_rekening" => $dataRekening['no'],
 			"bank" => $dataRekening['nama_bank'],
+			"jumlah_sebelumnya" => $payload['total'],
 			"jumlah" => $jumlah,
 			"biaya_trf" => $biayaAdmin,
 			"jadwal_transfer" => $dataTransfer['jadwal_transfer'],
-			"project" => $project['nama']
+			"project" => $project['nama'],
+			"nomor_stkb" => $payload["term"]
 		];
 	}
 
