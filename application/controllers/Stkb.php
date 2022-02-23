@@ -872,6 +872,7 @@ class Stkb extends Whatsapp
 			  $itemBudget = $this->data_item_budget($waktuBudget, 'STKB TRK Jakarta');
 			  $dinasTerm = $this->max_term_bpu($waktuBudget, $itemBudget["no"]);
 
+			  $payloadBpu["no"] = $itemBudget["no"];
 			  $payloadBpu["statusbpu"] = "STKB TRK Jakarta";
 			  $payloadBpu["term"] = $dinasTerm + 1;
 			  $payloadBpu["jumlah"] = $payload["jumlahtrk"];
@@ -883,6 +884,7 @@ class Stkb extends Whatsapp
 			  $itemBudget = $this->data_item_budget($waktuBudget, "STKB TRK Luar Kota");
 			  $luarKotaTerm = $this->max_term_bpu($waktuBudget, $itemBudget["no"]);
 
+			  $payloadBpu["no"] = $itemBudget["no"];
 			  $payloadBpu["statusbpu"] = "STKB TRK Luar Kota";
 			  $payloadBpu["term"] = $luarKotaTerm + 1;
 			  $payloadBpu["jumlah"] = $payload["jumlahtrk"];
