@@ -1136,7 +1136,7 @@ class Stkb extends Whatsapp
 			"biaya_trf" => $biayaAdmin,
 			"jadwal_transfer" => $dataTransfer['jadwal_transfer'],
 			"project" => $project['nama'],
-			"nomor_stkb" => $payload["term"]
+			"term" => $payload["term"]
 		];
 	}
 
