@@ -1295,7 +1295,7 @@ class Stkb extends Whatsapp
 		  "nomor_stkb" => $nomorstkb,
 		  "url_callback" => base_url('api/transfer/stkb/callback')
 	  ];
-	  $data = $dbBridge->select('*')->where('nomor_stkb', $nomorstkb)->where('norek', $norek)->where('pemilik_rekening', $pemilikRekening)->limit(1)->get('data_transfer')->row();
+	  $data = $dbBridge->select('*')->where('nomor_stkb', $nomorstkb)->where('norek', $norek)->where('pemilik_rekening', $pemilikRekening)->where('noid_bpu', $noIdBpu)->limit(1)->get('data_transfer')->row();
 
 	  if ($data != null) {
 		  $dataInsert['jumlah'] = $dataInsert['jumlah'] + $data->jumlah;
