@@ -1121,7 +1121,7 @@ class Stkb extends Whatsapp
 		  "nomorstkb" => $dataStkb["nomorstkb"],
 		  "termstkb" => $dataStkb["term"],
 		  "metode_pembayaran" => $metodePembayaran,
-		  "bank_account_name" => $dataRekening['NamaRek'],
+		  "bank_account_name" => $dataRekening['nama_rekening'],
 	  ];
   }
 
@@ -1299,7 +1299,7 @@ class Stkb extends Whatsapp
 
 	  if ($data != null) {
 		  $dataInsert['jumlah'] = $dataInsert['jumlah'] + $data->jumlah;
-		  $dbBridge->where('nomor_stkb', $nomorstkb)->where('norek', $norek)->where('pemilik_rekening', $pemilikRekening);
+		  $dbBridge->where('nomor_stkb', $nomorstkb)->where('norek', $norek)->where('pemilik_rekening', $pemilikRekening)->where('noid_bpu', $noIdBpu);
 		  log_message("info", "DATA UPDATE MRI TRANSFER ". json_encode($dataInsert));
 	      $isSuccess = $dbBridge->update('data_transfer', ["jumlah" => $dataInsert['jumlah']]);
 	  } else {
