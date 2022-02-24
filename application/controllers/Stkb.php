@@ -821,6 +821,7 @@ class Stkb extends Whatsapp
 	  $arrDataNotifikasiWaa = [];
 	  $duplicateNumber = [];
 	  $projectNotRegisterOnBudget = [];
+	  $namaRekeningNotRegister = [];
 	  foreach ($dataStatusPembayaran as $key => $status) {
 		  // Collect data
 		  $payload = $this->payload_rtp($status);
@@ -840,6 +841,11 @@ class Stkb extends Whatsapp
 		  $metodePembayaran = $this->metode_pembayaran($payload["total"], $maxTransfer);
 		  $dataRekening = $this->dataRekening($payload["idpic"]);
 		  $jadwalPembayaran = $this->transferSchedule($isTerm1);
+
+		  if ($dataRekening['nama_rekening'] == '') {
+			  $namaRekeningNotRegister[] = $status;
+			  continue;
+		  }
 
 
 		  // DATA OPS
@@ -898,7 +904,7 @@ class Stkb extends Whatsapp
 			  $idBpu = $this->getLastDataNoidBpu();
 			  $totalBiaya = $payload["total"] - $biayaTransfer;
 
-			  $dataTransfer = $this->pushToMriTransfer($payload["nomorstkb"], $dataRekening['no'], $userPic["Nama"], $userPic['Email'], $dataRekening['nama_bank'], $dataRekening['kode_bank'], "", $totalBiaya, "", $userCreator['name'], "Sistem", $pengajuan['jenis'], $project['nama'], $idBpu, $sourceAccountBank, $jadwalPembayaran, $isTerm1);
+			  $dataTransfer = $this->pushToMriTransfer($payload["nomorstkb"], $dataRekening['no'], $dataRekening['nama_rekening'], $userPic['Email'], $dataRekening['nama_bank'], $dataRekening['kode_bank'], "", $totalBiaya, "", $userCreator['name'], "Sistem", $pengajuan['jenis'], $project['nama'], $idBpu, $sourceAccountBank, $jadwalPembayaran, $isTerm1);
 			  if (!in_array($userPic['HP'], $duplicateNumber)) {
 				  $duplicateNumber[] = $userPic['HP'];
 				  $arrDataNotifikasiWaa[] = $this->setDataNotifWa($payload, $userPic, $dataTransfer, $dataRekening, $totalBiaya, $biayaTransfer, $project);
@@ -971,6 +977,23 @@ class Stkb extends Whatsapp
 				  $message .= $value . ", ";
 			  }
 			  $message .= " tidak dapat diproses dikarenakan data project tidak ditemukan di Budget Online";
+		  }
+
+		  $this->session->set_flashdata('flash', $message);
+	  } elseif (count($namaRekeningNotRegister) > 0) {
+		  $message = "";
+		  if (count($namaRekeningNotRegister) < count($dataStatusPembayaran)) {
+			  $message .= "STKB Berhasil Pindah Ke RTP\n Dan untuk Nomor STKB ";
+			  foreach ($namaRekeningNotRegister as $key => $value) {
+				  $message .= $value . ", ";
+			  }
+			  $message .= " tidak dapat diproses dikarenakan data nama rekening penerima tidak ditemukan di Budget Online";
+		  } else {
+			  $message .= "STKB Gagal dipindahkan Ke RTP\n Untuk Nomor STKB ";
+			  foreach ($namaRekeningNotRegister as $key => $value) {
+				  $message .= $value . ", ";
+			  }
+			  $message .= " tidak dapat diproses dikarenakan data nama rekening penerima tidak ditemukan di Budget Online";
 		  }
 
 		  $this->session->set_flashdata('flash', $message);
@@ -1157,7 +1180,7 @@ class Stkb extends Whatsapp
 	 */
   private function dataRekening($idPic)
   {
-		$query = "SELECT b.nama as nama_bank, d.NoRek as no, b.swift_code as kode_bank FROM datarekening d JOIN bank b ON d.CodeBank = b.kode WHERE d.Id = '$idPic'";
+		$query = "SELECT d.NamaRek as nama_rekening, b.nama as nama_bank, d.NoRek as no, b.swift_code as kode_bank FROM datarekening d JOIN bank b ON d.CodeBank = b.kode WHERE d.Id = '$idPic'";
 	  $rek = $this->db->query($query)->row_array();
 	  return $rek;
   }
