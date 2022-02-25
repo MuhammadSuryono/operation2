@@ -2407,7 +2407,7 @@ class Stkb_model extends CI_model
     // if ($divisi2 != '7') {
     // $this->datatables->where('z.penanggung_jawab_field = "'.$user.'"', NULL, FALSE);
     // }
-    $this->datatables->where('d.type = "n" AND a.term1 + b.term1 != 0 AND a.nomorstkb', NULL, FALSE);
+    $this->datatables->where('d.type = "n" AND d.visible="y" AND a.term1 + b.term1 != 0 AND a.nomorstkb', NULL, FALSE);
     $this->datatables->add_column('cek', '<input type="checkbox" style="width: 30px" class="checkbox form-control" id="agree1" name="statusbayar[]" value="$1" /><input type="hidden" name="nomorstkb$1" value="$1"><input type="hidden" name="term$1" value="Term 1"><input type="hidden" name="tanggalbuat$1" value="$2"><input type="hidden" name="kodeproject$1" value="$3"><input type="hidden" name="idpic$1" value="$4"><input type="hidden" name="perdin$1" value="$5">', 'nmrstkb,tanggalbuat,kodeproject,idpic,perdin');
     $this->datatables->add_column('print', '<a href="printstkb/$1/0" target="_blank"><i class="fa fa-print"></i> Print</a><input type="hidden" name="akomodasi$1" value="$2"><input type="hidden" name="bpjs$1" value="$3"><input type="hidden" name="jumlahops$1" value="$4"><input type="hidden" name="jumlahtrk$1" value="$5"><input type="hidden" name="total$1" value="$6">', 'nmrstkb,akomodasi,bpjs,jumlahops,jumlahtrk,total');
 
@@ -2420,11 +2420,11 @@ class Stkb_model extends CI_model
     $newArray = array();
     foreach ($data['data'] as $keyy) {
       if (!in_array($keyy['nmrstkb'], $newT1)) {
-        $rek = $this->db->query("SELECT b.nama, d.NoRek as no FROM datarekening d JOIN bank b ON d.CodeBank = b.kode WHERE d.Id = '$keyy[idpic]'")->row_array();
+        $rek = $this->db->query("SELECT b.nama, d.NoRek as no, d.NamaRek FROM datarekening d JOIN bank b ON d.CodeBank = b.kode WHERE d.Id = '$keyy[idpic]'")->row_array();
 
         if($keyy['status_sdm'] == 1 OR $keyy['status_sdm'] == NULL){
           $cek = $keyy['cek'];
-        } else {
+        } else if($keyy['status_sdm'] == 0){
           $cek = $keyy['cek_disabled'];
         }
         $newArray[] = array(
@@ -2436,6 +2436,7 @@ class Stkb_model extends CI_model
           "namaproject" => $keyy['namaproject'],
           "idpic" => $keyy['idpic'],
           "namapic" => $keyy['namapic'],
+          "namarek" => $rek['NamaRek'],
           "jumlahops" => $keyy['jumlahops'],
           "jumlahtrk" => $keyy['jumlahtrk'],
           "total" => $keyy['total'],
@@ -2479,6 +2480,7 @@ class Stkb_model extends CI_model
       a.jml_hari,
       a.quota,
       a.kotadinas,
+      e.statusbayar,
       IF(a.perdin IS NULL, 0, 0) AS perdin,
       IF(a.akomodasi IS NULL, 0, 0) AS akomodasi,
       IF(a.bpjs IS NULL, 0, 0) AS bpjs,
@@ -2499,7 +2501,8 @@ class Stkb_model extends CI_model
     $this->datatables->join('field_sdm f', 'a.kode_iddata = f.id_data_id', 'left');
 
     // AND a.nomorstkb NOT IN (SELECT nomorstkb FROM stkb_pembayaran WHERE term = 2)
-    $this->datatables->where('d.type = "n" AND e.statusbayar = "Paid" AND a.term2 + b.term2 != 0', NULL, FALSE);
+    // $this->datatables->where('d.type = "n" AND e.statusbayar = "Paid" AND a.term2 + b.term2 != 0', NULL, FALSE);
+    $this->datatables->where('d.type = "n" AND d.visible="y" AND a.term2 + b.term2 != 0', NULL, FALSE);
     $this->datatables->add_column('cek', '<input type="checkbox" style="width: 30px" class="checkbox form-control" id="agree2" name="statusbayar[]" value="$1" />', 'nmrstkb');
     $this->datatables->add_column('print', '<a href="printstkb/$1/$2" target="_blank"><i class="fa fa-print"></i> Print</a>', 'nmrstkb,0');
 
@@ -2568,11 +2571,13 @@ class Stkb_model extends CI_model
             $insert = $this->db->query("UPDATE stkb_ops SET tgl_buat_term2 = '$date' WHERE nomorstkb = '$keyy[nmrstkb]' AND project = '$keyy[kodeproject]'");
           }
 
-          $rek = $this->db->query("SELECT b.nama, d.NoRek as no FROM datarekening d JOIN bank b ON d.CodeBank = b.kode WHERE d.Id = '$keyy[idpic]'")->row_array();
+          $rek = $this->db->query("SELECT b.nama, d.NoRek as no, d.NamaRek FROM datarekening d JOIN bank b ON d.CodeBank = b.kode WHERE d.Id = '$keyy[idpic]'")->row_array();
 
-          if($keyy['status_sdm'] == 1 OR $keyy['status_sdm'] == NULL){
+          if(($keyy['status_sdm'] == 1 OR $keyy['status_sdm'] == NULL) AND $keyy['statusbayar'] == 'Paid'){
             $cek = '<input type="checkbox" style="width: 30px" class="checkbox form-control" id="agree2" name="statusbayar[]" value="' . $keyy['nmrstkb'] . '" /><input type="hidden" name="nomorstkb' . $keyy['nmrstkb'] . '" value="' . $keyy['nmrstkb'] . '"><input type="hidden" name="term' . $keyy['nmrstkb'] . '" value="' . $keyy['termnya'] . '"><input type="hidden" name="tanggalbuat' . $keyy['nmrstkb'] . '" value="' . $keyy['tanggalbuat'] . '"><input type="hidden" name="kodeproject' . $keyy['nmrstkb'] . '" value="' . $keyy['kodeproject'] . '"><input type="hidden" name="idpic' . $keyy['nmrstkb'] . '" value="' . $keyy['idpic'] . '">';
-          } else {
+          } else if($keyy['statusbayar']  == 'RTP'){
+            $cek = '<input type="checkbox" style="width: 30px" class="checkbox form-control" id="agree2" name="statusbayar[]" value="' . $keyy['nmrstkb'] . '" disabled data-trigger="hover" data-toggle="popover" data-placement="top" title="STKB ini tidak dapat dilanjutkan ke tahap RTP karena Term sebelumnya belum dilakukan pembayaran!" data-content="STKB ini tidak dapat dilanjutkan ke tahap RTP karena Term sebelumnya belum dilakukan pembayaran!"/><input type="hidden" name="nomorstkb' . $keyy['nmrstkb'] . '" value="' . $keyy['nmrstkb'] . '"><input type="hidden" name="term' . $keyy['nmrstkb'] . '" value="' . $keyy['termnya'] . '"><input type="hidden" name="tanggalbuat' . $keyy['nmrstkb'] . '" value="' . $keyy['tanggalbuat'] . '"><input type="hidden" name="kodeproject' . $keyy['nmrstkb'] . '" value="' . $keyy['kodeproject'] . '"><input type="hidden" name="idpic' . $keyy['nmrstkb'] . '" value="' . $keyy['idpic'] . '">';
+          } else if($keyy['status_sdm'] == 0){
             $cek = '<input type="checkbox" style="width: 30px" class="checkbox form-control" id="agree2" name="statusbayar[]" value="' . $keyy['nmrstkb'] . '" disabled title="PIC tersebut sudah di blaclist dari list PIC"/><input type="hidden" name="nomorstkb' . $keyy['nmrstkb'] . '" value="' . $keyy['nmrstkb'] . '"><input type="hidden" name="term' . $keyy['nmrstkb'] . '" value="' . $keyy['termnya'] . '"><input type="hidden" name="tanggalbuat' . $keyy['nmrstkb'] . '" value="' . $keyy['tanggalbuat'] . '"><input type="hidden" name="kodeproject' . $keyy['nmrstkb'] . '" value="' . $keyy['kodeproject'] . '"><input type="hidden" name="idpic' . $keyy['nmrstkb'] . '" value="' . $keyy['idpic'] . '">';
           }
 
@@ -2585,6 +2590,7 @@ class Stkb_model extends CI_model
             "namaproject" => $keyy['namaproject'],
             "idpic" => $keyy['idpic'],
             "namapic" => $keyy['namapic'],
+            "namarek" => $rek['NamaRek'],
             "jumlahops" => $keyy['jumlahops'],
             "jumlahtrk" => $keyy['jumlahtrk'],
             "total" => $keyy['total'],
@@ -2652,7 +2658,7 @@ class Stkb_model extends CI_model
     $this->datatables->join('stkb_sdm c', 'a.kode_iddata = c.id');
     $this->datatables->join('project d', 'a.project = d.kode');
     $this->datatables->join('field_sdm e', 'a.kode_iddata = e.id_data_id', 'left');
-    $this->datatables->where('d.type = "n" AND a.term3 + b.term3 != 0', NULL, FALSE);
+    $this->datatables->where('d.type = "n" AND d.visible="y" AND a.term3 + b.term3 != 0', NULL, FALSE);
     $this->datatables->add_column('cek', '<input type="checkbox" style="width: 30px" class="checkbox form-control" id="agree3" name="statusbayar[]" value="$1" />', 'nmrstkb');
     $this->datatables->add_column('print', '<a href="printstkb/$1/$2" target="_blank"><i class="fa fa-print"></i> Print</a>', 'nmrstkb,0');
     $this->db->order_by('a.nomorstkb', 'ASC');
@@ -2712,7 +2718,7 @@ class Stkb_model extends CI_model
         }
 
         if ($progressnya >= 100) {
-          $rek = $this->db->query("SELECT b.nama, d.NoRek as no FROM datarekening d JOIN bank b ON d.CodeBank = b.kode WHERE d.Id = '$keyy[idpic]'")->row_array();
+          $rek = $this->db->query("SELECT b.nama, d.NoRek as no, d.NamaRek FROM datarekening d JOIN bank b ON d.CodeBank = b.kode WHERE d.Id = '$keyy[idpic]'")->row_array();
 
           $checkTanggal = $this->db->query("SELECT * FROM stkb_ops WHERE nomorstkb = '$keyy[nmrstkb]' AND project = '$keyy[kodeproject]'")->row_array();
           if (!$checkTanggal['tgl_buat_term3']) {
@@ -2720,9 +2726,18 @@ class Stkb_model extends CI_model
             $insert = $this->db->query("UPDATE stkb_ops SET tgl_buat_term3 = '$date' WHERE nomorstkb = '$keyy[nmrstkb]' AND project = '$keyy[kodeproject]'");
           }
 
-          if($keyy['status_sdm'] == 1 OR $keyy['status_sdm'] == NULL){
-            $cek = '<input type="checkbox" style="width: 30px" class="checkbox form-control" id="agree3" name="statusbayar[]" value="' . $keyy['nmrstkb'] . '" /><input type="hidden" name="nomorstkb' . $keyy['nmrstkb'] . '" value="' . $keyy['nmrstkb'] . '"><input type="hidden" name="term' . $keyy['nmrstkb'] . '" value="' . $keyy['termnya'] . '"><input type="hidden" name="tanggalbuat' . $keyy['nmrstkb'] . '" value="' . $keyy['tanggalbuat'] . '"><input type="hidden" name="kodeproject' . $keyy['nmrstkb'] . '" value="' . $keyy['kodeproject'] . '"><input type="hidden" name="idpic' . $keyy['nmrstkb'] . '" value="' . $keyy['idpic'] . '">';
+          $get_term2 = $this->db->get_where('stkb_pembayaran', ['term' => '2', 'nomorstkb' => $keyy['nmrstkb']])->row_array();
+          if ($get_term2 != NULL) {
+            $statusnya = $get_term2['statusbayar'];
           } else {
+            $statusnya = NULL;
+          }
+
+          if(($keyy['status_sdm'] == 1 OR $keyy['status_sdm'] == NULL) AND $statusnya == 'Paid'){
+            $cek = '<input type="checkbox" style="width: 30px" class="checkbox form-control" id="agree3" name="statusbayar[]" value="' . $keyy['nmrstkb'] . '" /><input type="hidden" name="nomorstkb' . $keyy['nmrstkb'] . '" value="' . $keyy['nmrstkb'] . '"><input type="hidden" name="term' . $keyy['nmrstkb'] . '" value="' . $keyy['termnya'] . '"><input type="hidden" name="tanggalbuat' . $keyy['nmrstkb'] . '" value="' . $keyy['tanggalbuat'] . '"><input type="hidden" name="kodeproject' . $keyy['nmrstkb'] . '" value="' . $keyy['kodeproject'] . '"><input type="hidden" name="idpic' . $keyy['nmrstkb'] . '" value="' . $keyy['idpic'] . '">';
+          } else if($statusnya == 'RTP'){
+            $cek = '<input type="checkbox" style="width: 30px" class="checkbox form-control" id="agree3" name="statusbayar[]" value="' . $keyy['nmrstkb'] . '" disabled title="STKB ini tidak dapat dilanjutkan ke tahap RTP karena Term sebelumnya belum dilakukan pembayaran!" /><input type="hidden" name="nomorstkb' . $keyy['nmrstkb'] . '" value="' . $keyy['nmrstkb'] . '"><input type="hidden" name="term' . $keyy['nmrstkb'] . '" value="' . $keyy['termnya'] . '"><input type="hidden" name="tanggalbuat' . $keyy['nmrstkb'] . '" value="' . $keyy['tanggalbuat'] . '"><input type="hidden" name="kodeproject' . $keyy['nmrstkb'] . '" value="' . $keyy['kodeproject'] . '"><input type="hidden" name="idpic' . $keyy['nmrstkb'] . '" value="' . $keyy['idpic'] . '">';
+          } else if($keyy['status_sdm'] == 0){
             $cek = '<input type="checkbox" style="width: 30px" class="checkbox form-control" id="agree3" name="statusbayar[]" value="' . $keyy['nmrstkb'] . '" disabled title="PIC tersebut sudah di blaclist dari list PIC" /><input type="hidden" name="nomorstkb' . $keyy['nmrstkb'] . '" value="' . $keyy['nmrstkb'] . '"><input type="hidden" name="term' . $keyy['nmrstkb'] . '" value="' . $keyy['termnya'] . '"><input type="hidden" name="tanggalbuat' . $keyy['nmrstkb'] . '" value="' . $keyy['tanggalbuat'] . '"><input type="hidden" name="kodeproject' . $keyy['nmrstkb'] . '" value="' . $keyy['kodeproject'] . '"><input type="hidden" name="idpic' . $keyy['nmrstkb'] . '" value="' . $keyy['idpic'] . '">';
           }
 
@@ -2735,6 +2750,7 @@ class Stkb_model extends CI_model
             "namaproject" => $keyy['namaproject'],
             "idpic" => $keyy['idpic'],
             "namapic" => $keyy['namapic'],
+            "namarek" => $rek['NamaRek'],
             "jumlahops" => $keyy['jumlahops'],
             "jumlahtrk" => $keyy['jumlahtrk'],
             "total" => $keyy['total'],

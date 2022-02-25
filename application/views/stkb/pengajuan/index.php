@@ -255,7 +255,9 @@ if ($this->db->get_where('user', ['noid' => $id_user])->num_rows() >= 1) {
   </div>
 </div>
 
+
 <script type="text/javascript">
+
   $(document).ready(function() {
     $('#table_minus').DataTable();
   });
