@@ -1214,7 +1214,7 @@ class Stkb extends Whatsapp
 		if (!$isTerm1) {
 			$increaseDayString = "+" . 5 - $numberOfTheDay ." day";
 		} else {
-			$increaseDayString = "+1 day";
+			$increaseDayString = $numberOfTheDay == 5 ? "+3 day" : "+1 day";
 		}
 
 		$increaseDay = strtotime($increaseDayString, strtotime($dateNow));
