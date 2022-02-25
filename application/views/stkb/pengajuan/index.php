@@ -255,7 +255,14 @@ if ($this->db->get_where('user', ['noid' => $id_user])->num_rows() >= 1) {
   </div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+
+
 <script type="text/javascript">
+  $(document).ready(function() {
+        $('[data-toggle="popover"]').popover();
+    });
+
   $(document).ready(function() {
     $('#table_minus').DataTable();
   });

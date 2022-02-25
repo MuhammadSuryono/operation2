@@ -34,6 +34,7 @@
         <th>Nama</th>
         <th>Bank</th>
         <th>No. Rekening</th>
+        <th>Nama Rekening</th>
         <th>Perdin</th>
         <th>Akomodasi</th>
         <th>Bpjs</th>
@@ -132,6 +133,9 @@
                   },
                   {"data": "bank"},
                   {"data": "rekening"},
+                  {
+                    "data": "namarek"
+                  },
                   {"data": "perdin",
                     render: function ( data, type, row ) {
                       return formatRupiah(row.perdin, 'Rp. ');

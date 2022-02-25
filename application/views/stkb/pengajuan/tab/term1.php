@@ -35,6 +35,7 @@
           <th>Nama</th>
           <th>Bank</th>
           <th>No. Rekening</th>
+          <th>Nama Rekening</th>
           <th>Perdin</th>
           <th>Akomodasi</th>
           <th>Bpjs</th>
@@ -157,6 +158,9 @@
         },
         {
           "data": "rekening"
+        },
+        {
+          "data": "namarek"
         },
         {
           "data": "perdin",

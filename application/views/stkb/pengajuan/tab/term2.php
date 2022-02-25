@@ -34,6 +34,7 @@
           <th>Nama</th>
           <th>Bank</th>
           <th>No. Rekening</th>
+          <th>Nama Rekening</th>
           <th>Perdin</th>
           <th>Akomodasi</th>
           <th>Bpjs</th>
@@ -70,8 +71,15 @@
     </div>
   </form>
 </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+
 
 <script type="text/javascript">
+  $(document).ready(function() {
+        $('[data-toggle="popover"]').popover();
+    });
+
+  
   $(document).ready(function() {
     $.fn.dataTableExt.oApi.fnPagingInfo = function(oSettings) {
       return {
@@ -154,6 +162,9 @@
         },
         {
           "data": "rekening"
+        },
+        {
+          "data": "namarek"
         },
         {
           "data": "perdin",
