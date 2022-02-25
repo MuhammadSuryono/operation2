@@ -27,11 +27,12 @@ class Whatsapp extends CI_Controller {
 	}
 
 	/**
-     * @description Make HTTP-POST call
-     * @param       $url
-     * @param       array $params
-     * @return      HTTP-Response body or an empty string if the request fails or is empty
-     */
+	 * @description Make HTTP-POST call
+	 * @param       $url
+	 * @param array $params
+	 * @param string $type
+	 * @return      HTTP-Response body or an empty string if the request fails or is empty
+	 */
     private static function HTTPPost($url, array $params, $type = "form") {
         $query = http_build_query($params);
         if ($type == "json") {
@@ -70,7 +71,7 @@ Nama Penerima : " . $data['pemilik_rekening'] . "
 Jumlah Pembayaran : Rp. " . number_format($data['jumlah_sebelumnya'], 0, ',', '.') . "
 Biaya Admin : Rp. " . number_format($data['biaya_trf'], 0, '', '.') . "
 Jumlah Dibayarkan : Rp. " . number_format($data['jumlah'], 0, '', '.') . "
-Status : Dijadwalkan Pada,  Tanggal : " . $jadwal . "
+Status : Dijadwalkan Pada,  Tanggal : " . $jadwal[0] . "
 Keterangan Pembayaran : " . $keteranganPembayaran . "
 
 Jika ada pertanyaan lebih lanjut, silahkan email Divisi Finance ke finance@mri-research-ind.com.
