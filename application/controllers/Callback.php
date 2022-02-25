@@ -32,6 +32,8 @@ class Callback extends Whatsapp
 			$this->send_notification_whatsapp();
 
 			echo json_encode("OK");
+		} else {
+			echo $this->dataInput;
 		}
 	}
 
