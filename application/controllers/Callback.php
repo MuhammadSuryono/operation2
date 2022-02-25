@@ -12,6 +12,7 @@ class Callback extends Whatsapp
 	public function __construct()
 	{
 		parent::__construct();
+
 		$this->set_data_input_json();
 		$this->dbMri = $this->load->database('db_bridge', TRUE);
 		$this->dbJay2 = $this->load->database('database_kedua', TRUE);
@@ -29,6 +30,8 @@ class Callback extends Whatsapp
 			$this->send_notification_whatsapp();
 
 			echo json_encode("OK");
+		} else {
+			echo json_encode($this->dataInput);
 		}
 	}
 
@@ -36,12 +39,13 @@ class Callback extends Whatsapp
 	{
 		$input_data = json_decode($this->input->raw_input_stream, true);
 		$this->dataInput = $input_data;
+		$this->dataInput["response"] = json_decode($this->dataInput["response"]);
 	}
 
 	private function is_success_process_transfer()
 	{
 		log_message("info", json_encode($this->dataInput));
-		return $this->dataInput['response']['TransactionID'] == $this->dataInput['transfer_req_id'];
+		return $this->dataInput['response']->TransactionID == $this->dataInput['transfer_req_id'];
 	}
 
 	private function set_input_post($data, $dataStkb)
@@ -103,23 +107,36 @@ class Callback extends Whatsapp
 		$this->send_notification($dataNotifikasi['msisdn'], $messageTransfer);
 	}
 
-	private function generate_voucher_number()
+	private function generate_voucher_number($kodeBank = 'BRMIIDJA')
 	{
 		$tahun = date('y');
 		$bulan = date('m');
+		$lastVoucherId = $this->lastVoucherId($kodeBank);
 		// Mandiri Format KKP12-210001
 		// BCA Format KKP12-BCA-210001
-		return "KKP" . $bulan . "-" . $tahun . "0001";
+		if ($kodeBank != "BRMIIDJA") {
+			return "KKP" . $bulan . "-" . $this->name_short_bank($kodeBank) . "-" . $tahun . $lastVoucherId;
+		}
+		return "KKP" . $bulan . "-" . $tahun . $lastVoucherId;
 	}
 
-	private function lastVoucherId($kodeBank = "BRMIIDJA")
+	private function lastVoucherId($kodeBank)
 	{
-		$date = date('my');
-		$dbBridge = $this->load->database('database_ketiga', TRUE);
-		$data = $dbBridge->select('novoucher')->where('transfer_req_id LIKE', $date."%")->order_by('transfer_req_id',"desc")->limit(1)->get('data_transfer')->row();
+		$dbBridge = $this->load->database('db_bridge', TRUE);
+		$data = $dbBridge->select('transfer_req_id')->where('kode_bank', $kodeBank)->order_by('transfer_id',"desc")->limit(1)->get('data_transfer')->row();
     	$lastId = (int)substr($data->transfer_req_id, -4);
+		return sprintf('%04d', $lastId + 1);
+	}
 
-		$formatId = $date . sprintf('%04d', $lastId + 1);
-		return $formatId;
+	private function name_short_bank($kodeBank)
+	{
+		$bank = [
+			"CENAIDJA" => "BCA",
+			"BNINIDJA" => "BNI",
+			"BRINIDJA" => "BRI",
+			"BTANIDJA" => "BTN",
+		];
+
+		return $bank[$kodeBank];
 	}
 }
