@@ -840,7 +840,7 @@ class Stkb extends Whatsapp
 		  $userCreator = $this->db->query("SELECT * FROM user WHERE noid = '$idUser'")->row_array();
 		  $metodePembayaran = $this->metode_pembayaran($payload["total"], $maxTransfer);
 		  $dataRekening = $this->dataRekening($payload["idpic"]);
-		  $jadwalPembayaran = $this->transferSchedule($isTerm1);
+		  $jadwalPembayaran = $this->transferSchedule($isTerm1, $dataRekening['kode_bank']);
 
 		  if ($dataRekening['nama_rekening'] == '') {
 			  $namaRekeningNotRegister[] = $status;
@@ -1202,7 +1202,7 @@ class Stkb extends Whatsapp
 	/***
 	 * 
 	 */
-	private function transferSchedule($isTerm1 = false)
+	private function transferSchedule($isTerm1 = false, $kodeBank = 'CENAIDJA')
 	{
 		date_default_timezone_set('Asia/Jakarta');
 		$dateNow = date("Y-m-d");
@@ -1210,16 +1210,32 @@ class Stkb extends Whatsapp
 		$increaseDayString = "+0 day";
 		$timestamp = strtotime($dateNow);
 		$numberOfTheDay = date('w', $timestamp);
-		
+		$startTime = 8;
+		$max = 12;
+		$hourNow = date('H');
+
 		if (!$isTerm1) {
 			$increaseDayString = "+" . 5 - $numberOfTheDay ." day";
+
+			if ($numberOfTheDay == 5 && $kodeBank == 'CENAIDJA') {
+				$startTime = date('H');
+				$max = 24;
+			} else if ($numberOfTheDay == 5 && $kodeBank != 'CENAIDJA' && $hourNow > $max) {
+				$increaseDayString = "+3 day";
+			}
+
+			if ($numberOfTheDay != 5 && $hourNow > $max) {
+				$increaseDayString = "+1 day";
+			}
+
 		} else {
 			$increaseDayString = $numberOfTheDay == 5 ? "+3 day" : "+1 day";
 		}
 
 		$increaseDay = strtotime($increaseDayString, strtotime($dateNow));
 		$dateSchedule = date("Y-m-d", $increaseDay);
-    	$time = mt_rand(8,12).":".str_pad(mt_rand(0,59), 2, "0", STR_PAD_LEFT);
+		$time = mt_rand((int)$startTime,$max).":".str_pad(mt_rand(0,59), 2, "0", STR_PAD_LEFT);
+
 
 
 		return $dateSchedule . " " . $time . ":00";
