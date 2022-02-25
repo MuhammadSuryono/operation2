@@ -12,8 +12,6 @@ class Callback extends Whatsapp
 	public function __construct()
 	{
 		parent::__construct();
-		var_dump($this->lastVoucherId('BMRIIDJA'));
-		exit();
 
 		$this->set_data_input_json();
 		$this->dbMri = $this->load->database('db_bridge', TRUE);
