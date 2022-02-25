@@ -865,7 +865,8 @@ class Stkb extends Whatsapp
 				  $payload,
 				  $waktuBudget,
 				  $jadwalPembayaran,
-				  $metodePembayaran);
+				  $metodePembayaran,
+				  $project);
 
 
 		  // BPU OPS
@@ -1096,7 +1097,7 @@ class Stkb extends Whatsapp
 	  $dbBudget->insert('bpu', $payload);
   }
 
-  public function set_payload_bpu($itemBpu, $statusBpu, $jumlah, $termBpu, $user, $creator, $dataRekening, $dataStkb, $waktuBudget, $jadwalPembayaran, $metodePembayaran)
+  public function set_payload_bpu($itemBpu, $statusBpu, $jumlah, $termBpu, $user, $creator, $dataRekening, $dataStkb, $waktuBudget, $jadwalPembayaran, $metodePembayaran, $project)
   {
 	  return [
 		  "no" => $itemBpu["no"],
@@ -1122,6 +1123,7 @@ class Stkb extends Whatsapp
 		  "termstkb" => $dataStkb["term"],
 		  "metode_pembayaran" => $metodePembayaran,
 		  "bank_account_name" => $dataRekening['nama_rekening'],
+		  "ket_pembayaran" => $project['nama']."/".$dataStkb["nomorstkb"]."/".$dataStkb["term"],
 	  ];
   }
 

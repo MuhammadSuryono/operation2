@@ -9,6 +9,7 @@ class Callback extends Whatsapp
 	private $dbJay2;
 	private $dataTransfer;
 	private $dataStkb;
+	private $dataBpu;
 	public function __construct()
 	{
 		parent::__construct();
@@ -16,6 +17,7 @@ class Callback extends Whatsapp
 		$this->set_data_input_json();
 		$this->dbMri = $this->load->database('db_bridge', TRUE);
 		$this->dbJay2 = $this->load->database('database_kedua', TRUE);
+		$this->dbBudget = $this->load->database('database_ketiga', TRUE);
 		$this->load->model('Stkb_model');
 	}
 
@@ -24,7 +26,8 @@ class Callback extends Whatsapp
 		$isSuccessTransfer = $this->is_success_process_transfer();
 		if ($isSuccessTransfer) {
 			$this->get_data_transfer();
-			$this->get_data_stkb($this->dataTransfer->nomor_stkb);
+			$this->get_data_bpu($this->dataTransfer->noid_bpu);
+			$this->get_data_stkb($this->dataTransfer->nomor_stkb, $this->dataBpu->termstkb);
 			$this->set_input_post($this->dataTransfer, $this->dataStkb);
 			$this->Stkb_model->prosesbayarstkb();
 			$this->send_notification_whatsapp();
@@ -78,9 +81,14 @@ class Callback extends Whatsapp
 		$this->dataTransfer = $this->dbMri->where('transfer_req_id', $this->dataInput['transfer_req_id'])->get('data_transfer')->row();
 	}
 
-	private function get_data_stkb($nomorStkb)
+	private function get_data_stkb($nomorStkb, $term)
 	{
-		$this->dataStkb = $this->dbJay2->where('nomorstkb', $nomorStkb)->get('stkb_pembayaran')->row();
+		$this->dataStkb = $this->dbJay2->where('nomorstkb', $nomorStkb)->where('term', $term)->get('stkb_pembayaran')->row();
+	}
+
+	private function get_data_bpu($noidBpu)
+	{
+		$this->dataBpu = $this->dbBudget->where('noid', $noidBpu)->get('bpu')->row();
 	}
 
 	private function send_notification_whatsapp()
